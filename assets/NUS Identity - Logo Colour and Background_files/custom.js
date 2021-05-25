@@ -1,0 +1,6 @@
+jQuery(document).ready(function(){if(jQuery('#t3-mainbody #t3-content').length){if(jQuery('#t3-mainbody #t3-content').html().trim().length<1)
+jQuery('#t3-mainbody').remove();}
+if(jQuery('#t3-mainbody #t3-content .custom-body').length){if(jQuery('#t3-mainbody #t3-content .custom-body').html().trim().length<1)
+jQuery('#t3-mainbody').remove();}
+jQuery(document.body).SLScrollToTop({'image':'/images/default-source/base/top.png','text':'','title':'','className':'scrollToTop','duration':250});jQuery(".search-btn-box a").click(function(){event.preventDefault();jQuery("#search-collapse").toggleClass("collapse");});jQuery(".nus-mobile-nav a.fa-search").click(function(){event.preventDefault();jQuery("#search-collapse").toggleClass("collapse");});jQuery(".search-btn-box .glyphicon.glyphicon-search").click(function(){event.preventDefault();jQuery("#search-collapse").toggleClass("collapse");});jQuery('.search').keypress(function(e){var key=e.which;if(key==13)
+{var queryString=jQuery('#mod-search-searchword').val();var urlGoogleSearch="https://www.google.com/search?q="+queryString+"&domains=nus.edu.sg&sitesearch=nus.edu.sg";window.open(urlGoogleSearch);event.preventDefault();}});});
