@@ -8,9 +8,7 @@ import WorkoutSearch from "./pages/fitBudComponents/workoutSearch";
 import WorkoutSearchButton from "./pages/fitBudComponents/workoutSearchButton";
 
 export default function fitBud() {
-    return (
 
-    );
 }
 
 const styles = StyleSheet.create({
