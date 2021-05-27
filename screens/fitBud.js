@@ -14,12 +14,9 @@ export default function FitBud({ navigation }) {
   };
 
   return (
-    <>
       <View>
         <Text>FitBud</Text>
       </View>
-      <Button title="Logout" onPress={() => onLogout()} />
-    </>
   );
 
 const styles = StyleSheet.create({
@@ -29,4 +26,6 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
     justifyContent: "center",
   },
-});
+})
+
+};
