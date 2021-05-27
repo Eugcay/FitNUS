@@ -1,6 +1,8 @@
-import React, { Component } from "react";
+import { StatusBar } from "expo-status-bar";
+import React, { useState, Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import LoginStack from "./routes/loginStack";
 import MainStack from "./routes/mainStack";
 import firebase from "firebase";
@@ -15,10 +17,10 @@ export class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loggedIn: false,
       loaded: false,
     };
   }
-
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -48,9 +50,7 @@ export class App extends Component {
       return (
         <NavigationContainer>
           {loggedIn ? (
-            <MainStack />
-          ) : (
-            <LoginStack />
+
           )}
         </NavigationContainer>
       );

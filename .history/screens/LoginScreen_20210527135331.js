@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Background from "../components/Background";
 import { AntDesign } from "@expo/vector-icons";
-import firebase from "firebase";
+import { firebase } from "firebase";
 import { firebaseConfig } from "../config";
 
 export default function LoginScreen({navigation}) {
@@ -17,9 +17,15 @@ export default function LoginScreen({navigation}) {
   const [password, setPassword] = useState({ value: "", error: "" });
 
   const handleSubmit = () => {
-    firebase.auth().signInWithEmailAndPassword(userId.value, password.value)
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(userId, password)
       .then((result) => console.log(result))
-      .catch((error) => alert(error));
+      .catch((error) => console.log(error));
+
+      navigation.reset(
+
+      )
   }
 
   return (
@@ -47,12 +53,13 @@ export default function LoginScreen({navigation}) {
         />
       </View>
       <TouchableOpacity onPress={() => navigation.replace('SignupScreen')}>
-        <Text style={styles.forgotButton}>Sign up</Text>
+        <Text style={styles.forgotButton}>Forgot Password?</Text>
       </TouchableOpacity>
       <TouchableOpacity
         title="Login"
         style={styles.loginButton}
-        onPress={handleSubmit} >
+        onPress={() => navigation.navigate('FitBud')}
+      >
         <Text style={{ color: "#0B2A59" }}>Login</Text>
       </TouchableOpacity>
     </Background>
@@ -111,7 +118,6 @@ const styles = StyleSheet.create({
   forgotButton: {
     height: 30,
     marginBottom: 2,
-    fontSize: 14,
     color: "#F5DC3C"
   }
 

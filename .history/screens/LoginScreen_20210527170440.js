@@ -17,9 +17,9 @@ export default function LoginScreen({navigation}) {
   const [password, setPassword] = useState({ value: "", error: "" });
 
   const handleSubmit = () => {
-    firebase.auth().signInWithEmailAndPassword(userId.value, password.value)
+    firebase.auth().signInWithEmailAndPassword(userId, password)
       .then((result) => console.log(result))
-      .catch((error) => alert(error));
+      .catch((error) => console.log(error));
   }
 
   return (

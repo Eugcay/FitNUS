@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Background from "../components/Background";
 import { AntDesign } from "@expo/vector-icons";
-import firebase from "firebase";
+import { firebase } from "firebase";
 import { firebaseConfig } from "../config";
 
 export default function LoginScreen({navigation}) {
@@ -17,9 +17,15 @@ export default function LoginScreen({navigation}) {
   const [password, setPassword] = useState({ value: "", error: "" });
 
   const handleSubmit = () => {
-    firebase.auth().signInWithEmailAndPassword(userId.value, password.value)
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(userId, password)
       .then((result) => console.log(result))
-      .catch((error) => alert(error));
+      .catch((error) => console.log(error));
+
+      navigation.reset(
+
+      )
   }
 
   return (
@@ -52,7 +58,7 @@ export default function LoginScreen({navigation}) {
       <TouchableOpacity
         title="Login"
         style={styles.loginButton}
-        onPress={handleSubmit} >
+        onPress={() => navigation.navigate()} >
         <Text style={{ color: "#0B2A59" }}>Login</Text>
       </TouchableOpacity>
     </Background>

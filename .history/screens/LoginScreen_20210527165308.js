@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Background from "../components/Background";
 import { AntDesign } from "@expo/vector-icons";
-import firebase from "firebase";
+import { firebase } from "firebase";
 import { firebaseConfig } from "../config";
 
 export default function LoginScreen({navigation}) {
@@ -17,9 +17,12 @@ export default function LoginScreen({navigation}) {
   const [password, setPassword] = useState({ value: "", error: "" });
 
   const handleSubmit = () => {
-    firebase.auth().signInWithEmailAndPassword(userId.value, password.value)
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(userId, password)
       .then((result) => console.log(result))
-      .catch((error) => alert(error));
+      .catch((error) => console.log(error));
+
   }
 
   return (

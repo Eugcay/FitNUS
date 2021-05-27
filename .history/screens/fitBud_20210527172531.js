@@ -1,6 +1,5 @@
 import React from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
-import firebase from "firebase";
 // import HeaderTitle from "./pages/fitBudComponents/header";
 // import HistoryBar from "./pages/fitBudComponents/historyBar";
 // import MenuButton from "./pages/fitBudComponents/menuButton";

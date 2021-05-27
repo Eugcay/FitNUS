@@ -12,9 +12,9 @@ import { AntDesign } from "@expo/vector-icons";
 import firebase from "firebase";
 
 const SignupScreen = ({ navigation }) => {
-  const [name, setName] = useState({ input: "", error: "", pressed: false });
-  const [userId, setUserId] = useState({ input: "", error: "", pressed: false });
-  const [password, setPassword] = useState({ input: "", error: "", pressed: false });
+  const [name, setName] = useState({ input: "", pressed: false });
+  const [userId, setUserId] = useState({ input: "", pressed: false });
+  const [password, setPassword] = useState({ input: "", pressed: false });
 
   const handleSubmit = () => {
     firebase
@@ -60,10 +60,10 @@ const SignupScreen = ({ navigation }) => {
         style={styles.loginButton}
         onPress={handleSubmit}
       />
-      <TouchableOpacity style={styles.SignupButton} onPress={handleSubmit}>
-        <Text >Sign up</Text>
+      <TouchableOpacity onPress={handleSubmit}>
+        <Text style={styles.link}>Sign up</Text>
       </TouchableOpacity>
-      <TouchableOpacity stylb   onPress={() => navigation.replace("LoginScreen")}>
+      <TouchableOpacity onPress={() => navigation.replace("LoginScreen")}>
         <Text style={styles.forgotButton}>Login</Text>
       </TouchableOpacity>
     </Background>
@@ -75,9 +75,8 @@ export default SignupScreen;
 const styles = StyleSheet.create({
   logo: {
     width: "60%",
-    height: "12%",
+    height: "14%",
     alignSelf: "center",
-    marginBottom: 10
   },
 
   input: {
@@ -98,23 +97,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFC94A",
   },
-
-  SignupButton: {
-    marginTop: 15,
-    marginBottom: 10,
-    width: "80%",
-    alignItems: "center",
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: "#FFC94A",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#fff",
-  },
-
-  forgotButton: {
-    height: 30,
-    marginBottom: 2,
-    color: "#F5DC3C"
-  }
 });
