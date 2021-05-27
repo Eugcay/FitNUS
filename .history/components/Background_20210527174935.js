@@ -3,15 +3,12 @@ import {
   ImageBackground,
   StyleSheet,
   KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 
-export default function Background({ children }) {
+export default function Background({ children }) { 
   return (
     <ImageBackground source={require("../assets/BG.png")} style={styles.image}>
-      <KeyboardAvoidingView
-        behavior={Platform.Os == "ios" ? "padding" : "height"}
-      >
+      <KeyboardAvoidingView behavior="padding" style={styles.container}>
         {children}
       </KeyboardAvoidingView>
     </ImageBackground>
@@ -22,7 +19,8 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     resizeMode: "cover",
-    justifyContent: "center",
+    justifyContent: "center"
+    
   },
   container: {
     flex: 1,

@@ -2,16 +2,13 @@ import React from "react";
 import {
   ImageBackground,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
+  KeyboardAvoidingView, Platform
 } from "react-native";
 
 export default function Background({ children }) {
   return (
     <ImageBackground source={require("../assets/BG.png")} style={styles.image}>
-      <KeyboardAvoidingView
-        behavior={Platform.Os == "ios" ? "padding" : "height"}
-      >
+      <KeyboardAvoidingView behavior={Platform.Os == "ios" ? "padding" : "height" } >
         {children}
       </KeyboardAvoidingView>
     </ImageBackground>

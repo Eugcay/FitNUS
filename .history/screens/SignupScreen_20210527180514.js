@@ -1,27 +1,27 @@
 import React, { useState } from "react";
 import {
-  StyleSheet,
   View,
-  TextInput,
-  Image,
   Text,
   TouchableOpacity,
+  TextInput,
+  Image,
+  StyleSheet,
 } from "react-native";
 import Background from "../components/Background";
 import { AntDesign } from "@expo/vector-icons";
 import firebase from "firebase";
-import { firebaseConfig } from "../config";
 
-export default function LoginScreen({ navigation }) {
-  const [userId, setUserId] = useState({ value: "", error: "" });
-  const [password, setPassword] = useState({ value: "", error: "" });
+const SignupScreen = ({ navigation }) => {
+  const [name, setName] = useState({ input: "", error: "", pressed: false });
+  const [userId, setUserId] = useState({ input: "", error: "", pressed: false });
+  const [password, setPassword] = useState({ input: "", error: "", pressed: false });
 
   const handleSubmit = () => {
     firebase
       .auth()
-      .signInWithEmailAndPassword(userId.value, password.value)
+      .createUserWithEmailAndPassword(userId, password)
       .then((result) => console.log(result))
-      .catch((error) => alert(error));
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -31,13 +31,20 @@ export default function LoginScreen({ navigation }) {
         style={styles.logo}
       />
 
-      <Image source={require("../assets/Girls.png")} style={styles.image} />
+      <View style={styles.input}>
+        <AntDesign name="lock" size={24} color="blue" />
+        <TextInput
+          placeholder="Name"
+          style={{ paddingHorizontal: 10 }}
+          onChangeText={(text) => setName(text)}
+        />
+      </View>
       <View style={styles.input}>
         <AntDesign name="user" size={24} color="blue" />
         <TextInput
           placeholder="User ID"
           style={{ paddingHorizontal: 10 }}
-          onChangeText={(text) => setUserId({ value: text, error: "" })}
+          onChangeText={(id) => setUserId(id)}
         />
       </View>
       <View style={styles.input}>
@@ -45,35 +52,32 @@ export default function LoginScreen({ navigation }) {
         <TextInput
           placeholder="Password"
           style={{ paddingHorizontal: 10 }}
-          onChangeText={(text) => setPassword({ value: text, error: "" })}
+          onChangeText={(pwd) => setPassword(pwd)}
         />
       </View>
-      <TouchableOpacity onPress={() => navigation.replace("SignupScreen")}>
-        <Text style={styles.forgotButton}>Sign up</Text>
-      </TouchableOpacity>
       <TouchableOpacity
-        title="Login"
+        title="Sign Up"
         style={styles.loginButton}
         onPress={handleSubmit}
-      >
-        <Text style={{ color: "#0B2A59" }}>Login</Text>
+      />
+      <TouchableOpacity style={styles.SignupButton} onPress={handleSubmit}>
+        <Text >Sign up</Text>
+      </TouchableOpacity>
+      <TouchableOpacity stylb   onPress={() => navigation.replace("LoginScreen")}>
+        <Text style={styles.forgotButton}>Login</Text>
       </TouchableOpacity>
     </Background>
   );
-}
+};
+
+export default SignupScreen;
 
 const styles = StyleSheet.create({
   logo: {
-    width: "70%",
-    height: "14%",
+    width: "60%",
+    height: "12%",
     alignSelf: "center",
-  },
-
-  image: {
-    marginBottom: 20,
-    width: 150,
-    height: 170,
-    alignSelf: "center",
+    marginBottom: 10
   },
 
   input: {
@@ -82,7 +86,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "80%",
     height: "5%",
-    marginVertical: 10,
+    marginVertical: 13,
     borderWidth: 1.5,
     borderRadius: 20,
     paddingHorizontal: 10,
@@ -90,17 +94,14 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
 
-  layout: {
-    flex: 1,
-    alignSelf: "center",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "blue",
+  link: {
+    fontWeight: "bold",
+    color: "#FFC94A",
   },
 
-  loginButton: {
+  SignupButton: {
     marginTop: 15,
-    marginBottom: 70,
+    marginBottom: 10,
     width: "80%",
     alignItems: "center",
     paddingTop: 10,
@@ -114,7 +115,6 @@ const styles = StyleSheet.create({
   forgotButton: {
     height: 30,
     marginBottom: 2,
-    fontSize: 14,
-    color: "#F5DC3C",
-  },
+    color: "#F5DC3C"
+  }
 });

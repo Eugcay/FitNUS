@@ -10,6 +10,7 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
 
+
 export class App extends Component {
   constructor(props) {
     super(props);
@@ -17,6 +18,7 @@ export class App extends Component {
       loaded: false,
     };
   }
+
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -45,14 +47,18 @@ export class App extends Component {
     } else {
       return (
         <NavigationContainer>
-          {loggedIn ? <MainStack /> : <LoginStack />}
+          {loggedIn ? (
+            <MainStack />
+          ) : (
+            <LoginStack />
+          )}
         </NavigationContainer>
       );
     }
   }
 }
 
-export default App;
+export default App
 
 const styles = StyleSheet.create({
   container: {
