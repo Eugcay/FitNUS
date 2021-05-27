@@ -1,0 +1,63 @@
+import React, { useState } from "react";
+import { StyleSheet, View, TextInput, Image, Button, TouchableOpacity } from "react-native";
+import Background from "../components/Background";
+import { AntDesign } from "@expo/vector-icons";
+
+export default function LoginScreen() {
+  const [userId, setUserId] = useState({ value: "", error: "" });
+  const [password, setPassword] = useState({ value: "", error: "" });
+
+  const handleSubmit = () => {
+    console.log('hello')
+  }
+
+  return (
+      <Background>   
+      <Image
+        source={require("../assets/nus-logo-gold-b-horizontal.png")}
+        style={styles.image}
+      />
+      <View style={styles.input}>
+        <AntDesign name="user" size={24} color="blue" />
+        <TextInput placeholder="User ID" style={{paddingHorizontal: 10}} onChangeText={(text) => setUserId({value: text, error: ''})}/>
+      </View>
+      <View style={styles.input}>
+        <AntDesign name='lock' size={24} color="blue" />
+        <TextInput placeholder="Password" style={{paddingHorizontal: 10}} onChangeText={(text) => setPassword({value: text, error: ''})}/>
+      </View>
+      <TouchableOpacity title="Login" color="#FFF01A" mode="contained" onPress={handleSubmit}>
+        Login
+      </TouchableOpacity>
+    </Background>
+  );
+}
+
+const styles = StyleSheet.create({
+  image: {
+    width: 150,
+    alignSelf: "center",
+    marginBottom: 20
+  },
+
+  input: {
+    backgroundColor: '#BED1EF',
+    flexDirection: "row",
+    alignItems: "center",
+    width: '80%',
+    height: '5%',
+    marginVertical: 10,
+    borderWidth: 1.5,
+    borderRadius: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    opacity: 0.8
+  },
+
+  layout: {
+      flex: 1,
+      alignSelf: "center",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "blue"
+  }
+});
