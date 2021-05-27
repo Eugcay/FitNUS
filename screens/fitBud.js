@@ -26,4 +26,6 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
     justifyContent: "center",
   },
-});
+})
+
+};
