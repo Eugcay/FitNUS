@@ -10,52 +10,26 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
 
+const Stack = createStackNavigator();
 
-export class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loaded: false,
-    };
-  }
+export default function App() {
 
-
-  componentDidMount() {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!user) {
-        this.setState({
-          loggedIn: false,
-          loaded: true,
-        });
-      } else {
-        this.setState({
-          loggedIn: true,
-          loaded: true,
-        });
-      }
-    });
-  }
-
-  render() {
-    const { loggedIn, loaded } = this.state;
-    if (!loaded) {
-      return (
-        <View>
-          <Text>hello</Text>
-        </View>
-      );
-    } else {
-      return (
-        <NavigationContainer>
-          {loggedIn ? (
-            <MainStack />
-          ) : (
-            <LoginStack />
-          )}
-        </NavigationContainer>
-      );
-    }
-  }
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="FitBud"
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="SignupScreen" component={SignupScreen} />
+        <Stack.Screen name= "FitBud" component={FitBud} />
+        <Stack.Screen name="Jio" component={Jio} />
+        <Stack.Screen name="Tracker" component={Tracker} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
 
 export default App

@@ -21,7 +21,6 @@ export default function FitBud({ navigation }) {
       <Button title="Logout" onPress={() => onLogout()} />
     </>
   );
-}
 
 const styles = StyleSheet.create({
   container: {
