@@ -6,11 +6,11 @@ const WorkoutSearch = () => {
 
     return (
         <View>
-            {//Time available}
+            {/* Time available */}
             <Text>Hello</Text>
         </View>
     )
 
 }
 
-export default FitBudSuggests;
+export default WorkoutSearch;
