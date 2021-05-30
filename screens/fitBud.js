@@ -4,12 +4,14 @@ import firebase from "firebase";
 import { addToHistory, getUser, getUserHistory } from "../Api/userApi";
 import { getWorkoutById, getWorkouts } from "../Api/workoutApi";
 import { logout } from "../Api/authApi";
-// import HeaderTitle from "./pages/fitBudComponents/header";
-// import HistoryBar from "./pages/fitBudComponents/historyBar";
-// import MenuButton from "./pages/fitBudComponents/menuButton";
-// import FitBudSuggests from "./pages/fitBudComponents/fitBudSuggests";
-// import WorkoutSearch from "./pages/fitBudComponents/workoutSearch";
-// import WorkoutSearchButton from "./pages/fitBudComponents/workoutSearchButton";
+import React from "react";
+import { StyleSheet, View, Text, Button, SafeAreaView } from "react-native";
+import firebase from "firebase";
+import HeaderTitle from "../components/fitBudComponents/header";
+import HistoryBar from "../components/fitBudComponents/historyBar";
+import MenuButton from "../components/fitBudComponents/menuButton";
+import FitBudSuggests from "../components/fitBudComponents/fitBudSuggests";
+import WorkoutSearch from "../components/fitBudComponents/workoutSearch";
 
 export default function FitBud({ navigation }) {
   const [history, setHistory] = useState([]);
@@ -70,12 +72,15 @@ export default function FitBud({ navigation }) {
   };
 
   return (
-    <>
-      <View>
-        <Text>FitBud</Text>
-      </View>
-      <Button title="Logout" onPress={() => onLogout()} />
-    </>
+    <View>
+      <HeaderTitle />
+      <MenuButton />
+      <SafeAreaView>
+        <HistoryBar />
+      </SafeAreaView> 
+      <FitBudSuggests />
+      <WorkoutSearch />
+    </ View>
   );
 }
 
