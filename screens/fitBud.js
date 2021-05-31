@@ -37,6 +37,8 @@ export default function FitBud({ navigation }) {
         .then(hist => setHistory(hist))
         .catch((error) => error);
       console.log(history);
+      setLoading(false)
+
     };
 
     getHistory();

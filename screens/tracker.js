@@ -10,7 +10,7 @@ export default function Tracker({ navigation }) {
   useEffect(() => {
     const getCalories = async () => { 
         await getUser().onSnapshot(snapshot => {
-            const cal = snapshot.data().calories
+            const cal = snapshot.data().calories ? snapshot.data().calories : 0
             setCalories(cal)
             console.log(calories)
         })
@@ -19,6 +19,7 @@ export default function Tracker({ navigation }) {
 
     getCalories()
   }, []);
+
   return (
     <View>
       { loading ? (<Text>Fitness Tracker</Text>) : (<Text>{calories}</Text>)}

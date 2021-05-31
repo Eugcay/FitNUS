@@ -6,9 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert
 } from "react-native";
 import firebase from "firebase";
 import { getUser } from "../Api/userApi";
+import { color } from "react-native-reanimated";
 
 export default function EditProfile({route, navigation}) {
   const {user} = route.params
@@ -16,8 +18,37 @@ export default function EditProfile({route, navigation}) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [bio, setBio] = useState(user?.bio);
-  const [photoURL, setPhoto] = useState(user?.photoURL);
+  const [photoURL, setPhoto] = useState(user.photoURL ? user.photoURL : '');
   const [loading, setLoading] = useState(false);
+
+  const uploadPost = () => {
+      firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).set({
+          name: name,
+          email: email,
+          bio: bio,
+          photoURL: photoURL
+      }).then(navigation.goBack())
+  }
+
+  const confirmSubmit = () => {
+    Alert.alert(
+        "Confirm changes?",
+        "Confirm to continue",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          { text: "Confirm", onPress: () => uploadPost() }
+        ]
+      );
+  }
+
+  const handleSubmit = event => {
+    event.preventDefault()
+    confirmSubmit()
+  }
 
 
   return !loading ? (
@@ -57,6 +88,14 @@ export default function EditProfile({route, navigation}) {
           value={bio}
         ></TextInput>
       </View>
+
+      <TouchableOpacity
+        title="Save"
+        style={styles.saveButton}
+        onPress={handleSubmit}
+      >
+        <Text style={{color: "#FFFFF0"}}>Save</Text>
+      </TouchableOpacity>
     </View>
   ) : (
     <Text>Loading...</Text>
@@ -88,6 +127,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     alignSelf: "center",
     color: "#808080",
+  },
+
+  saveButton: {
+    marginTop: 15,
+    marginBottom: 70,
+    width: "80%",
+    alignItems: "center",
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: "#0000CD",
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: "#fff",
   },
 
   input: {

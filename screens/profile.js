@@ -23,6 +23,7 @@ const Profile = ({ navigation }) => {
       <Image source={require("../assets/user.png")} style={styles.image} />
       <Text style={styles.text}>{!loading && user.name}</Text>
       <Text>{!loading && user.email}</Text>
+      
 
       {!loading && (<TouchableOpacity
         style={styles.editButton}
@@ -32,7 +33,10 @@ const Profile = ({ navigation }) => {
       >
         <Text>Edit profile</Text>
       </TouchableOpacity>)}
+      <Text style={styles.bio}>{!loading && user?.bio}</Text>
+      <View style={{borderWidth: 1, borderColor: "#D3D3D3", width:'80%', marginVertical:15}}></View>
     </View>
+    
   );
 };
 
@@ -57,6 +61,12 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 120,
     backgroundColor: "#D3D3D3",
+  },
+
+  bio: {
+    width: '80%',
+    textAlign: 'justify',
+    marginTop: 10
   },
 
   editButton: {

@@ -9,6 +9,7 @@ export function getUser() {
     .doc(firebase.auth().currentUser.uid);
 }
 
+
 export function getUserHistory() {  
   return getUser()
     .collection("history")
