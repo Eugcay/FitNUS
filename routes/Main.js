@@ -16,7 +16,7 @@ const Tab = createMaterialBottomTabNavigator();
 const Main = () => {
   return (
     <>
-      <Tab.Navigator initialRouteName="FitBud" barStyle={{ color: 'black', paddingTop: 10}}>
+      <Tab.Navigator initialRouteName="FitBud" barStyle={{ color: 'black'}}>
         <Tab.Screen
           name="FitBud"
           component={FitBudStack}

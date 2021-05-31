@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { addToHistory, getUser, getUserHistory } from "../Api/userApi";
 import { getWorkouts } from "../Api/workoutApi";
 import { logout } from "../Api/authApi";
-import { StyleSheet, View, Text, Button, SafeAreaView } from "react-native";
+import { StyleSheet, View, Text, ScrollView, SafeAreaView } from "react-native";
 import firebase from "firebase";
 import HeaderTitle from "../components/fitBudComponents/header";
 import HistoryBar from "../components/fitBudComponents/historyBar";
@@ -11,7 +11,7 @@ import FitBudSuggests from "../components/fitBudComponents/fitBudSuggests";
 import WorkoutSearch from "../components/fitBudComponents/workoutSearch";
 
 export default function FitBud({ navigation }) {
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(null);
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,12 +40,14 @@ export default function FitBud({ navigation }) {
           return hist;
         })
         .then((hist) => setHistory(hist))
+        .then(() => console.log(history))
         .catch((error) => error);
-      console.log(history);
-      setLoading(false);
+        
     };
-
+    
     getHistory();
+
+    
   }, []);
 
   // get workouts
@@ -60,8 +62,10 @@ export default function FitBud({ navigation }) {
       });
       setWorkouts(workouts);
     });
+    
 
     return fetchWorkouts;
+
   }, []);
 
   const addWorkout = (workout) => {
@@ -70,27 +74,38 @@ export default function FitBud({ navigation }) {
   };
 
   return (
-    <View>
-      <HeaderTitle />
-      <MenuButton />
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : (
+    <ScrollView style={{ flex: 1, backgroundColor: "#f2f2f2" }}
+    scrollEnabled={true}>
+      <Text style={styles.headers}>Workout History!</Text>
+      
         <SafeAreaView>
-          <HistoryBar navigation={navigation} hist={history} />
+          {history && <HistoryBar navigation={navigation} hist={history} />}
         </SafeAreaView>
-      )}
-      <FitBudSuggests />
-      <WorkoutSearch />
-    </View>
+      
+      <View style={styles.divider}></View>
+      <Text style={styles.headers}>Try something New!</Text>
+      <FitBudSuggests navigation={navigation} />
+      <Text style={styles.headers}>Find a Workout</Text>
+      
+      <WorkoutSearch navigation={navigation} workouts={workouts}/>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "stretch",
-    justifyContent: "center",
+  headers: {
+    fontSize: 20,
+    paddingHorizontal: 15,
+    marginVertical: 10
   },
+
+  divider: {
+    width: "100%",
+    marginVertical: 10,
+    borderBottomColor: "#A0A0A0",
+    borderBottomWidth: 1,
+    alignSelf: 'center'
+  }
+
+
 });
