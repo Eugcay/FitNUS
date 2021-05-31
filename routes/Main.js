@@ -24,7 +24,7 @@ const Main = () => {
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="arm-flex"  color={color} size={25} />
             ),
-            tabBarColor:'#694fad'
+            tabBarColor:'#0B2A59'
           }}
         />
         <Tab.Screen
@@ -34,7 +34,7 @@ const Main = () => {
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="account-group"  color={color} size={25} />
             ),
-            tabBarColor: "#F71A90"
+            tabBarColor: "#0B2A59"
           }}
         />
         <Tab.Screen
@@ -44,7 +44,7 @@ const Main = () => {
             tabBarIcon: ({ color, size }) => (
               <Feather name="activity" color={color} size={25} />
             ),
-            tabBarColor: 'green'
+            tabBarColor: '#0B2A59'
           }}
         />
         <Tab.Screen
@@ -54,7 +54,7 @@ const Main = () => {
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="account-circle" color={color} size={25} />
             ),
-            tabBarColor: '#191995'
+            tabBarColor: '#0B2A59'
             
           }}
         />

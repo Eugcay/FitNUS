@@ -10,9 +10,9 @@ const StatChart = () => {
   return (
       <View >
         <Svg width={'100%'} height={300}>
-        <Circle cx={Dimensions.get('window').width/2} cy={150} r={55} fill="#c43a31"/>
+        <Circle cx={Dimensions.get('window').width/2} cy={150} r={55} fill="#FFF01A"/>
         <VictoryPie
-          colorScale={["lightgreen"]}
+          colorScale={["#0B2A59"]}
           data={[{ x: "560", y: 75 }]}
           startAngle={0}
           endAngle={270}
@@ -24,8 +24,9 @@ const StatChart = () => {
           padding={10}
           style={{
             labels: {
-              fontSize: 10,
-              fill: "#c43a31",
+              fontSize: 12,
+              fill: "#A6A6A6",
+              fontWeight: 'bold'
             },
           }}
         />

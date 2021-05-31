@@ -42,12 +42,9 @@ export default function FitBud({ navigation }) {
         .then((hist) => setHistory(hist))
         .then(() => console.log(history))
         .catch((error) => error);
-        
     };
-    
-    getHistory();
 
-    
+    getHistory();
   }, []);
 
   // get workouts
@@ -62,10 +59,8 @@ export default function FitBud({ navigation }) {
       });
       setWorkouts(workouts);
     });
-    
 
     return fetchWorkouts;
-
   }, []);
 
   const addWorkout = (workout) => {
@@ -74,20 +69,23 @@ export default function FitBud({ navigation }) {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#f2f2f2" }}
-    scrollEnabled={true}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#f2f2f2" }}
+      scrollEnabled={true}
+    >
       <Text style={styles.headers}>Workout History!</Text>
-      
-        <SafeAreaView>
-          {history && <HistoryBar navigation={navigation} hist={history} />}
-        </SafeAreaView>
-      
+
+      <SafeAreaView>
+        {history && <HistoryBar navigation={navigation} hist={history} />}
+      </SafeAreaView>
+
       <View style={styles.divider}></View>
       <Text style={styles.headers}>Try something New!</Text>
       <FitBudSuggests navigation={navigation} />
-      <Text style={styles.headers}>Find a Workout</Text>
-      
-      <WorkoutSearch navigation={navigation} workouts={workouts}/>
+      <View style={{ marginVertical: 20 }}>
+        <Text style={styles.headers}>Find a Workout</Text>
+        <WorkoutSearch navigation={navigation} workouts={workouts} />
+      </View>
     </ScrollView>
   );
 }
@@ -96,7 +94,6 @@ const styles = StyleSheet.create({
   headers: {
     fontSize: 20,
     paddingHorizontal: 15,
-    marginVertical: 10
   },
 
   divider: {
@@ -104,8 +101,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderBottomColor: "#A0A0A0",
     borderBottomWidth: 1,
-    alignSelf: 'center'
-  }
-
-
+    alignSelf: "center",
+  },
 });
