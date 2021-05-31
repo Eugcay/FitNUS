@@ -45,8 +45,17 @@
 //       );
 // }
 
-import React, { useState } from "react";
-import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
+import { getUserHistory } from "../../Api/userApi";
+import { setRandomColor } from "../../helpers";
 
 const DATA = [
   {
@@ -63,37 +72,78 @@ const DATA = [
   },
 ];
 
-const Item = ({ item, onPress, backgroundColor, textColor }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-    <Text style={[styles.title, textColor]}>{item.title}</Text>
-  </TouchableOpacity>
-);
-
-const HistoryBar = () => {
+const HistoryBar = ({ navigation, hist }) => {
+  const [history, setHistory] = useState(hist);
   const [selectedId, setSelectedId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const renderItem = ({ item }) => {
-    const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
-    const color = item.id === selectedId ? 'white' : 'black';
-
-    return (
-      <Item
-        item={item}
-        onPress={() => setSelectedId(item.id)}
-        backgroundColor={{ backgroundColor }}
-        textColor={{ color }}
-      />
-    );
+  const getDetails = (item) => {
+    navigation.navigate("Workout Details", item);
   };
+  // useEffect(() => {
+  //   const getHistory = async () => {
+  //     const hist = await getUserHistory()
+  //       .get()
+  //       .then((snapshot) => {
+  //           const hist = []
+  //           snapshot.docs.forEach((doc) =>
+  //             doc
+  //               .data()
+  //               .workoutRef.get()
+  //               .then((snap) => hist.push({id: doc.id, date: doc.data().date, workout: snap.data()}))
+  //           )
+  //         return hist
+  //       })
+  //       .then(hist => setHistory(hist))
+  //       .then(setLoading(false))
+  //       .catch((error) => error);
+  //     console.log(history);
 
-  return (
-      <FlatList
-        horizontal={true}
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        extraData={selectedId}
-      />
+  //   };
+
+  //   getHistory();
+  // }, []);
+
+  const Item = ({ item, onPress, backgroundColor, textColor }) => (
+    <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
+      <Text style={[styles.title, textColor]}>
+        {!loading && item.workout.name}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity onPress={() =>  navigation.navigate("Workout Details", item)} style={[styles.item, {backgroundColor:setRandomColor()}]}>
+      <Text style={styles.title}>
+        {!loading && item.workout.name}
+      </Text>
+    </TouchableOpacity>
+  )
+
+  // const backgroundColor = setRandomColor();
+  // const color = item.id === selectedId ? "white" : "black";
+
+  // return (
+  //   <Item
+  //     item={item}
+  //     onPress={() => getDetails(item)}
+  //     backgroundColor={{ backgroundColor }}
+  //     textColor={{ color }}
+  //   />
+  // );
+
+  return !loading ? (
+    <FlatList
+      horizontal={true}
+      data={history}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      extraData={selectedId}
+    />
+  ) : (
+    <View>
+      <Text>Loading...</Text>
+    </View>
   );
 };
 
@@ -106,6 +156,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
+    
   },
   title: {
     fontSize: 32,
@@ -113,4 +164,3 @@ const styles = StyleSheet.create({
 });
 
 export default HistoryBar;
-    

@@ -4,6 +4,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { Feather } from "@expo/vector-icons";
 
 import Tracker from "../screens/tracker";
+import FitBudStack from "./fitBudStack";
 import FitBud from "../screens/fitBud";
 import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";
@@ -18,7 +19,7 @@ const Main = () => {
       <Tab.Navigator initialRouteName="FitBud" barStyle={{ color: 'black', paddingTop: 10}}>
         <Tab.Screen
           name="FitBud"
-          component={FitBud}
+          component={FitBudStack}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="arm-flex"  color={color} size={25} />
