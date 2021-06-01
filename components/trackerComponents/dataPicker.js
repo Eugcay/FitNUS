@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   button: {
-    backgroundColor: "lightgreen",
+    backgroundColor: "#0B2A59",
     width: "30%",
     height: 45,
     borderRadius: 15,
@@ -38,6 +38,8 @@ const styles = StyleSheet.create({
   text: {
     textAlign: "center",
     paddingTop: 13,
+    color: 'white',
+    fontWeight: 'bold'
   },
 });
 
