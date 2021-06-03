@@ -22,19 +22,18 @@ const Tracker = () => {
     val: 100,
     max: 200,
     units: "min",
-    color: 'green'
+    color: 'green',
   };
 
   const distance = {
     val: 4.8,
     max: 6,
     units: "km",
-    color: 'tomato'
+    color: 'tomato',
   };
 
   const [stats, setStats] = useState(calories);
-
-  
+  const [donut, setDonut] = useState({calories: true, time: false, distance: false})
 
 
   return (
@@ -46,13 +45,13 @@ const Tracker = () => {
       {/* <MenuButton /> */}
       <View style={styles.datapicker}>
         <View style={styles.container}>
-          <TouchableOpacity style={styles.button} onClick={() => setStats(calories)}>
+          <TouchableOpacity style={styles.button} onPress={() => {setStats(calories); setDonut({calories: true, time: false, distance: false})}}>
             <Text style={styles.text}>Calories</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onClick={() => setStats(time)}>
+          <TouchableOpacity style={styles.button} onPress={() => {setStats(time); setDonut({calories: false, time: true, distance: false})}}>
             <Text style={styles.text}>Time</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onClick={() => setStats(distance)}>
+          <TouchableOpacity style={styles.button} onPress={() => {setStats(distance); setDonut({calories: false, time: false, distance: true})}}>
             <Text style={styles.text}>Distance</Text>
           </TouchableOpacity>
         </View>
@@ -61,9 +60,10 @@ const Tracker = () => {
         <DayPicker />
       </View>
       <View style={styles.statchart}>
-        <Donut val={stats.val} color={stats.color} max={stats.max} units={stats.units} />
-        {/* <StatChart /> */}
-      </View>
+       { donut.calories && <Donut val={calories.val} max={calories.max} color={calories.color} units={calories.units}/> }
+       { donut.time && <Donut val={time.val} max={time.max} color={time.color} units={time.units}/> }
+       { donut.distance && <Donut val={distance.val} max={distance.max} color={distance.color} units={distance.units}/> }
+      </View> 
       <View style={styles.statbar}>
         <StatBar />
       </View>
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     alignContent: "center",
   },
+  
   statbar: {
     paddingTop: 0,
     alignContent: "center",
