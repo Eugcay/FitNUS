@@ -62,10 +62,10 @@ export default function FitBud({ navigation }) {
     return fetchWorkouts;
   }, []);
 
-  const addWorkout = (workout) => {
-    addToHistory(workout.id);
-    getUser().set({});
-  };
+  // const addWorkout = (workout) => {
+  //   addToHistory(workout.id);
+  //   getUser().set({});
+  // };
 
   return (
     <ScrollView

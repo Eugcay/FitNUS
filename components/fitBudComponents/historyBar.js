@@ -58,7 +58,7 @@ import { setRandomColor } from "../../helpers";
 
 const HistoryBar = ({ navigation, hist }) => {
   const [history, setHistory] = useState(hist);
-  const [loading, setLoading] = useState(true);
+ 
 
   console.log(history)
 
