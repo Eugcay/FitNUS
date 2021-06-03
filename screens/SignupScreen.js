@@ -22,10 +22,33 @@ const SignupScreen = ({ navigation }) => {
 
   return (
     <Background>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.replace('Landing')}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <AntDesign name="arrowleft" size={22} color="azure" />
+          <Text style={{ color: "azure", fontSize: 15, marginLeft: 7 }}>
+            Back
+          </Text>
+        </View>
+      </TouchableOpacity>
+
       <Image
         source={require("../assets/National_University_of_Singapore_logo_NUS.png")}
         style={styles.logo}
       />
+
+      <Text
+        style={{
+          color: "#F0FFFF",
+          marginTop: 10,
+          marginBottom: 5,
+          fontSize: 16,
+        }}
+      >
+        Sign Up
+      </Text>
 
       <View style={styles.input}>
         <AntDesign name="lock" size={24} color="blue" />
@@ -59,9 +82,7 @@ const SignupScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.SignupButton} onPress={handleSubmit}>
         <Text>Sign up</Text>
       </TouchableOpacity>
-      <TouchableOpacity stylb onPress={() => navigation.replace("LoginScreen")}>
-        <Text style={styles.forgotButton}>Login</Text>
-      </TouchableOpacity>
+      
     </Background>
   );
 };
@@ -112,11 +133,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#fff",
+    marginBottom: 60,
   },
 
   forgotButton: {
     height: 30,
-    marginBottom: 2,
+    marginBottom: 30,
     color: "#F5DC3C",
+  },
+
+  backButton: {
+    width: "80%",
+    marginBottom: 40,
+    alignSelf: "auto",
   },
 });

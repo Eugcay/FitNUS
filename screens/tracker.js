@@ -7,6 +7,7 @@ import DataPicker from "../components/trackerComponents/dataPicker";
 import DayPicker from "../components/trackerComponents/dayPicker";
 import StatChart from "../components/trackerComponents/statChart";
 import StatBar from "../components/trackerComponents/statBar";
+import Donut from "../components/Donut";
 
 const Tracker = () => {
   return (
@@ -23,7 +24,8 @@ const Tracker = () => {
         <DayPicker />
       </View>
       <View style={styles.statchart}>
-        <StatChart />
+        <Donut />
+        {/* <StatChart /> */}
       </View>
       <View style={styles.statbar}>
         <StatBar />

@@ -6,6 +6,11 @@ import Main from "./routes/Main";
 import firebase from "firebase";
 import { firebaseConfig } from "./config";
 import { createStackNavigator } from "@react-navigation/stack";
+import * as Linking from "expo-linking"
+import config from './linking'
+import Spinner from "./components/Spinner";
+
+const prefix = Linking.createURL('/')
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
@@ -19,6 +24,11 @@ export class App extends Component {
     this.state = {
       loaded: false,
     };
+  }
+
+  linking = {
+    prefixes: [prefix],
+    config: config
   }
 
   componentDidMount() {
@@ -41,13 +51,13 @@ export class App extends Component {
     const { loggedIn, loaded } = this.state;
     if (!loaded) {
       return (
-        <View>
-          <Text>hello</Text>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Spinner/>
         </View>
       );
     } else {
       return (
-        <NavigationContainer>
+        <NavigationContainer linking={this.linking}>
           {loggedIn ? (
             <Stack.Navigator initialRouteName="Main" >
               <Stack.Screen name="Main" component={Main} />

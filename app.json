@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "fitnus",
     "name": "FitNUS",
     "slug": "FitNUS",
     "version": "1.0.0",
@@ -17,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "fitNus"
     },
     "android": {
       "adaptiveIcon": {

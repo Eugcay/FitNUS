@@ -47,7 +47,7 @@ const WorkoutSearch = ({ navigation, workouts }) => {
       />
       <FlatList 
         data={filtered}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.key}
         renderItem={renderItem}
       />
       

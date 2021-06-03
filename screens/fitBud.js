@@ -13,15 +13,14 @@ import WorkoutSearch from "../components/fitBudComponents/workoutSearch";
 export default function FitBud({ navigation }) {
   const [history, setHistory] = useState(null);
   const [workouts, setWorkouts] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   // get user
 
   // get history of user
   useEffect(() => {
     const getHistory = async () => {
-      setLoading(true);
-      const hist = await getUserHistory()
+      
+      await getUserHistory()
         .get()
         .then((snapshot) => {
           const hist = [];
