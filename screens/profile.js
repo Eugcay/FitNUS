@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
-import { getUser } from "../Api/userApi";
+import { connect } from "react-redux";
 
-const Profile = ({ navigation }) => {
+const Profile = (props) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const profile = async () => {
-      getUser().onSnapshot((snapshot) => {
-        console.log(snapshot.data());
-        setUser(snapshot.data());
-        setLoading(false);
-      });
-    };
+    setUser(props.currentUser)
+    setLoading(false)
 
-    profile();
-  }, []);
+    console.log(user)
+  }, [props.currentUser]);
 
   return (
     <View style={styles.container}>
@@ -27,7 +22,7 @@ const Profile = ({ navigation }) => {
 
       {!loading && (<TouchableOpacity
         style={styles.editButton}
-        onPress={() => navigation.navigate("Edit Profile", {
+        onPress={() => props.navigation.navigate("Edit Profile", {
             user: user
         })}
       >
@@ -40,7 +35,12 @@ const Profile = ({ navigation }) => {
   );
 };
 
-export default Profile;
+
+const mapStateToProps = (store) => ({
+  currentUser: store.user.currentUser
+})
+
+export default connect(mapStateToProps, null)(Profile)
 
 const styles = StyleSheet.create({
   text: {

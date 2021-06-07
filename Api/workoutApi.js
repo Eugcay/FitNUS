@@ -9,5 +9,4 @@ export async function getWorkoutById(id) {
     .firestore()
     .collection("Workouts")
     .doc(id)
-    .onSnapshot((snapshot) => snapshot.data());
 }

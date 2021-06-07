@@ -6,11 +6,13 @@ import Main from "./routes/Main";
 import firebase from "firebase";
 import { firebaseConfig } from "./config";
 import { createStackNavigator } from "@react-navigation/stack";
-import * as Linking from "expo-linking"
-import config from './linking'
+import * as Linking from "expo-linking";
+import config from "./linking";
 import Spinner from "./components/Spinner";
+import { Provider } from "react-redux";
+import Store from "./store";
 
-const prefix = Linking.createURL('/')
+const prefix = Linking.createURL("/");
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
@@ -28,8 +30,8 @@ export class App extends Component {
 
   linking = {
     prefixes: [prefix],
-    config: config
-  }
+    config: config,
+  };
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -51,21 +53,25 @@ export class App extends Component {
     const { loggedIn, loaded } = this.state;
     if (!loaded) {
       return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Spinner/>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Spinner />
         </View>
       );
     } else {
       return (
-        <NavigationContainer linking={this.linking}>
-          {loggedIn ? (
-            <Stack.Navigator initialRouteName="Main" >
-              <Stack.Screen name="Main" component={Main} />
-            </Stack.Navigator>
-          ) : (
-            <LoginStack />
-          )}
-        </NavigationContainer>
+        <Provider store={Store}>
+          <NavigationContainer linking={this.linking}>
+            {loggedIn ? (
+              <Stack.Navigator initialRouteName="Main">
+                <Stack.Screen name="Main" component={Main} />
+              </Stack.Navigator>
+            ) : (
+              <LoginStack />
+            )}
+          </NavigationContainer>
+        </Provider>
       );
     }
   }

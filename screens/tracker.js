@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import ProfilePicture from "../components/trackerComponents/profilePicture";
 //import MenuButton from "../components/trackerComponents/menuButton";
@@ -9,7 +9,10 @@ import StatChart from "../components/trackerComponents/statChart";
 import StatBar from "../components/trackerComponents/statBar";
 import Donut from "../components/Donut";
 
+
 const Tracker = () => {
+
+  const [totalCal, setTOtalCal] = useState(0)
   
   const calories = {
     val: 670,
@@ -31,6 +34,9 @@ const Tracker = () => {
     units: "km",
     color: 'tomato',
   };
+
+  
+
 
   const [stats, setStats] = useState(calories);
   const [donut, setDonut] = useState({calories: true, time: false, distance: false})

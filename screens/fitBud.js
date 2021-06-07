@@ -1,50 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { addToHistory, getUser, getUserHistory } from "../Api/userApi";
 import { getWorkouts } from "../Api/workoutApi";
-import { logout } from "../Api/authApi";
 import { StyleSheet, View, Text, ScrollView, SafeAreaView } from "react-native";
 import firebase from "firebase";
-import HeaderTitle from "../components/fitBudComponents/header";
 import HistoryBar from "../components/fitBudComponents/historyBar";
-import MenuButton from "../components/fitBudComponents/menuButton";
 import FitBudSuggests from "../components/fitBudComponents/fitBudSuggests";
 import WorkoutSearch from "../components/fitBudComponents/workoutSearch";
+import { connect } from "react-redux";
 
-export default function FitBud({ navigation }) {
+ function FitBud(props) {
   const [history, setHistory] = useState(null);
   const [workouts, setWorkouts] = useState([]);
+  const [user, setUser] = useState(null)
 
-  // get user
 
   // get history of user
   useEffect(() => {
-    const getHistory = async () => {
-      
-      await getUserHistory()
-        .get()
-        .then((snapshot) => {
-          const hist = [];
-          snapshot.docs.forEach((doc) =>
-            doc
-              .data()
-              .workoutRef.get()
-              .then((snap) =>
-                hist.push({
-                  id: doc.id,
-                  date: doc.data().date,
-                  workout: snap.data(),
-                })
-              )
-          );
-          return hist;
-        })
-        .then((hist) => setHistory(hist))
-        .then(() => console.log(history))
-        .catch((error) => error);
-    };
-
-    getHistory();
-  }, []);
+    setHistory(props.history)
+    setUser(props.user)
+    console.log(history)
+  }, [props.user, props.history]);
 
   // get workouts
   useEffect(() => {
@@ -75,19 +49,28 @@ export default function FitBud({ navigation }) {
       <Text style={styles.headers}>Workout History!</Text>
 
       <SafeAreaView>
-        {history && <HistoryBar navigation={navigation} hist={history} />}
+        {history && <HistoryBar navigation={props.navigation} hist={history} />}
       </SafeAreaView>
 
       <View style={styles.divider}></View>
       <Text style={styles.headers}>Try something New!</Text>
-      <FitBudSuggests navigation={navigation} />
+      <FitBudSuggests navigation={props.navigation} />
       <View style={{ marginVertical: 20 }}>
         <Text style={styles.headers}>Find a Workout</Text>
-        <WorkoutSearch navigation={navigation} workouts={workouts} />
+        <WorkoutSearch navigation={props.navigation} workouts={workouts} />
       </View>
     </ScrollView>
   );
 }
+
+const mapStateToProps = (store) => ({
+  currentUser: store.user.currentUser,
+  history: store.user.history
+})
+
+export default connect(mapStateToProps, null)(FitBud)
+
+
 
 const styles = StyleSheet.create({
   headers: {

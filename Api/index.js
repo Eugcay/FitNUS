@@ -7,7 +7,16 @@ app.use( cors({origin: true}))
 
 const builrUri = 'http://localhost:19002/'
 
+// Create workout
+app.post('/api/users/:id/workouts', (req, res) => {
+  async () => {
+    await firebase.firestore().collection('users').doc(req.params.id).collection('history').add(req.body)
+  }
+})
+
 // GET all users 
+
+
 
 
 

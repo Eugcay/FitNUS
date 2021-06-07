@@ -45,7 +45,7 @@
 //       );
 // }
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   FlatList,
   StatusBar,
@@ -53,14 +53,23 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { getUserHistory } from "../../Api/userApi";
 import { setRandomColor } from "../../helpers";
+import Spinner from "../Spinner";
 
 const HistoryBar = ({ navigation, hist }) => {
-  const [history, setHistory] = useState(hist);
+  const history = hist
  
-
   console.log(history)
+
+  if (!history) {
+    return (
+      <View
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <Spinner />
+      </View>
+    );
+  }
 
   if ( history && history.length === 0) {
     return (

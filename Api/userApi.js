@@ -21,22 +21,11 @@ export function addToHistory(workoutId) {
     .collection("users")
     .doc(firebase.auth().currentUser.uid)
     .collection("history")
-    .doc(workoutId)
-    .set({
+    .add({
       date: Date.now(),
       workoutRef: `/Workout/${workoutId}`
     });
 }
 
 
-export function totalCalories() {
-  return getUserHistory().onSnapshot((snapshot) => {
-    snapshot.docs
-      .map((doc) =>
-        getWorkoutById(doc.id).onSnapshot(
-          (documentSnapshot) => documentSnapshot.data().calories
-        )
-      )
-      .reduce((x, y) => x + y, 0);
-  });
-}
+

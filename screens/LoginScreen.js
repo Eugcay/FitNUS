@@ -57,9 +57,10 @@ export default function LoginScreen({ navigation }) {
       <View style={styles.input}>
         <AntDesign name="user" size={24} color="blue" />
         <TextInput
-          placeholder="User ID"
+          placeholder="Email"
           style={{ paddingHorizontal: 10 }}
           onChangeText={(text) => setUserId(text)}
+          errorText="Please enter valid email"
         />
       </View>
       <View style={styles.input}>
@@ -68,6 +69,7 @@ export default function LoginScreen({ navigation }) {
           placeholder="Password"
           style={{ paddingHorizontal: 10 }}
           onChangeText={(text) => setPassword(text)}
+          errorText="Please enter valid password"
         />
       </View>
       <TouchableOpacity onPress={() => navigation.navigate("SignupScreen")}>
