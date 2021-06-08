@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import { View, Dimensions, StyleSheet, Text} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
-const StatBar = () => {
+const StatBar = (props) => {
   const location = "MPSH2";
   const mHR = "192BPM";
   const calBurnt = "238kCal";

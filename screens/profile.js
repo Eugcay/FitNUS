@@ -7,6 +7,8 @@ const Profile = (props) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
+
     setUser(props.currentUser)
     setLoading(false)
 
@@ -39,6 +41,7 @@ const Profile = (props) => {
 const mapStateToProps = (store) => ({
   currentUser: store.user.currentUser
 })
+
 
 export default connect(mapStateToProps, null)(Profile)
 

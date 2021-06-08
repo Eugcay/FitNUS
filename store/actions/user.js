@@ -1,7 +1,13 @@
 import React from "react";
 import firebase from "firebase";
 
-import { USER_STATE_CHANGE, USER_HISTORY_STATE_CHANGE, ADD_WORKOUT, CLEAR } from "./types";
+import {
+  SET_USER,
+  UPDATE_USER,
+  SET_USER_HISTORY,
+  ADD_WORKOUT,
+  CLEAR,
+} from "./types";
 
 export function getUser() {
   return (dispatch) => {
@@ -12,11 +18,42 @@ export function getUser() {
       .get()
       .then((snapshot) => {
         if (snapshot.exists) {
-          dispatch({ type: USER_STATE_CHANGE, currentUser: snapshot.data() });
+          dispatch({ type: SET_USER, currentUser: snapshot.data() });
         } else {
           console.log("No such user");
         }
       });
+  };
+}
+
+export function updateUser(
+  name,
+  email,
+  bio,
+  photoURL,
+  caloriesGoal,
+  durationGoal,
+  distanceGoal,
+  workoutGoal
+) {
+  const user = {
+    name,
+    email,
+    bio,
+    photoURL,
+    caloriesGoal,
+    durationGoal,
+    distanceGoal,
+    workoutGoal
+  };
+  return async (dispatch) => {
+    await firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .set(user);
+
+    dispatch({ type: UPDATE_USER, currentUser: user });
   };
 }
 
@@ -41,46 +78,19 @@ export function getUserHistory() {
                 date: doc.data().date,
                 workout: snap.data(),
                 calories: doc.data().calories,
-                duration: doc.data().duration
+                duration: doc.data().duration,
               })
             )
         );
         return hist;
       })
-      .then((hist) =>
-        dispatch({ type: USER_HISTORY_STATE_CHANGE, history: hist })
-      );
+      .then((hist) => dispatch({ type: SET_USER_HISTORY, history: hist }));
   };
 }
 
-// export const getStats = () => {
-//   return (dispatch) => {
-//     firebase
-//       .firestore()
-//       .collection("users")
-//       .doc(firebase.auth().currentUser.uid)
-//       .collection("history")
-//       .orderBy("date", "desc")
-//       .onSnapshot((snapshot) =>
-//         snapshot.docs
-//           .map((doc) => ({
-//             calories: doc.data().calories,
-//             duration: doc.data().duration,
-//           }))
-//           .reduce(
-//             (x, y) => ({
-//               calories: x.calories + y.calories,
-//               duration: x.duration + y.duration,
-//             }),
-//             0
-//           )
-//       );
-//   };
-// };
-
 export function addToHistory(workoutId, calories, duration, workoutData) {
   return async (dispatch) => {
-    const workoutRef = `/Workout/${workoutId}`
+    const workoutRef = `/Workout/${workoutId}`;
     await firebase
       .firestore()
       .collection("users")
@@ -99,9 +109,9 @@ export function addToHistory(workoutId, calories, duration, workoutData) {
         date: Date.now(),
         workoutData,
         calories,
-        duration
-      }
-    })
+        duration,
+      },
+    });
   };
 }
 

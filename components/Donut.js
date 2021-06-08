@@ -1,6 +1,8 @@
-import React, { useEffect, useRef } from "react";
-import { View, Easing, Animated, TextInput, StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, Easing, Animated, TextInput, StyleSheet } from "react-native";
 import Svg, { G, Circle } from "react-native-svg";
+
+
 
 const ProgressCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedTextValue = Animated.createAnimatedComponent(TextInput)
@@ -23,6 +25,7 @@ const Donut = (props) => {
   const animationValue = useRef(new Animated.Value(0)).current;
   const circ = useRef();
   const input = useRef()
+  const [textStyle, setTextStyle] = useState({})
 
   const half = RADIUS + STROKEWIDTH;
   const circumference = 2 * Math.PI * RADIUS;
@@ -31,26 +34,32 @@ const Donut = (props) => {
     return Animated.timing(animationValue, {
       toValue,
       duration: 500,
-      delay: 300,
+      delay: 200,
       useNativeDriver: true,
       easing: Easing.out(Easing.ease)
     }).start();
   };
 
   useEffect(() => {
+    
     animate(val);
 
     animationValue.addListener((v) => {
       if (circ?.current) {
-        const strokeDashoffset =
-          circumference - (v.value / max) * circumference;
+        const strokeDashoffset = v.value < max 
+          ? circumference - (v.value / max) * circumference
+          : 0;
         circ.current.setNativeProps({
           strokeDashoffset,
         });
       }
       if (input?.current) {
+        if (v.value > max) {
+          setTextStyle({color:"#0B2A59", fontWeight:"bold", textShadowColor: "gold", textShadowOffset: {width: -1, height: 1},
+          textShadowRadius: 10})
+        }
           input.current.setNativeProps({
-              text: `${Math.round(v.value)} ${units}`
+              text: `${units !== "km" ? (Math.round(v.value)) : (v.value.toFixed(2))} ${units}`,
           })
       }
     });
@@ -93,9 +102,9 @@ const Donut = (props) => {
         ref={input}
         underlineColorAndroid='transparent'
         defaultValue='0'
-        style={[StyleSheet.absoluteFillObject, {textAlign: 'center', fontSize: 20}]}
+        style={[StyleSheet.absoluteFillObject, {textAlign: 'center', fontSize: 20,}, textStyle]}
       />
-
+    <Text>out of {max}</Text>
     </View>
   );
 };

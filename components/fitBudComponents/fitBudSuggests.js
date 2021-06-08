@@ -12,7 +12,7 @@ import { getWorkouts } from "../../Api/workoutApi";
 
 const FitBudSuggests = ({ navigation }) => {
   const title = "Fit-Bud Suggests:";
-  let onPress = () => alert("pressmemememe");
+  ;
   const [workout, setWorkout] = useState({});
   const [loading, setLoading] = useState(true);
 

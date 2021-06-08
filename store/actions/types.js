@@ -1,5 +1,6 @@
-export const USER_STATE_CHANGE = 'USER_STATE_CHANGE'
-export const USER_HISTORY_STATE_CHANGE = 'USER_HISTORY_STATE_CHANGE'
+export const SET_USER = 'SET_USER'
+export const UPDATE_USER = 'UPDATE_USER'
+export const SET_USER_HISTORY = 'SET_USER_HISTORY'
 export const ADD_WORKOUT = 'ADD_WORKOUT'
 export const CLEAR = 'CLEAR'
 

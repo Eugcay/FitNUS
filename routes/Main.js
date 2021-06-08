@@ -7,7 +7,6 @@ import { bindActionCreators } from "redux";
 
 import Tracker from "../screens/tracker";
 import FitBudStack from "./fitBudStack";
-import FitBud from "../screens/fitBud";
 import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";
 

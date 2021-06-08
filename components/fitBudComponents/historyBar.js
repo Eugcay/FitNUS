@@ -51,40 +51,35 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
+  TouchableOpacity, View
 } from "react-native";
 import { setRandomColor } from "../../helpers";
 import Spinner from "../Spinner";
 
 const HistoryBar = ({ navigation, hist }) => {
-  const history = hist
- 
-  console.log(history)
+  const history = hist;
+
+  console.log(history);
 
   if (!history) {
     return (
-      <View
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
-        <Spinner />
-      </View>
-    );
-  }
-
-  if ( history && history.length === 0) {
-    return (
       <TouchableOpacity
-        onPress={() => alert('hello')}
+        onPress={() => navigation.navigate("Start Workout")}
         style={[styles.item, { backgroundColor: setRandomColor() }]}
       >
-        <Text >Create new workout</Text>
+        <Text>Create new workout</Text>
       </TouchableOpacity>
     );
   }
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate("Workout Details", { workout: item.workout, date: item.date })}
+      onPress={() =>
+        navigation.navigate("Workout Details", {
+          workout: item.workout,
+          date: item.date,
+        })
+      }
       style={[styles.item, { backgroundColor: setRandomColor() }]}
     >
       <Text style={styles.title}>{item.workout.name}</Text>
@@ -92,12 +87,14 @@ const HistoryBar = ({ navigation, hist }) => {
   );
 
   return (
-    <FlatList
-      horizontal={true}
-      data={history}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
-    />
+      <FlatList
+        horizontal={true}
+        data={history}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+
+    
   );
 };
 
@@ -112,7 +109,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
-    alignItems: 'center'
+    alignItems: "center",
   },
   title: {
     fontSize: 32,

@@ -10,6 +10,10 @@ export async function signUp(name, email, password) {
     firebase.firestore().collection("users").doc(currUser.uid).set({
       name,
       email,
+      bio: "",
+      photoURL: "",
+      caloriesGoal: "",
+      durationGoal: ""
     });
   } catch (error) {
     alert(error);

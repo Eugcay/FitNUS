@@ -1,46 +1,95 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  ScrollView,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import ProfilePicture from "../components/trackerComponents/profilePicture";
 //import MenuButton from "../components/trackerComponents/menuButton";
 import Greeting from "../components/trackerComponents/greeting";
-import DataPicker from "../components/trackerComponents/dataPicker";
 import DayPicker from "../components/trackerComponents/dayPicker";
-import StatChart from "../components/trackerComponents/statChart";
 import StatBar from "../components/trackerComponents/statBar";
 import Donut from "../components/Donut";
+import { connect } from "react-redux";
+import { SET_USER } from "../store/actions/types";
 
+const Tracker = (props) => {
+  const [total, setTotal] = useState({});
+  const [weekly, setWeekly] = useState({});
+  const [monthly, setMonthly] = useState({});
+  const [goals, setGoals] = useState({});
 
-const Tracker = () => {
+  useEffect(() => {
+    const getStats = (arr) =>
+      arr.reduce(
+        (x, y) => ({
+          calories: x.calories + y.calories,
+          duration: x.duration + y.duration,
+        }),
+        {
+          calories: 0,
+          duration: 0,
+        }
+      );
 
-  const [totalCal, setTOtalCal] = useState(0)
-  
+    const today = new Date();
+
+    const tot = getStats(props.history);
+    const week = getStats(
+      props.history.filter(
+        (doc) => Date.now() - doc.date.seconds * 1000 < 7 * 24 * 3600 * 1000
+      )
+    );
+    const month = getStats(
+      props.history.filter(
+        (doc) =>
+          today.getMonth() === new Date(doc.date.seconds * 1000).getMonth()
+      )
+    );
+
+    setTotal(tot);
+    setWeekly(week);
+    setMonthly(month);
+    setGoals({
+      calories: props.currentUser.caloriesGoal,
+      duration: props.currentUser.durationGoal,
+      distance: props.currentUser.distanceGoal,
+      workouts: props.currentUser.workoutGoal,
+    });
+
+    console.log(goals);
+  }, [props.history, props.currentUser]);
+
   const calories = {
-    val: 670,
-    max: 1000,
+    val: 1405,
+    max: 1300,
     units: "cal",
-    color: "gold"
+    color: "gold",
   };
 
   const time = {
     val: 100,
     max: 200,
     units: "min",
-    color: 'green',
+    color: "green",
   };
 
   const distance = {
     val: 4.8,
     max: 6,
     units: "km",
-    color: 'tomato',
+    color: "tomato",
   };
 
-  
-
-
   const [stats, setStats] = useState(calories);
-  const [donut, setDonut] = useState({calories: true, time: false, distance: false})
-
+  const [donut, setDonut] = useState({
+    calories: true,
+    time: false,
+    distance: false,
+  });
 
   return (
     <ScrollView>
@@ -51,13 +100,31 @@ const Tracker = () => {
       {/* <MenuButton /> */}
       <View style={styles.datapicker}>
         <View style={styles.container}>
-          <TouchableOpacity style={styles.button} onPress={() => {setStats(calories); setDonut({calories: true, time: false, distance: false})}}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setStats(calories);
+              setDonut({ calories: true, time: false, distance: false });
+            }}
+          >
             <Text style={styles.text}>Calories</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => {setStats(time); setDonut({calories: false, time: true, distance: false})}}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setStats(time);
+              setDonut({ calories: false, time: true, distance: false });
+            }}
+          >
             <Text style={styles.text}>Time</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => {setStats(distance); setDonut({calories: false, time: false, distance: true})}}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setStats(distance);
+              setDonut({ calories: false, time: false, distance: true });
+            }}
+          >
             <Text style={styles.text}>Distance</Text>
           </TouchableOpacity>
         </View>
@@ -66,10 +133,31 @@ const Tracker = () => {
         <DayPicker />
       </View>
       <View style={styles.statchart}>
-       { donut.calories && <Donut val={calories.val} max={calories.max} color={calories.color} units={calories.units}/> }
-       { donut.time && <Donut val={time.val} max={time.max} color={time.color} units={time.units}/> }
-       { donut.distance && <Donut val={distance.val} max={distance.max} color={distance.color} units={distance.units}/> }
-      </View> 
+        {donut.calories && (
+          <Donut
+            val={calories.val}
+            max={calories.max}
+            color={calories.color}
+            units={calories.units}
+          />
+        )}
+        {donut.time && (
+          <Donut
+            val={time.val}
+            max={time.max}
+            color={time.color}
+            units={time.units}
+          />
+        )}
+        {donut.distance && (
+          <Donut
+            val={distance.val}
+            max={distance.max}
+            color={distance.color}
+            units={distance.units}
+          />
+        )}
+      </View>
       <View style={styles.statbar}>
         <StatBar />
       </View>
@@ -92,8 +180,8 @@ const styles = StyleSheet.create({
   text: {
     textAlign: "center",
     paddingTop: 13,
-    color: 'white',
-    fontWeight: 'bold'
+    color: "white",
+    fontWeight: "bold",
   },
   greeting: {
     paddingLeft: 20,
@@ -109,7 +197,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     alignContent: "center",
   },
-  
+
   statbar: {
     paddingTop: 0,
     alignContent: "center",
@@ -117,7 +205,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Tracker;
+const mapStateToProps = (store) => ({
+  history: store.user.history,
+  currentUser: store.user.currentUser,
+});
+
+export default connect(mapStateToProps, null)(Tracker);
 
 // export default function Tracker({ navigation }) {
 //   const [calories, setCalories] = useState(0);

@@ -6,50 +6,60 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert
+  Alert,
 } from "react-native";
 import firebase from "firebase";
-import { getUser } from "../Api/userApi";
 import { color } from "react-native-reanimated";
+import { updateUser } from "../store/actions/user";
+import { connect } from "react-redux";
 
-export default function EditProfile({route, navigation}) {
-  const {user} = route.params
-  
+function EditProfile(props) {
+  const { user } = props.route.params;
+
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [bio, setBio] = useState(user?.bio);
-  const [photoURL, setPhoto] = useState(user.photoURL ? user.photoURL : '');
+  const [photoURL, setPhoto] = useState(user.photoURL ? user.photoURL : "");
   const [loading, setLoading] = useState(false);
+  const [calGoal, setCalGoal] = useState(
+    user.caloriesGoal ? user.caloriesGoal : ""
+  );
+  const [durationGoal, setDurationGoal] = useState(
+    user.durationGoal ? user.durationGoal : ""
+  );
+  const [distanceGoal, setDistanceGoal] = useState(user?.distanceGoal);
+  const [workoutGoal, setWokroutGoal] = useState(user?.workoutGoal);
 
-  const uploadPost = () => {
-      firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).set({
-          name: name,
-          email: email,
-          bio: bio,
-          photoURL: photoURL
-      }).then(navigation.goBack())
-  }
+  const upload = () => {
+    props
+      .uploadChanges(
+        name,
+        email,
+        bio,
+        photoURL,
+        calGoal,
+        durationGoal,
+        distanceGoal,
+        workoutGoal
+      )
+      .then(props.navigation.goBack());
+  };
 
   const confirmSubmit = () => {
-    Alert.alert(
-        "Confirm changes?",
-        "Confirm to continue",
-        [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel"
-          },
-          { text: "Confirm", onPress: () => uploadPost() }
-        ]
-      );
-  }
+    Alert.alert("Confirm changes?", "Confirm to continue", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      { text: "Confirm", onPress: () => upload() },
+    ]);
+  };
 
-  const handleSubmit = event => {
-    event.preventDefault()
-    confirmSubmit()
-  }
-
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    confirmSubmit();
+  };
 
   return !loading ? (
     <View style={styles.container}>
@@ -63,7 +73,7 @@ export default function EditProfile({route, navigation}) {
         <TextInput
           style={styles.fields}
           onChangeText={(text) => console.log(text)}
-          onChange={text => setName(text)}
+          onChange={(text) => setName(text)}
           placeholder="name"
           value={name}
         ></TextInput>
@@ -89,18 +99,87 @@ export default function EditProfile({route, navigation}) {
         ></TextInput>
       </View>
 
+      <View style={styles.input}>
+        <Text style={styles.label}>Calories Goal (cal)</Text>
+        <TextInput
+          style={styles.fields}
+          onChangeText={(text) => setCalGoal(text)}
+          placeholder="Set goal for calories burnt weekly"
+          value={calGoal}
+        ></TextInput>
+      </View>
+
+      <View style={styles.input}>
+        <Text style={styles.label}>Duration Goal (min)</Text>
+        <TextInput
+          style={styles.fields}
+          onChangeText={(text) => setDurationGoal(text)}
+          placeholder="Set goal for total weekly workout duration"
+          value={durationGoal}
+        ></TextInput>
+      </View>
+
+      <View style={styles.input}>
+        <Text style={styles.label}>Distance Goal (km)</Text>
+        <TextInput
+          style={styles.fields}
+          onChangeText={(text) => setDistanceGoal(text)}
+          placeholder="Set goal for total distance run per week"
+          value={distanceGoal}
+        ></TextInput>
+      </View>
+
+      <View style={styles.input}>
+        <Text style={styles.label}>Weekly Workout Goal (sessions)</Text>
+        <TextInput
+          style={styles.fields}
+          onChangeText={(text) => setWokroutGoal(text)}
+          placeholder="Set goal for minimum workouts per week"
+          value={workoutGoal}
+        ></TextInput>
+      </View>
+
       <TouchableOpacity
         title="Save"
         style={styles.saveButton}
         onPress={handleSubmit}
       >
-        <Text style={{color: "#FFFFF0"}}>Save</Text>
+        <Text style={{ color: "#FFFFF0" }}>Save</Text>
       </TouchableOpacity>
     </View>
   ) : (
     <Text>Loading...</Text>
   );
 }
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    uploadChanges: (
+      name,
+      email,
+      bio,
+      photoURL,
+      caloriesGoal,
+      durationGoal,
+      distanceGoal,
+      workoutGoal
+    ) =>
+      dispatch(
+        updateUser(
+          name,
+          email,
+          bio,
+          photoURL,
+          caloriesGoal,
+          durationGoal,
+          distanceGoal,
+          workoutGoal
+        )
+      ),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(EditProfile);
 
 const styles = StyleSheet.create({
   container: {

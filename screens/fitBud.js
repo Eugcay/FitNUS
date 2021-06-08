@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { getWorkouts } from "../Api/workoutApi";
 import { StyleSheet, View, Text, ScrollView, SafeAreaView } from "react-native";
-import firebase from "firebase";
+
 import HistoryBar from "../components/fitBudComponents/historyBar";
 import FitBudSuggests from "../components/fitBudComponents/fitBudSuggests";
 import WorkoutSearch from "../components/fitBudComponents/workoutSearch";
 import { connect } from "react-redux";
+import Spinner from "../components/Spinner";
+import { getUserHistory } from "../store/actions/user";
+
 
  function FitBud(props) {
   const [history, setHistory] = useState(null);
   const [workouts, setWorkouts] = useState([]);
   const [user, setUser] = useState(null)
-
 
   // get history of user
   useEffect(() => {
@@ -36,10 +38,7 @@ import { connect } from "react-redux";
     return fetchWorkouts;
   }, []);
 
-  // const addWorkout = (workout) => {
-  //   addToHistory(workout.id);
-  //   getUser().set({});
-  // };
+  
 
   return (
     <ScrollView
@@ -49,7 +48,7 @@ import { connect } from "react-redux";
       <Text style={styles.headers}>Workout History!</Text>
 
       <SafeAreaView>
-        {history && <HistoryBar navigation={props.navigation} hist={history} />}
+        {history ? <HistoryBar navigation={props.navigation} hist={history} /> : <Spinner/>}
       </SafeAreaView>
 
       <View style={styles.divider}></View>
@@ -68,7 +67,11 @@ const mapStateToProps = (store) => ({
   history: store.user.history
 })
 
-export default connect(mapStateToProps, null)(FitBud)
+const mapDispatchToProps = (dispatch) => ({
+  getHistory: () => dispatch(getUserHistory())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(FitBud)
 
 
 

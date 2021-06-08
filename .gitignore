@@ -86,3 +86,4 @@ lint/tmp/
 node_modules
 config.js
 .history
+json_to_firestore/service_key.json

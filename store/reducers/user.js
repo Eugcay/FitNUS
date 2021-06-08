@@ -1,20 +1,24 @@
-import { addons } from "react-native"
-import { USER_STATE_CHANGE, USER_HISTORY_STATE_CHANGE, ADD_WORKOUT, CLEAR } from "../actions/types"
+import { SET_USER, SET_USER_HISTORY, ADD_WORKOUT, CLEAR, UPDATE_USER } from "../actions/types"
 
 const initialState= {
     currentUser: null,
-    history: [],
+    history: null,
     friends: [],
 }
 
 export const userReducer = (state = initialState, action) => {
     switch (action.type) {
-        case USER_STATE_CHANGE: 
+        case SET_USER: 
             return {
                 ...state,
                 currentUser: action.currentUser
             }
-        case USER_HISTORY_STATE_CHANGE: 
+        case UPDATE_USER: 
+            return {
+                ...state,
+                currentUser: action.currentUser
+            }
+        case SET_USER_HISTORY: 
             return {
                 ...state,
                 history: action.history
