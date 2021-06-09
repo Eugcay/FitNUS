@@ -5,24 +5,37 @@ import {
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 
-export default function StartWorkout({ navigation }) {
-  return (
-    <ImageBackground source={require("../assets/jio.png")} style={styles.image}>
-      <View style={styles.bottom}>
-        <Text style={styles.caption}>Welcome to the club</Text>
-        <Text style={styles.content}>Find a buddy and get started!</Text>
-        
-      </View>
-      <View style={styles.buttonSurrounding}>
-      <TouchableOpacity style={styles.join}>
-          <Text>Find your friends</Text>
-        </TouchableOpacity>
-        </View>
-    </ImageBackground>
-  );
+import HeaderTop from "../components/startWorkoutComponents/headerTop";
+
+const StartWorkout = ({navigation}) => {
+    return (
+        <ScrollView
+            scrollEnabled={true}
+        >
+            <HeaderTop />
+            <View>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("Map")}>
+                    <Text>
+                        Map
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    // onPress={() => navigation.navigate("Add Exercises")}>
+                    >
+                    <Text>
+                        Add exercises
+                    </Text>  
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
+    )
 }
+
+export default StartWorkout;
 
 const styles = StyleSheet.create({
   image: {
