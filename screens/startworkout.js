@@ -24,8 +24,8 @@ const StartWorkout = ({navigation}) => {
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    // onPress={() => navigation.navigate("Add Exercises")}>
-                    >
+                    onPress={() => navigation.navigate("Add Exercises")}>
+                    
                     <Text>
                         Add exercises
                     </Text>  

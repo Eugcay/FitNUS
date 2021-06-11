@@ -64,9 +64,7 @@ export class App extends Component {
         <Provider store={Store}>
           <NavigationContainer linking={this.linking}>
             {loggedIn ? (
-              <Stack.Navigator initialRouteName="Main">
-                <Stack.Screen name="Main" component={Main} />
-              </Stack.Navigator>
+              <Main/>
             ) : (
               <LoginStack />
             )}
