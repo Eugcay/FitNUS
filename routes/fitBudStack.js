@@ -23,10 +23,10 @@ const FitBudStack = ({ navigation }) => {
           ) 
         }}></Stack.Screen>
         <Stack.Screen name="Workout Details" component={WorkoutDetails}></Stack.Screen>
-        <Stack.Screen name="Start Workout" component={StartWorkout}></Stack.Screen>
+        {/* <Stack.Screen name="Start Workout" component={StartWorkout}></Stack.Screen>
         <Stack.Screen name="Add Exercises" component={AddExercises}></Stack.Screen>
         <Stack.Screen name="Exercise Details" component={ExerciseDetails}></Stack.Screen>
-        <Stack.Screen name="Map" component={Map}></Stack.Screen>
+        <Stack.Screen name="Map" component={Map}></Stack.Screen> */}
       </Stack.Navigator>
     </>
   );

@@ -1,21 +1,26 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, Text, Image } from "react-native";
 import HTML from "react-native-render-html";
 
 
-
-
 export const ExerciseDetails = (props) => {
+  
   const { exercise } = props.route.params;
+  console.log(exercise)
+  const img = exercise.data.photo;
   return (
     <View>
-      <Image
-        source={require("../assets/National_University_of_Singapore_logo_NUS.png")}
-        style={styles.image}
-      />
+      {img ? (
+        <Image source={{ uri: img }} style={styles.image} />
+      ) : (
+        <Image
+          source={require("../assets/National_University_of_Singapore_logo_NUS.png")}
+          style={styles.image}
+        />
+      )}
+
       <Text>{exercise.data.name}</Text>
-      {/* <HTMLText html={exercise.data.description} /> */}
-      <Text>{exercise.data.description}</Text>
+      <HTML html={exercise.data.description} />
     </View>
   );
 };

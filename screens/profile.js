@@ -17,7 +17,7 @@ const Profile = (props) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/user.png")} style={styles.image} />
+      <Image source={user.photoURL ? {uri: user.photoURL} : require("../assets/user.png")} style={styles.image} />
       <Text style={styles.text}>{!loading && user.name}</Text>
       <Text>{!loading && user.email}</Text>
       

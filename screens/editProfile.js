@@ -8,10 +8,10 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import firebase from "firebase";
-import { color } from "react-native-reanimated";
+import * as ImagePicker from "expo-image-picker";
 import { updateUser } from "../store/actions/user";
 import { connect } from "react-redux";
+import firebase from "firebase";
 
 function EditProfile(props) {
   const { user } = props.route.params;
@@ -19,8 +19,8 @@ function EditProfile(props) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [bio, setBio] = useState(user?.bio);
-  const [photoURL, setPhoto] = useState(user.photoURL ? user.photoURL : "");
-  const [loading, setLoading] = useState(false);
+  const [photoURL, setPhoto] = useState(user.photoURL ? user.photoURL : null);
+  const [changePhoto, setChange] = useState(false);
   const [calGoal, setCalGoal] = useState(
     user.caloriesGoal ? user.caloriesGoal : ""
   );
@@ -29,20 +29,86 @@ function EditProfile(props) {
   );
   const [distanceGoal, setDistanceGoal] = useState(user?.distanceGoal);
   const [workoutGoal, setWokroutGoal] = useState(user?.workoutGoal);
+  const [galleryPermission, setGalleryPermission] = useState(null);
+  const [image, setImage] = useState(null);
+  const path = `users/${firebase.auth().currentUser.uid}/profile`;
 
-  const upload = () => {
-    props
-      .uploadChanges(
-        name,
-        email,
-        bio,
-        photoURL,
-        calGoal,
-        durationGoal,
-        distanceGoal,
-        workoutGoal
-      )
-      .then(props.navigation.goBack());
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        setGalleryPermission(status === "granted");
+      }
+    })();
+  }, []);
+
+  const upload = async () => {
+    if (changePhoto) {
+      const res = await fetch(image);
+      const blob = await res.blob();
+
+      const profile = firebase.storage().ref().child(path).put(blob);
+
+      const progress = (snapshot) => {
+        console.log(`transferred: ${snapshot.bytesTransferred}`);
+      };
+
+      const completed = () => {
+        profile.snapshot.ref.getDownloadURL().then((snapshot) => {
+          update(snapshot);
+          console.log(snapshot);
+        });
+      };
+
+      const error = (snapshot) => {
+        console.log(snapshot);
+      };
+
+      profile.on("state_change", progress, error, completed);
+
+    } else {
+      update(photoURL);
+    }
+  };
+
+  const update = async (url) => {
+    await props.uploadChanges(
+      name,
+      email,
+      bio,
+      url,
+      calGoal,
+      durationGoal,
+      distanceGoal,
+      workoutGoal
+    );
+    props.navigation.goBack();
+  };
+
+  const setDP = () => {
+    console.log(galleryPermission);
+    if (galleryPermission) {
+      pickImage();
+    } else {
+      Alert.alert("no access to gallery!");
+    }
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      setChange(true);
+    }
   };
 
   const confirmSubmit = () => {
@@ -61,10 +127,20 @@ function EditProfile(props) {
     confirmSubmit();
   };
 
-  return !loading ? (
+  return (
     <View style={styles.container}>
-      <TouchableOpacity>
-        <Image source={require("../assets/user.png")} style={styles.image} />
+      <TouchableOpacity onPress={setDP}>
+        <Image
+          source={
+            image
+              ? { uri: image }
+              : photoURL
+              ? { uri: photoURL }
+              : require("../assets/user.png")
+          }
+          style={styles.image}
+        />
+
         <Text style={styles.text}>edit</Text>
       </TouchableOpacity>
 
@@ -147,8 +223,6 @@ function EditProfile(props) {
         <Text style={{ color: "#FFFFF0" }}>Save</Text>
       </TouchableOpacity>
     </View>
-  ) : (
-    <Text>Loading...</Text>
   );
 }
 

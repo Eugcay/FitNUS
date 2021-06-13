@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  ScrollView
+  SafeAreaView,
 } from "react-native";
 import { CheckBox } from "react-native-elements";
 import { Searchbar } from "react-native-paper";
@@ -17,6 +17,7 @@ export default function AddExercises(props) {
   const [filtered, setFiltered] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState([]);
+  const [imageURL, setURL] = useState(null);
 
   const onChangeSearch = (text) => {
     if (text) {
@@ -32,28 +33,31 @@ export default function AddExercises(props) {
     }
   };
 
-  const isSelected = (item) => {
-    const index = exercises.indexOf(item);
-    console.log(selected[index])
-    return selected[index] 
-  }
-
   const selectExercise = (exercise) => {
-    let data = [...selected]
+    let data = [...selected];
     if (selected.includes(exercise)) {
-      const index = data.indexOf(exercise)
-      data.splice(index, 1)
+      const index = data.indexOf(exercise);
+      data.splice(index, 1);
     } else {
-      data = data.concat(exercise)
+      data = data.concat(exercise);
     }
     setSelected(data);
-    console.log(data)
-    console.log(selected)
-
+    console.log(data);
+    console.log(selected);
   };
 
+  const addToWorkout = () => {
+    props.navigation.navigate({
+      name: "Start Workout",
+      params: { exercises: selected },
+      merge: true,
+    });
+  };
+
+
   const renderItem = ({ item }) => {
-    const check = selected.includes(item.key)
+    const check = selected.includes(item.key);
+
     return (
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
@@ -63,12 +67,20 @@ export default function AddExercises(props) {
           }
         >
           <Image
-            source={require("../assets/boxing.jpeg")}
+            source={
+              item.data.photo
+                ? { uri: item.data.photo }
+                : require("../assets/boxing.jpeg")
+            }
             style={styles.image}
           />
           <Text style={styles.searchResult}>{item.data.name}</Text>
         </TouchableOpacity>
-        <CheckBox center checked={check} onPress={() => selectExercise(item.key)} />
+        <CheckBox
+          center
+          checked={check}
+          onPress={() => selectExercise(item.key)}
+        />
       </View>
     );
   };
@@ -77,7 +89,7 @@ export default function AddExercises(props) {
     const fetchExercises = firebase
       .firestore()
       .collection("exercise")
-      .orderBy("name")
+      
       .onSnapshot((querySnapshot) => {
         const complete = [];
         querySnapshot.forEach((documentSnapshot) => {
@@ -88,18 +100,14 @@ export default function AddExercises(props) {
         });
         setExercises(complete);
         setFiltered(complete);
-        // setSelected(complete.map(ex => false))
       });
 
     return fetchExercises;
   }, []);
 
   return (
-    <View style={{ marginHorizontal: 10, marginBottom: 70 }}>
+    <SafeAreaView style={{ marginHorizontal: 10, marginBottom: 130 }}>
       <View>
-      <TouchableOpacity style={styles.addAll}>
-        <Text>Add to workout ({selected.length})</Text>
-      </TouchableOpacity>
         <Searchbar
           placeholder="Choose exercises"
           theme={{ roundness: 10 }}
@@ -114,8 +122,10 @@ export default function AddExercises(props) {
         renderItem={renderItem}
         extraData={selected}
       />
-      
-    </View>
+      <TouchableOpacity style={styles.addAll} onPress={() => addToWorkout()}>
+        <Text>Add to workout ({selected.length})</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
@@ -149,13 +159,14 @@ const styles = StyleSheet.create({
   },
 
   addAll: {
-    alignSelf: 'center',
+    alignSelf: "center",
     alignItems: "center",
-    marginTop: 5,
-    width: '70%',
-    height: 30,
-    backgroundColor: 'lightskyblue',
+    marginTop: 10,
+    width: "90%",
+    height: 40,
+    backgroundColor: "lightskyblue",
     justifyContent: "center",
     opacity: 0.6,
-  }
+    borderRadius: 7,
+  },
 });

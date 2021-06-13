@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import LoginStack from "./routes/loginStack";
 import Main from "./routes/Main";
+import addWorkoutStack from "./routes/addWorkoutStack";
 import firebase from "firebase";
 import { firebaseConfig } from "./config";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -64,7 +65,12 @@ export class App extends Component {
         <Provider store={Store}>
           <NavigationContainer linking={this.linking}>
             {loggedIn ? (
-              <Main/>
+              <Stack.Navigator initialRouteName="Main" screenOptions={{
+                headerShown: false,
+              }}>
+                <Stack.Screen name="Main" component={Main} />
+                <Stack.Screen name="Start Workout" component={addWorkoutStack}/>
+              </Stack.Navigator>
             ) : (
               <LoginStack />
             )}
