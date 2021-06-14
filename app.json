@@ -19,7 +19,11 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "fitNus"
+      "bundleIdentifier": "fitNus",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Just say yes thank you - app.json infoPlist",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Just say yes thank you - app.json infoPlist"
+      }
     },
     "android": {
       "adaptiveIcon": {

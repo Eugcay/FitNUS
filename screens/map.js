@@ -13,6 +13,9 @@ export default function Map() {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
+        showsUserLocation={true}
+        showsMyLocationButton={true}
+        showsMyLocationButton={true}
       />
     </View>
   );
