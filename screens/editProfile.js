@@ -66,7 +66,6 @@ function EditProfile(props) {
       };
 
       profile.on("state_change", progress, error, completed);
-
     } else {
       update(photoURL);
     }

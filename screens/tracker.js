@@ -17,6 +17,7 @@ import { connect } from "react-redux";
 import { SET_USER } from "../store/actions/types";
 
 const Tracker = (props) => {
+  const [user, setUser] = useState(null);
   const [total, setTotal] = useState({});
   const [weekly, setWeekly] = useState({});
   const [monthly, setMonthly] = useState({});
@@ -50,9 +51,11 @@ const Tracker = (props) => {
       )
     );
 
+    setUser(props.currentUser);
     setTotal(tot);
     setWeekly(week);
     setMonthly(month);
+
     setGoals({
       calories: props.currentUser.caloriesGoal,
       duration: props.currentUser.durationGoal,
@@ -93,7 +96,9 @@ const Tracker = (props) => {
 
   return (
     <ScrollView>
-      <ProfilePicture />
+      <TouchableOpacity>
+        <Image source={user.photoURL ? {uri: user.photoURL} : require("../assets/user.png")} style={styles.dp} />
+      </TouchableOpacity>
       <View style={styles.greeting}>
         <Greeting />
       </View>
@@ -202,6 +207,15 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     alignContent: "center",
     height: 150,
+  },
+
+  dp: {
+    marginTop: 20,
+    width: 70,
+    height: 70,
+    borderRadius: 100,
+    alignSelf: "center",
+    backgroundColor: "#D3D3D3",
   },
 });
 

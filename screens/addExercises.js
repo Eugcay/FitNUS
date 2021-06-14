@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   SafeAreaView,
+  Alert
 } from "react-native";
 import { CheckBox } from "react-native-elements";
 import { Searchbar } from "react-native-paper";
@@ -17,7 +18,7 @@ export default function AddExercises(props) {
   const [filtered, setFiltered] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState([]);
-  const [imageURL, setURL] = useState(null);
+  const [replace, setReplace] = useState(false)
 
   const onChangeSearch = (text) => {
     if (text) {
@@ -42,21 +43,34 @@ export default function AddExercises(props) {
       data = data.concat(exercise);
     }
     setSelected(data);
-    console.log(data);
     console.log(selected);
+    if (replace) {
+      addToWorkout(data)
+    }
   };
 
-  const addToWorkout = () => {
+  const addToWorkout = (data = selected) => {
+    Alert.alert("Confirm changes?", "Cancel if unfinished", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      { text: "Confirm", onPress: () => confirmSubmit(data) },
+    ]);
+  };
+
+  const confirmSubmit = (data) => {
     props.navigation.navigate({
       name: "Start Workout",
-      params: { exercises: selected },
+      params: { exercises: data, replace: replace },
       merge: true,
     });
-  };
+  }
 
 
   const renderItem = ({ item }) => {
-    const check = selected.includes(item.key);
+    const check = selected.includes(item);
 
     return (
       <View style={{ flexDirection: "row" }}>
@@ -79,17 +93,21 @@ export default function AddExercises(props) {
         <CheckBox
           center
           checked={check}
-          onPress={() => selectExercise(item.key)}
+          onPress={() => selectExercise(item)}
         />
       </View>
     );
   };
 
+ 
+
   useEffect(() => {
+    
+
     const fetchExercises = firebase
       .firestore()
       .collection("exercise")
-      
+      .orderBy("name") 
       .onSnapshot((querySnapshot) => {
         const complete = [];
         querySnapshot.forEach((documentSnapshot) => {
@@ -104,6 +122,13 @@ export default function AddExercises(props) {
 
     return fetchExercises;
   }, []);
+
+  useEffect(() => {
+    if (props.route.params?.item) {
+      setReplace(true)
+      console.log(replace)
+    }
+  }, [props.route.params?.item])
 
   return (
     <SafeAreaView style={{ marginHorizontal: 10, marginBottom: 130 }}>

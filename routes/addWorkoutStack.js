@@ -4,6 +4,7 @@ import StartWorkout from "../screens/startworkout";
 import Map from "../screens/map";
 import AddExercises from "../screens/addExercises";
 import { ExerciseDetails } from "../screens/exerciseDetails"
+import EditExercise from "../screens/editWorkout";
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ const addWorkoutStack = ({navigation}) => {
         component={ExerciseDetails}
       ></Stack.Screen>
       <Stack.Screen name="Map" component={Map}></Stack.Screen>
+      <Stack.Screen name="Edit" component={EditExercise}></Stack.Screen>
     </Stack.Navigator>
     </>
   );
