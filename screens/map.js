@@ -11,9 +11,17 @@ export default function Map() {
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
+      if (status == 'granted') {
+        let { status2 } = await Location.requestBackgroundPermissionsAsync();
+        if (status2 !== 'granted') {
+          setErrorMsg('Permission to access background location was denied');
+          return;
+        }
+      } else {
+        if (status !== 'granted') {
+          setErrorMsg('Permission to access location was denied');
+          return;
+        }
       }
 
       let location = await Location.getCurrentPositionAsync({});

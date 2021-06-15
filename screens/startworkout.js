@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -47,6 +47,7 @@ import HeaderTop from "../components/startWorkoutComponents/headerTop";
 const StartWorkout = ({ navigation, route }) => {
   const [exercises, setExercises] = useState([]);
   const [replaced, setReplaced] = useState(null);
+  const [workoutStatus, setStatus] = useState("Not Started");
 
   const clearWorkout = () => {
     setExercises([]);
@@ -154,6 +155,26 @@ const StartWorkout = ({ navigation, route }) => {
         <TouchableOpacity onPress={() => navigation.navigate("Map")}>
           <Text>Map</Text>
         </TouchableOpacity>
+        <View>
+          {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
+            <TouchableOpacity onPress={() => setStatus("Continue")}>
+              <AntDesign name="play" size={24} color="black" />
+            </TouchableOpacity>
+          ) : (
+            <View>
+              <TouchableOpacity onPress={() => setStatus("Paused")}>
+                <AntDesign name="pausecircle" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <MaterialCommunityIcons
+                  name="stop-circle"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
         <FlatList
           data={exercises}
           keyExtractor={(item) => item.key}
