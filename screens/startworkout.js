@@ -1,5 +1,5 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useState, useEffect } from "react";
+import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -21,6 +21,15 @@ const StartWorkout = (props) => {
   const [replaced, setReplaced] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [pulls, setPulls] = useState(1);
+  const [workoutStatus, setStatus] = useState("Not Started");
+
+  useLayoutEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () => (
+        <Button onPress={() => console.log(exercises)} title="FINISH" color="green"/>
+      )
+    })
+  }, [])
 
   const clearWorkout = () => {
     setExercises([]);
@@ -171,11 +180,31 @@ const StartWorkout = (props) => {
         <TouchableOpacity onPress={() => props.navigation.navigate("Map")}>
           <Text>Map</Text>
         </TouchableOpacity>
-        <Button
+        {/* <Button
           title="finish"
           color="green"
           onPress={() => finishWorkout()}
-        />
+        /> */}
+        <View>
+          {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
+            <TouchableOpacity onPress={() => setStatus("Continue")}>
+              <AntDesign name="play" size={24} color="black" />
+            </TouchableOpacity>
+          ) : (
+            <View>
+              <TouchableOpacity onPress={() => setStatus("Paused")}>
+                <AntDesign name="pausecircle" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <MaterialCommunityIcons
+                  name="stop-circle"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
         <FlatList
           data={exercises}
           keyExtractor={(item) => item.key}
