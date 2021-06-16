@@ -15,6 +15,7 @@ import { connect } from "react-redux";
 import { addToHistory } from "../store/actions/user";
 
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
+import StopWatch from "../components/StopWatch";
 
 const StartWorkout = (props) => {
   const [exercises, setExercises] = useState([]);
@@ -186,6 +187,7 @@ const StartWorkout = (props) => {
           onPress={() => finishWorkout()}
         /> */}
         <View>
+          <StopWatch />
           {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
             <TouchableOpacity onPress={() => setStatus("Continue")}>
               <AntDesign name="play" size={24} color="black" />
