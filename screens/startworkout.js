@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Button,
   FlatList,
-  Alert
+  Alert,
 } from "react-native";
 import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
@@ -22,14 +22,25 @@ const StartWorkout = (props) => {
   const [updating, setUpdating] = useState(false);
   const [pulls, setPulls] = useState(1);
   const [workoutStatus, setStatus] = useState("Not Started");
+  const [isStopwatchStart, setIsStopwatchStart] = useState(false);
+  const [timeNow, setTime] = useState({
+    hrs: 0,
+    min: 0,
+    sec: 0,
+    msec: 0,
+  });
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerRight: () => (
-        <Button onPress={() => console.log(exercises)} title="FINISH" color="green"/>
-      )
-    })
-  }, [])
+        <Button
+          onPress={() => console.log(exercises)}
+          title="FINISH"
+          color="green"
+        />
+      ),
+    });
+  }, []);
 
   const clearWorkout = () => {
     setExercises([]);
@@ -78,9 +89,50 @@ const StartWorkout = (props) => {
   const finishWorkout = () => {
     if (workoutComplete()) {
       props.finish("", 100, 30, exercises);
-      props.navigation.navigate('Main')
+      props.navigation.navigate("Main");
     } else {
-      Alert.alert("Workout incomplete!")
+      Alert.alert("Workout incomplete!");
+    }
+  };
+
+  twoDigits = (num) => {
+    return num <= 9 ? `0${num}` : num;
+  };
+
+  handleToggle = () => {
+    setIsStopwatchStart(!isStopwatchStart);
+    () => start();
+  };
+
+  start = () => {
+    if (isStopwatchStart) {
+      session = setInterval(() => {
+        if (timeNow.msec !== 98) {
+          setTime({
+            msec: timeNow.msec + 7,
+          });
+        } else if (timeNow.sec !== 59) {
+          setTime({
+            msec: 0,
+            sec: timeNow.sec + 1,
+          });
+        } else if (timeNow.min !== 59) {
+          setTime({
+            msec: 0,
+            sec: 0,
+            min: timeNow.min + 1,
+          });
+        } else {
+          setTime({
+            msec: 0,
+            sec: 0,
+            min: 0,
+            hrs: timeNow.hrs + 1,
+          });
+        }
+      }, 60);
+    } else {
+      clearInterval(session);
     }
   };
 
@@ -180,22 +232,39 @@ const StartWorkout = (props) => {
         <TouchableOpacity onPress={() => props.navigation.navigate("Map")}>
           <Text>Map</Text>
         </TouchableOpacity>
-        {/* <Button
-          title="finish"
-          color="green"
-          onPress={() => finishWorkout()}
-        /> */}
         <View>
-          {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
-            <TouchableOpacity onPress={() => setStatus("Continue")}>
+          <View style={styles.contianer}>
+            {timeNow.hrs > 0 && <Text>{twoDigits(timeNow.hrs)} :</Text>}
+            <Text>{twoDigits(timeNow.min)} :</Text>
+            <Text>{twoDigits(timeNow.sec)} :</Text>
+            {timeNow.hrs === 0 && <Text>{twoDigits(timeNow.msec)}</Text>}
+          </View>
+          {workoutStatus == "Not Started" ? (
+            <TouchableOpacity
+              onPress={() => {
+                handleToggle()
+                setStatus("Continue") 
+              }}
+            >
               <AntDesign name="play" size={24} color="black" />
             </TouchableOpacity>
-          ) : (
+          ) : workoutStatus == "Continue" ? (
             <View>
-              <TouchableOpacity onPress={() => setStatus("Paused")}>
+              <TouchableOpacity
+                onPress={() => {
+                  setStatus("Paused");
+                  handleToggle();
+                }}
+              >
                 <AntDesign name="pausecircle" size={24} color="black" />
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setStatus("Stopped");
+                  finishWorkout();
+                  handleToggle();
+                }}
+              >
                 <MaterialCommunityIcons
                   name="stop-circle"
                   size={24}
@@ -203,6 +272,32 @@ const StartWorkout = (props) => {
                 />
               </TouchableOpacity>
             </View>
+          ) : workoutStatus == "Paused" ? (
+            <View>
+              <TouchableOpacity
+                onPress={() => {
+                  setStatus("Continue");
+                  handleToggle();
+                }}
+              >
+                <AntDesign name="play" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setStatus("Stopped");
+                  finishWorkout();
+                  handleToggle();
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="stop-circle"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View></View>
           )}
         </View>
         <FlatList
@@ -314,5 +409,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: "100%",
     borderRadius: 5,
+  },
+  contianer: {
+    display: "flex",
+    flexDirection: "row",
   },
 });
