@@ -6,6 +6,9 @@ export const CLEAR = 'CLEAR'
 
 export const CLEAR_WORKOUT = 'CLEAR_WORKOUT'
 export const ADD_EXERCISE = 'ADD_EXERCISE'
+export const UPDATE_EXERCISE = 'UPDATE_EXERCISE'
+export const DELETE_EXERCISE = 'DELETE_EXERCISE'
+export const REPLACE_EXERCISE = 'REPLACE_EXERCISE'
 
 export const SIGN_UP = "SIGN_UP";
 export const LOGIN = "LOGIN"

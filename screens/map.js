@@ -8,7 +8,7 @@ export default function Map() {
   return (
     <View style={styles.container}>
       <MapView
-        style={[styles.map, {marginBottom: {marginBot}}]}
+        style={[styles.map, {marginBottom: marginBot}]}
         initialRegion={{
           latitude: 1.3702303096151767,
           longitude: 103.94958799677016,

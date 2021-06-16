@@ -99,11 +99,7 @@ export default function AddExercises(props) {
     );
   };
 
- 
-
   useEffect(() => {
-    
-
     const fetchExercises = firebase
       .firestore()
       .collection("exercise")
@@ -153,6 +149,8 @@ export default function AddExercises(props) {
     </SafeAreaView>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   searchBar: {

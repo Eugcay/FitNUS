@@ -3,6 +3,7 @@ import { SET_USER, SET_USER_HISTORY, ADD_WORKOUT, CLEAR, UPDATE_USER } from "../
 const initialState= {
     currentUser: null,
     history: null,
+    rendered: false,
     friends: [],
 }
 

@@ -89,6 +89,7 @@ export function getUserHistory() {
 }
 
 export function addToHistory(workoutId, calories, duration, workoutData) {
+  const date = firebase.firestore.FieldValue.serverTimestamp()
   return async (dispatch) => {
     const workoutRef = `/Workout/${workoutId}`;
     await firebase
@@ -97,16 +98,17 @@ export function addToHistory(workoutId, calories, duration, workoutData) {
       .doc(firebase.auth().currentUser.uid)
       .collection("history")
       .add({
-        date: Date.now(),
+        date,
         workoutRef,
         calories,
         duration,
+        workoutData
       });
 
     dispatch({
       type: ADD_WORKOUT,
       data: {
-        date: Date.now(),
+        date,
         workoutData,
         calories,
         duration,

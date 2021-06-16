@@ -97,7 +97,7 @@ const Tracker = (props) => {
   return (
     <ScrollView>
       <TouchableOpacity>
-        <Image source={user.photoURL ? {uri: user.photoURL} : require("../assets/user.png")} style={styles.dp} />
+        <Image source={user?.photoURL ? {uri: user?.photoURL} : require("../assets/user.png")} style={styles.dp} />
       </TouchableOpacity>
       <View style={styles.greeting}>
         <Greeting />

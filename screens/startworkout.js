@@ -6,47 +6,21 @@ import {
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  Button,
   FlatList,
+  Alert
 } from "react-native";
 import { ListItem } from "react-native-elements";
-
-import { Menu, Divider, Provider } from "react-native-paper";
-
-// const MyComponent = (props) => {
-//   const [visible, setVisible] = useState(false);
-
-//   const openMenu = () => setVisible(true);
-
-//   const closeMenu = () => setVisible(false);
-
-//   return (
-//     <Provider>
-//       <View
-//         style={{
-//           flex: 1,
-//           justifyContent: 'center'
-//         }}
-//       >
-//         <Menu
-//           visible={visible}
-//           onDismiss={closeMenu}
-//           anchor={<Button onPress={openMenu}></Button>}
-//         >
-//           <Menu.Item onPress={() => {}} title="Replace" />
-//           <Divider />
-//           <Menu.Item onPress={() => {}} title="Delete" />
-//         </Menu>
-//       </View>
-//     </Provider>
-//   );
-// };
+import { connect } from "react-redux";
+import { addToHistory } from "../store/actions/user";
 
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
 
-const StartWorkout = ({ navigation, route }) => {
+const StartWorkout = (props) => {
   const [exercises, setExercises] = useState([]);
   const [replaced, setReplaced] = useState(null);
+  const [updating, setUpdating] = useState(false);
+  const [pulls, setPulls] = useState(1);
 
   const clearWorkout = () => {
     setExercises([]);
@@ -63,14 +37,47 @@ const StartWorkout = ({ navigation, route }) => {
 
   const replaceItem = (item) => {
     setReplaced(item);
-    navigation.navigate("Add Exercises", { item: item });
+    props.navigation.navigate("Add Exercises", { item: item });
+  };
+
+  const editExercise = (item) => {
+    setUpdating(true);
+    setReplaced(item);
+    props.navigation.navigate("Edit", { exercise: item });
+  };
+
+  const completedSets = (item) => {
+    return item.sets.filter((content) => content.completed).length;
+  };
+
+  const updateWorkout = (item) => {
+    const index = exercises.indexOf(replaced);
+    const data = [...exercises];
+    data.splice(index, 1, item);
+    setExercises(data);
+    console.log(exercises[index]);
+  };
+
+  const workoutComplete = () => {
+    const completed = exercises.reduce(
+      (x, y) => x && (y.sets ? completedSets(y) === y.sets.length : false),
+      true
+    );
+    return completed;
+  };
+
+  const finishWorkout = () => {
+    if (workoutComplete()) {
+      props.finish("", 100, 30, exercises);
+      props.navigation.navigate('Main')
+    } else {
+      Alert.alert("Workout incomplete!")
+    }
   };
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Edit", { exercise: item })}
-      >
+      <TouchableOpacity onPress={() => editExercise(item)}>
         <ListItem.Swipeable
           style={{
             flexDirection: "row",
@@ -122,7 +129,7 @@ const StartWorkout = ({ navigation, route }) => {
             <ListItem.Title>{item.data.name}</ListItem.Title>
             <ListItem.Subtitle>
               {item.sets
-                ? `0/${item.sets} sets completed`
+                ? `${completedSets(item)}/${item.sets.length} sets completed`
                 : "0/1 sets completed"}
             </ListItem.Subtitle>
           </ListItem.Content>
@@ -135,30 +142,45 @@ const StartWorkout = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    if (route.params?.replace) {
-      const index = exercises.indexOf(replaced);
-      const data = [...exercises];
-      data.splice(index, 1, route.params.exercises[0]);
-      setExercises(data);
-      console.log(exercises[index]);
-    } else if (route.params?.exercises) {
-      setExercises(exercises.concat(route.params?.exercises));
-      console.log(exercises);
+    if (props.route.params?.exercise && updating) {
+      updateWorkout(props.route.params?.exercise);
+    } else if (props.route.params?.replace) {
+      updateWorkout(props.route.params.exercises[0]);
+    } else if (props.route.params?.exercises) {
+      setExercises(
+        exercises.concat(
+          props.route.params?.exercises.map((content) => ({
+            ...content,
+            key: (content.key * pulls).toString(),
+          }))
+        )
+      );
+      setPulls(pulls + 1);
     }
-  }, [route.params?.exercises, route.params?.replace]);
+    setUpdating(false);
+  }, [
+    props.route.params?.exercises,
+    props.route.params?.exercise,
+    props.route.params?.replace,
+  ]);
 
   return (
     <View style={{ flex: 1 }}>
       <HeaderTop />
       <View>
-        <TouchableOpacity onPress={() => navigation.navigate("Map")}>
+        <TouchableOpacity onPress={() => props.navigation.navigate("Map")}>
           <Text>Map</Text>
         </TouchableOpacity>
+        <Button
+          title="finish"
+          color="green"
+          onPress={() => finishWorkout()}
+        />
         <FlatList
           data={exercises}
           keyExtractor={(item) => item.key}
           renderItem={renderItem}
-          style={{ marginVertical: 15 }}
+          style={{ marginTop: 15, height: "63%" }}
           extraData={exercises}
           // ItemSeparatorComponent={() => {
           //   return <Divider />;
@@ -179,7 +201,7 @@ const StartWorkout = ({ navigation, route }) => {
       >
         <TouchableOpacity
           style={[styles.bottomButton, { backgroundColor: "#00BFFF" }]}
-          onPress={() => navigation.navigate("Add Exercises")}
+          onPress={() => props.navigation.navigate("Add Exercises")}
         >
           <Text>Add exercises</Text>
         </TouchableOpacity>
@@ -194,7 +216,12 @@ const StartWorkout = ({ navigation, route }) => {
   );
 };
 
-export default StartWorkout;
+const maptDispatchToProps = (dispatch) => ({
+  finish: (id, calories, duration, workoutData) =>
+    dispatch(addToHistory(id, calories, duration, workoutData)),
+});
+
+export default connect(null, maptDispatchToProps)(StartWorkout);
 
 const styles = StyleSheet.create({
   image: {

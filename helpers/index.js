@@ -35,4 +35,10 @@ export const workoutImages = {
        'Pilates': require('../assets/Pilates.jpeg')
     }
 }
-console.log(Date.now())
+
+export const deleteFromArray = (array, item) => {
+  const data = [...array]
+  const index = array.indexOf(item)
+  data.splice(index, 1)
+  return data
+}
