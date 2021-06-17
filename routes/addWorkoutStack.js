@@ -26,7 +26,8 @@ const addWorkoutStack = ({ navigation }) => {
           name="Exercise Details"
           component={ExerciseDetails}
         ></Stack.Screen>
-        <Stack.Screen name="Map" component={Map}></Stack.Screen>
+        {/* pass status of exercise into map navigation to display polyline */}
+        <Stack.Screen name="Map" component={Map}></Stack.Screen> 
         <Stack.Screen
           name="Edit"
           component={EditExercise}

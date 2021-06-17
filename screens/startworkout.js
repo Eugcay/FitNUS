@@ -23,12 +23,12 @@ const StartWorkout = (props) => {
   const [pulls, setPulls] = useState(1);
   const [workoutStatus, setStatus] = useState("Not Started");
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
-  const [timeNow, setTime] = useState({
-    hrs: 0,
-    min: 0,
-    sec: 0,
-    msec: 0,
-  });
+  const [hrs, setHrs] = useState(0)
+  const [min, setMin] = useState(0)
+  const [sec, setSec] = useState(0)
+  const [msec, setMsec] = useState(0)
+
+  let session = null;
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -95,40 +95,36 @@ const StartWorkout = (props) => {
     }
   };
 
-  twoDigits = (num) => {
+  const twoDigits = (num) => {
     return num <= 9 ? `0${num}` : num;
   };
 
-  handleToggle = () => {
-    setIsStopwatchStart(!isStopwatchStart);
-    () => start();
+  const handleToggle = () => {
+    console.log(isStopwatchStart)
+    setIsStopwatchStart(prev => !prev);
+    console.log(isStopwatchStart);
+    console.log("handled");
+    start();
   };
 
-  start = () => {
-    if (isStopwatchStart) {
+  const start = () => {
+    console.log("started")
+    if (!isStopwatchStart) {
       session = setInterval(() => {
-        if (timeNow.msec !== 98) {
-          setTime({
-            msec: timeNow.msec + 7,
-          });
-        } else if (timeNow.sec !== 59) {
-          setTime({
-            msec: 0,
-            sec: timeNow.sec + 1,
-          });
-        } else if (timeNow.min !== 59) {
-          setTime({
-            msec: 0,
-            sec: 0,
-            min: timeNow.min + 1,
-          });
+        if (msec !== 98) {
+          setMsec(prevmsec => prevmsec + 7)
+        } else if (sec !== 59) {
+          setMsec(0)
+          setSec(prevsec => prevsec + 1)
+        } else if (min !== 59) {
+          setMsec(0)
+          setSec(0)
+          setMin(prevmin => prevmin + 1)
         } else {
-          setTime({
-            msec: 0,
-            sec: 0,
-            min: 0,
-            hrs: timeNow.hrs + 1,
-          });
+          setMsec(0)
+          setSec(0)
+          setMin(0)
+          setHrs(prevhrs => prevhrs + 1)
         }
       }, 60);
     } else {
@@ -234,16 +230,16 @@ const StartWorkout = (props) => {
         </TouchableOpacity>
         <View>
           <View style={styles.contianer}>
-            {timeNow.hrs > 0 && <Text>{twoDigits(timeNow.hrs)} :</Text>}
-            <Text>{twoDigits(timeNow.min)} :</Text>
-            <Text>{twoDigits(timeNow.sec)} :</Text>
-            {timeNow.hrs === 0 && <Text>{twoDigits(timeNow.msec)}</Text>}
+            {hrs > 0 && <Text>{twoDigits(hrs)} :</Text>}
+            <Text>{twoDigits(min)} :</Text>
+            <Text>{twoDigits(sec)} :</Text>
+            {hrs === 0 && <Text>{twoDigits(msec)}</Text>}
           </View>
           {workoutStatus == "Not Started" ? (
             <TouchableOpacity
               onPress={() => {
-                handleToggle()
-                setStatus("Continue") 
+                handleToggle();
+                setStatus("Continue");
               }}
             >
               <AntDesign name="play" size={24} color="black" />
@@ -261,7 +257,7 @@ const StartWorkout = (props) => {
               <TouchableOpacity
                 onPress={() => {
                   setStatus("Stopped");
-                  finishWorkout();
+                  // finishWorkout();
                   handleToggle();
                 }}
               >
