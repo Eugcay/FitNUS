@@ -7,8 +7,6 @@ const Profile = (props) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
-
     setUser(props.currentUser)
     setLoading(false)
 

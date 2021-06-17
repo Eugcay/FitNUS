@@ -44,7 +44,7 @@ export function updateUser(
     caloriesGoal,
     durationGoal,
     distanceGoal,
-    workoutGoal
+    workoutGoal,
   };
   return async (dispatch) => {
     await firebase
@@ -68,20 +68,30 @@ export function getUserHistory() {
       .get()
       .then((snapshot) => {
         const hist = [];
-        snapshot.docs.forEach((doc) =>
-          doc
-            .data()
-            .workoutRef.get()
-            .then((snap) =>
-              hist.push({
-                id: doc.id,
-                date: doc.data().date,
-                workout: snap.data(),
-                calories: doc.data().calories,
-                duration: doc.data().duration,
-              })
-            )
-        );
+        snapshot.docs.forEach((doc) => {
+          if (doc.data()?.workoutData) {
+            hist.push({
+              id: doc.id,
+              date: doc.data().date,
+              workout: doc.data()?.workoutData,
+              calories: doc.data().calories,
+              duration: doc.data().duration,
+            });
+          } else {
+            doc
+              .data()
+              .workoutRef.get()
+              .then((snap) =>
+                hist.push({
+                  id: doc.id,
+                  date: doc.data().date,
+                  workout: snap.data(),
+                  calories: doc.data().calories,
+                  duration: doc.data().duration,
+                })
+              );
+          }
+        });
         return hist;
       })
       .then((hist) => dispatch({ type: SET_USER_HISTORY, history: hist }));
@@ -89,7 +99,7 @@ export function getUserHistory() {
 }
 
 export function addToHistory(workoutId, calories, duration, workoutData) {
-  const date = firebase.firestore.FieldValue.serverTimestamp()
+  const date = firebase.firestore.FieldValue.serverTimestamp();
   return async (dispatch) => {
     const workoutRef = `/Workout/${workoutId}`;
     await firebase
@@ -102,7 +112,7 @@ export function addToHistory(workoutId, calories, duration, workoutData) {
         workoutRef,
         calories,
         duration,
-        workoutData
+        workoutData,
       });
 
     dispatch({

@@ -54,6 +54,7 @@ import {
   TouchableOpacity, View
 } from "react-native";
 import { setRandomColor } from "../../helpers";
+import { timestampToDate } from "../../helpers";
 import Spinner from "../Spinner";
 
 const HistoryBar = ({ navigation, hist }) => {
@@ -61,7 +62,7 @@ const HistoryBar = ({ navigation, hist }) => {
 
   console.log(history);
 
-  if (!history) {
+  if (!history || history.length === 0) {
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate("Start Workout")}
@@ -82,7 +83,8 @@ const HistoryBar = ({ navigation, hist }) => {
       }
       style={[styles.item, { backgroundColor: setRandomColor() }]}
     >
-      <Text style={styles.title}>{item.workout.name}</Text>
+      <Text style={styles.title}>{item.workout?.name ? item.workout?.name : 'Custom Workout'}</Text>
+      <Text>{timestampToDate(item.date)}</Text>
     </TouchableOpacity>
   );
 
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight || 0,
   },
   item: {
-    width: 160,
+    width: 200,
     maxHeight: 100,
     padding: 20,
     marginVertical: 8,

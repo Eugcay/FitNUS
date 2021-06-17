@@ -181,11 +181,12 @@ const StartWorkout = (props) => {
         <TouchableOpacity onPress={() => props.navigation.navigate("Map")}>
           <Text>Map</Text>
         </TouchableOpacity>
-        {/* <Button
+
+        <Button
           title="finish"
           color="green"
           onPress={() => finishWorkout()}
-        /> */}
+        />
         <View>
           <StopWatch />
           {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
