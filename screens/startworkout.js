@@ -13,9 +13,10 @@ import {
 import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
 import { addToHistory } from "../store/actions/user";
-
+import haversine from "haversine";
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
 import { Stopwatch } from "react-native-stopwatch-timer";
+import * as Location from 'expo-location'
 
 const StartWorkout = (props) => {
   const [exercises, setExercises] = useState([]);
@@ -28,7 +29,44 @@ const StartWorkout = (props) => {
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
   const [timeNow, setTimeNow] = useState(0);
 
-  //Track location stuff
+  //Track location stuff => Calcdistance, Watch poition, Polyline
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [distance, setNewDistance] = useState(0);
+  const [LocList, setLocList] = useState(0);
+
+  const calcDistance = (prevLatLng, newLatLng) => {
+    return haversine(prevLatLng, newLatLng) || 0;
+  };
+
+  useEffect(() => {
+    console.log("here")
+    if (workoutStatus != "Not Started") {
+      console.log("Started")
+      if (workoutStatus != "Stopped") {
+      } else {
+        console.log("hi");
+        _getLocationAsync = async () => {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== "granted") {
+            console.log("debieeed");
+          }
+          let locations = await Location.watchPositionAsync(
+            {
+              accuracy: Location.Accuracy.Highest,
+              timeInterval: 100,
+              distanceInterval: 1,
+            },
+            (loc) => {
+              setNewDistance(distance + calcDistance(currentLocation, loc.coords));
+              setCurrentLocation(loc.coords);
+            }
+          );
+          console.log(locations);
+          setLocList(locations);
+        };
+      }
+    }
+  }, []);
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -194,15 +232,13 @@ const StartWorkout = (props) => {
         {workoutStatus == "Not Started" ? (
           <View>
             <Stopwatch
-              msecs
               start={isStopwatchStart}
               //To start
               reset={false}
               //To reset
               options={options}
               //options for the styling
-              getTime={(time) => {
-              }}
+              getTime={(time) => {}}
             />
             <TouchableOpacity
               onPress={() => {
@@ -216,15 +252,13 @@ const StartWorkout = (props) => {
         ) : workoutStatus == "Continue" ? (
           <View>
             <Stopwatch
-              msecs
               start={isStopwatchStart}
               //To start
               reset={false}
               //To reset
               options={options}
               //options for the styling
-              getTime={(time) => {
-              }}
+              getTime={(time) => {}}
             />
             <TouchableOpacity
               onPress={() => {
@@ -250,15 +284,13 @@ const StartWorkout = (props) => {
         ) : workoutStatus == "Paused" ? (
           <View>
             <Stopwatch
-              msecs
               start={isStopwatchStart}
               //To start
               reset={false}
               //To reset
               options={options}
               //options for the styling
-              getTime={(time) => {
-              }}
+              getTime={(time) => {}}
             />
             <TouchableOpacity
               onPress={() => {
@@ -284,15 +316,13 @@ const StartWorkout = (props) => {
         ) : (
           <View>
             <Stopwatch
-              msecs
               start={isStopwatchStart}
               //To start
               reset={false}
               //To reset
               options={options}
               //options for the styling
-              getTime={(time) => {
-              }}
+              getTime={(time) => {}}
             />
           </View>
         )}
