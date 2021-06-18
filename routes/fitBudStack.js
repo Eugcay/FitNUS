@@ -19,14 +19,10 @@ const FitBudStack = ({ navigation }) => {
       <Stack.Navigator initialRouteName="">
         <Stack.Screen name="Fit Bud" component={FitBud} options={{
           headerRight: () => (
-            <Button onPress={() => navigation.navigate("Start Workout")} title='Start workout' color="#FFF01A"/>
+            <Button onPress={() => navigation.navigate("Start Workout")} title='Start workout' color="#0B2A59"/>
           ) 
         }}></Stack.Screen>
-        <Stack.Screen name="Workout Details" component={WorkoutDetails}></Stack.Screen>
-        {/* <Stack.Screen name="Start Workout" component={StartWorkout}></Stack.Screen>
-        <Stack.Screen name="Add Exercises" component={AddExercises}></Stack.Screen>
-        <Stack.Screen name="Exercise Details" component={ExerciseDetails}></Stack.Screen>
-        <Stack.Screen name="Map" component={Map}></Stack.Screen> */}
+        <Stack.Screen name="Workout Details" component={WorkoutDetails}></Stack.Screen> 
       </Stack.Navigator>
     </>
   );

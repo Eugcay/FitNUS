@@ -16,6 +16,7 @@ import { addToHistory } from "../store/actions/user";
 
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
 import StopWatch from "../components/StopWatch";
+import { Stopwatch } from "react-native-stopwatch-timer";
 
 const StartWorkout = (props) => {
   const [exercises, setExercises] = useState([]);
@@ -23,6 +24,12 @@ const StartWorkout = (props) => {
   const [updating, setUpdating] = useState(false);
   const [pulls, setPulls] = useState(1);
   const [workoutStatus, setStatus] = useState("Not Started");
+
+  //Stopwatch stuff
+  const [isStopwatchStart, setIsStopwatchStart] = useState(false);
+  const [timeNow, setTimeNow] = useState(0);
+
+  //Track location stuff
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -79,9 +86,9 @@ const StartWorkout = (props) => {
   const finishWorkout = () => {
     if (workoutComplete()) {
       props.finish("", 100, 30, exercises);
-      props.navigation.navigate('Main')
+      props.navigation.navigate("Main");
     } else {
-      Alert.alert("Workout incomplete!")
+      Alert.alert("Workout incomplete!");
     }
   };
 
@@ -181,33 +188,112 @@ const StartWorkout = (props) => {
         <TouchableOpacity onPress={() => props.navigation.navigate("Map")}>
           <Text>Map</Text>
         </TouchableOpacity>
-
-        <Button
-          title="finish"
-          color="green"
-          onPress={() => finishWorkout()}
-        />
-        <View>
-          <StopWatch />
-          {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
-            <TouchableOpacity onPress={() => setStatus("Continue")}>
+        {workoutStatus == "Not Started" ? (
+          <View>
+            <Stopwatch
+              msecs
+              start={isStopwatchStart}
+              //To start
+              reset={false}
+              //To reset
+              options={options}
+              //options for the styling
+              getTime={(time) => {
+                setTimeNow(time)
+              }}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                setStatus("Continue");
+                setIsStopwatchStart(true);
+              }}
+            >
               <AntDesign name="play" size={24} color="black" />
             </TouchableOpacity>
-          ) : (
-            <View>
-              <TouchableOpacity onPress={() => setStatus("Paused")}>
-                <AntDesign name="pausecircle" size={24} color="black" />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <MaterialCommunityIcons
-                  name="stop-circle"
-                  size={24}
-                  color="black"
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+          </View>
+        ) : workoutStatus == "Continue" ? (
+          <View>
+            <Stopwatch
+              msecs
+              start={isStopwatchStart}
+              //To start
+              reset={false}
+              //To reset
+              options={options}
+              //options for the styling
+              getTime={() => {
+              }}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                setStatus("Paused");
+                setIsStopwatchStart(false);
+              }}
+            >
+              <AntDesign name="pausecircle" size={24} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setStatus("Stopped");
+                setIsStopwatchStart(false);
+              }}
+            >
+              <MaterialCommunityIcons
+                name="stop-circle"
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
+        ) : workoutStatus == "Paused" ? (
+          <View>
+            <Stopwatch
+              msecs
+              start={isStopwatchStart}
+              //To start
+              reset={false}
+              //To reset
+              options={options}
+              //options for the styling
+              getTime={(time) => {
+              }}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                setStatus("Continue");
+                setIsStopwatchStart(true);
+              }}
+            >
+              <AntDesign name="play" size={24} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setStatus("Stopped");
+                setIsStopwatchStart(false);
+              }}
+            >
+              <MaterialCommunityIcons
+                name="stop-circle"
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View>
+            <Stopwatch
+              msecs
+              start={isStopwatchStart}
+              //To start
+              reset={false}
+              //To reset
+              options={options}
+              //options for the styling
+              getTime={(time) => {
+              }}
+            />
+          </View>
+        )}
         <FlatList
           data={exercises}
           keyExtractor={(item) => item.key}
@@ -319,3 +405,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 });
+
+const options = {
+  container: {
+    backgroundColor: "#FF0000",
+    padding: 5,
+    borderRadius: 5,
+    width: 200,
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 25,
+    color: "#FFF",
+    marginLeft: 7,
+  },
+};

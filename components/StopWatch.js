@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 
 export default class StopWatch extends Component {
+   
     constructor(props) {
         super(props)
 
@@ -12,9 +13,13 @@ export default class StopWatch extends Component {
             sec: 0,
             msec: 0,
             start: false
-        },
+        }
 
         this.session = null
+    }
+    
+    submitTime = () => {
+        this.props.onStop(this.state)
     }
 
     twoDigits = (num) => {
@@ -57,8 +62,19 @@ export default class StopWatch extends Component {
                 }
             }, 60)
         } else {
+            this.submitTime()
             clearInterval(this.session)
         }
+    }
+
+    reset = () => {
+        this.setState({
+            hrs: 0,
+            min: 0,
+            sec: 0,
+            msec: 0,
+            start: false
+        })
     }
 
     render() {
@@ -70,9 +86,14 @@ export default class StopWatch extends Component {
                 <Text>{this.twoDigits(this.state.sec)} :</Text>
                 {this.state.hrs === 0 && <Text>{this.twoDigits(this.state.msec)}</Text>}
             </View>
-            <TouchableOpacity onPress={() => this.handleToggle()}>
+            <View style={{flexDirection: 'row'}}>
+            <TouchableOpacity onPress={() => this.handleToggle()} style={{marginRight: 5}}>
               <AntDesign name={this.state.start ? 'pausecircle' : 'play'} size={24} color="black" />
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.reset()}>
+              <AntDesign name='reload1' size={20} color="black" />
+            </TouchableOpacity>
+            </View>
             </View>
         )
     }

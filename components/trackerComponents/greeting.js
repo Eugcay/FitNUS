@@ -1,8 +1,9 @@
 import React from "react";
 import { Text, View, StyleSheet} from "react-native";
 
-const Greeting = () => {
-    const titleLine1 = "Hello Lydia,";
+const Greeting = (props) => {
+    const user = props.user
+    const titleLine1 = `Hello ${user?.name ? user.name : ''},`;
     const titleLine2 = "Keep up the good work!";
 
     return (

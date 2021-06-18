@@ -3,18 +3,28 @@ import {
   Text,
   TouchableOpacity,
   ImageBackground,
-  Image,
   View,
   StyleSheet,
 } from "react-native";
+import MapView from "react-native-maps";
 import { Card } from "react-native-paper";
+
 import { getWorkouts } from "../../Api/workoutApi";
 
 const FitBudSuggests = ({ navigation }) => {
   const title = "Fit-Bud Suggests:";
-  ;
+
   const [workout, setWorkout] = useState({});
   const [loading, setLoading] = useState(true);
+
+  const options = [
+    {
+      source: workout.data?.imageURL
+        ? { uri: workout.data.imageURL }
+        : require("../../assets/suggestionSample.jpeg"),
+      
+    },
+  ];
 
   // suggestion = () => (
   //     //get workout object from database
@@ -52,34 +62,61 @@ const FitBudSuggests = ({ navigation }) => {
   // </ImageBackground>
 
   return (
-    <TouchableOpacity onPress={() => !loading && navigation.navigate("Workout Details", { workout: workout.data, date: null })} >
-      <ImageBackground
-        source={require("../../assets/suggestionSample.jpeg")}
-        imageStyle={{ borderRadius: 15 }}
+    <View style={{ flex: 1, flexDirection: "column" }}>
+      <TouchableOpacity
         style={styles.image}
-        blurRadius={5}
+        onPress={() => navigation.navigate("Maps")}
       >
-        
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 1.2966,
+            longitude: 103.7764,
+            latitudeDelta: 0.045,
+            longitudeDelta: 0.02,
+          }}
+          provider="google"
+          showsUserLocation={true}
+          showsCompass={true}
+        ></MapView>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() =>
+          !loading &&
+          navigation.navigate("Workout Details", {
+            workout: workout.data,
+            date: null,
+          })
+        }
+      >
+        <ImageBackground
+          source={
+            workout.data?.imageURL
+              ? { uri: workout.data.imageURL }
+              : require("../../assets/suggestionSample.jpeg")
+          }
+          imageStyle={{ borderRadius: 15 }}
+          style={styles.image}
+          blurRadius={5}
+        >
           <Text style={styles.text}>{!loading && workout.data.name}</Text>
-       
-      </ImageBackground>
-    </TouchableOpacity>
+        </ImageBackground>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 export default FitBudSuggests;
 
 const styles = StyleSheet.create({
-    
-    containter: {
-        borderRadius: 15,
-        marginBottom: 10
-    },
+  containter: {
+    borderRadius: 15,
+    marginBottom: 10,
+  },
 
-  
   image: {
-    flex: 1, 
-    height: 220,
+    flex: 1,
+    height: 180,
     backgroundColor: "black",
     marginTop: 10,
     marginBottom: 15,
@@ -88,19 +125,23 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
     borderRadius: 15,
 
-    // width: "90%",
-    // height: "60%",
     // alignSelf: "center",
     // justifyContent: "center",
   },
 
   text: {
     color: "white",
-    fontSize: 42,
+    fontSize: 21,
     fontWeight: "bold",
     textAlign: "center",
-    backgroundColor: "#000000a0",
+    textShadowColor: "#000000a0",
+    shadowOpacity: 0.8,
     alignSelf: "center",
-    borderRadius: 20
+    borderRadius: 20,
+  },
+
+  map: {
+    height: "100%",
+    borderRadius: 15,
   },
 });

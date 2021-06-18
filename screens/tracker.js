@@ -100,7 +100,7 @@ const Tracker = (props) => {
         <Image source={user?.photoURL ? {uri: user?.photoURL} : require("../assets/user.png")} style={styles.dp} />
       </TouchableOpacity>
       <View style={styles.greeting}>
-        <Greeting />
+        <Greeting user={user}/>
       </View>
       {/* <MenuButton /> */}
       <View style={styles.datapicker}>

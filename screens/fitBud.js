@@ -45,7 +45,7 @@ import { getUserHistory } from "../store/actions/user";
       style={{ flex: 1, backgroundColor: "#f2f2f2" }}
       scrollEnabled={true}
     >
-      <Text style={styles.headers}>Workout History!</Text>
+      <Text style={styles.headers}>Do it again!</Text>
 
       <SafeAreaView>
         {history ? <HistoryBar navigation={props.navigation} hist={history} /> : <Spinner/>}
