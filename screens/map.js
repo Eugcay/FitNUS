@@ -34,10 +34,6 @@ export default function Map() {
       }
     })();
   }, []);
-
-  
-
-  console.log(JSON.stringify(location))
   
   const _onMapReady = () => setMargin(60)
 
