@@ -7,25 +7,27 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import ProfilePicture from "../components/trackerComponents/profilePicture";
-//import MenuButton from "../components/trackerComponents/menuButton";
+import { WeekCalendar, Calendar } from "react-native-calendars";
+
 import Greeting from "../components/trackerComponents/greeting";
 import DayPicker from "../components/trackerComponents/dayPicker";
 import StatBar from "../components/trackerComponents/statBar";
 import Donut from "../components/Donut";
 import { connect } from "react-redux";
-import { SET_USER } from "../store/actions/types";
+import Dropdown from "react-native-material-dropdown/src/components/dropdown";
 
 const Tracker = (props) => {
   const [user, setUser] = useState(null);
+  const [day, setDay] = useState();
   const [total, setTotal] = useState({});
   const [weekly, setWeekly] = useState({});
   const [monthly, setMonthly] = useState({});
   const [goals, setGoals] = useState({});
 
   useEffect(() => {
-    const getStats = (arr) =>
-      arr.reduce(
+    const getStats = (arr) => {
+      const workouts = arr.length
+      const temp = arr.reduce(
         (x, y) => ({
           calories: x.calories + y.calories,
           duration: x.duration + y.duration,
@@ -35,6 +37,9 @@ const Tracker = (props) => {
           duration: 0,
         }
       );
+      temp.workouts = workouts
+      return temp
+    };
 
     const today = new Date();
 
@@ -63,12 +68,12 @@ const Tracker = (props) => {
       workouts: props.currentUser.workoutGoal,
     });
 
-    console.log(goals);
+    console.log(month);
   }, [props.history, props.currentUser]);
 
   const calories = {
     val: 1405,
-    max: 1300,
+    max: goals.calories,
     units: "cal",
     color: "gold",
   };
@@ -87,20 +92,37 @@ const Tracker = (props) => {
     color: "tomato",
   };
 
-  const [stats, setStats] = useState(calories);
-  const [donut, setDonut] = useState({
-    calories: true,
-    time: false,
-    distance: false,
-  });
+  const workoutsPerWeek = {
+    val: 2,
+    max: 3,
+    units: "",
+    color: "midnightblue",
+  };
+
+  const data = [
+    { value: "calories" },
+    { value: "time" },
+    { value: "distance" },
+    { value: "workouts" },
+  ];
+
+  const [statsType, setType] = useState("weekly");
+  const [donut, setDonut] = useState("calories");
 
   return (
     <ScrollView>
       <TouchableOpacity>
-        <Image source={user?.photoURL ? {uri: user?.photoURL} : require("../assets/user.png")} style={styles.dp} />
+        <Image
+          source={
+            user?.photoURL
+              ? { uri: user?.photoURL }
+              : require("../assets/user.png")
+          }
+          style={styles.dp}
+        />
       </TouchableOpacity>
       <View style={styles.greeting}>
-        <Greeting user={user}/>
+        <Greeting user={user} />
       </View>
       {/* <MenuButton /> */}
       <View style={styles.datapicker}>
@@ -108,37 +130,42 @@ const Tracker = (props) => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              setStats(calories);
-              setDonut({ calories: true, time: false, distance: false });
+              setType("weekly");
             }}
           >
-            <Text style={styles.text}>Calories</Text>
+            <Text style={styles.text}>Weekly</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              setStats(time);
-              setDonut({ calories: false, time: true, distance: false });
+              setType("monthly");
             }}
           >
-            <Text style={styles.text}>Time</Text>
+            <Text style={styles.text}>Monthly</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              setStats(distance);
-              setDonut({ calories: false, time: false, distance: true });
+              setType("overall");
             }}
           >
-            <Text style={styles.text}>Distance</Text>
+            <Text style={styles.text}>Overall</Text>
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.daypicker}>
-        <DayPicker />
+        {statsType === "weekly" && <WeekCalendar />}
+        {statsType === "monthly" && <Calendar />}
+      </View>
+      <View style={styles.dropdown}>
+        <Dropdown
+          label="select"
+          data={data}
+          onChangeText={(value) => setDonut(value)}
+        />
       </View>
       <View style={styles.statchart}>
-        {donut.calories && (
+        {donut === "calories" && (
           <Donut
             val={calories.val}
             max={calories.max}
@@ -146,7 +173,7 @@ const Tracker = (props) => {
             units={calories.units}
           />
         )}
-        {donut.time && (
+        {donut === "time" && (
           <Donut
             val={time.val}
             max={time.max}
@@ -154,12 +181,20 @@ const Tracker = (props) => {
             units={time.units}
           />
         )}
-        {donut.distance && (
+        {donut === "distance" && (
           <Donut
             val={distance.val}
             max={distance.max}
             color={distance.color}
             units={distance.units}
+          />
+        )}
+        {donut === "workouts" && (
+          <Donut
+            val={workoutsPerWeek.val}
+            max={workoutsPerWeek.max}
+            color={workoutsPerWeek.color}
+            units={workoutsPerWeek.units}
           />
         )}
       </View>
@@ -180,7 +215,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#0B2A59",
     width: "30%",
     height: 45,
-    borderRadius: 15,
+    borderRadius: 20,
+    marginVertical: 10,
   },
   text: {
     textAlign: "center",
@@ -194,6 +230,7 @@ const styles = StyleSheet.create({
   },
   datapicker: {
     paddingTop: 10,
+    marginHorizontal: 10,
   },
   daypicker: {
     paddingTop: 10,
@@ -216,6 +253,11 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignSelf: "center",
     backgroundColor: "#D3D3D3",
+  },
+
+  dropdown: {
+    width: "20%",
+    marginHorizontal: 15,
   },
 });
 

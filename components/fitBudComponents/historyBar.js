@@ -88,6 +88,7 @@ const HistoryBar = ({ navigation, hist }) => {
           navigation.navigate("Workout Details", {
             workout: item.workout,
             date: item.date,
+            duration: item.duration
           })
         }
         style={{ borderRadius: 8 }}

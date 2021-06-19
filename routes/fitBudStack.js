@@ -17,11 +17,7 @@ const FitBudStack = ({ navigation }) => {
   return (
     <>
       <Stack.Navigator initialRouteName="">
-        <Stack.Screen name="Fit Bud" component={FitBud} options={{
-          headerRight: () => (
-            <Button onPress={() => navigation.navigate("Start Workout")} title='Start workout' color="#0B2A59"/>
-          ) 
-        }}></Stack.Screen>
+        <Stack.Screen name="Fit Bud" component={FitBud} />
         <Stack.Screen name="Workout Details" component={WorkoutDetails}></Stack.Screen> 
       </Stack.Navigator>
     </>

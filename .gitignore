@@ -83,7 +83,7 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
-node_modules
 config.js
 .history
 json_to_firestore/service_key.json
+node_modules

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getWorkouts } from "../Api/workoutApi";
 import { StyleSheet, View, Text, ScrollView, SafeAreaView } from "react-native";
-
 import HistoryBar from "../components/fitBudComponents/historyBar";
 import FitBudSuggests from "../components/fitBudComponents/fitBudSuggests";
 import WorkoutSearch from "../components/fitBudComponents/workoutSearch";

@@ -8,15 +8,15 @@ import {
   TouchableOpacity,
   Button,
   FlatList,
-  Alert
+  Alert,
 } from "react-native";
 import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
 import { addToHistory } from "../store/actions/user";
-
+import haversine from "haversine";
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
-import StopWatch from "../components/StopWatch";
 import { Stopwatch } from "react-native-stopwatch-timer";
+import * as Location from "expo-location";
 
 const StartWorkout = (props) => {
   const [exercises, setExercises] = useState([]);
@@ -29,15 +29,58 @@ const StartWorkout = (props) => {
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
   const [timeNow, setTimeNow] = useState(0);
 
-  //Track location stuff
+  //Track location stuff => Calcdistance, Watch poition, Polyline
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [distance, setNewDistance] = useState(0);
+  const [LocList, setLocList] = useState(0);
+
+  const calcDistance = (prevLatLng, newLatLng) => {
+    return haversine(prevLatLng, newLatLng) || 0;
+  };
+
+  useEffect(() => {
+    console.log("here");
+    if (workoutStatus != "Not Started") {
+      console.log("Started");
+      if (workoutStatus != "Stopped") {
+      } else {
+        console.log("hi");
+        _getLocationAsync = async () => {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== "granted") {
+            console.log("debieeed");
+          }
+          let locations = await Location.watchPositionAsync(
+            {
+              accuracy: Location.Accuracy.Highest,
+              timeInterval: 100,
+              distanceInterval: 1,
+            },
+            (loc) => {
+              setNewDistance(
+                distance + calcDistance(currentLocation, loc.coords)
+              );
+              setCurrentLocation(loc.coords);
+            }
+          );
+          console.log(locations);
+          setLocList(locations);
+        };
+      }
+    }
+  }, []);
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerRight: () => (
-        <Button onPress={() => console.log(exercises)} title="FINISH" color="green"/>
-      )
-    })
-  }, [])
+        <Button
+          onPress={() => console.log(exercises)}
+          title="FINISH"
+          color="green"
+        />
+      ),
+    });
+  }, []);
 
   const clearWorkout = () => {
     setExercises([]);
@@ -85,7 +128,7 @@ const StartWorkout = (props) => {
 
   const finishWorkout = () => {
     if (workoutComplete()) {
-      props.finish("", 100, 30, exercises);
+      props.finish("", 100, 30, { exercises });
       props.navigation.navigate("Main");
     } else {
       Alert.alert("Workout incomplete!");
@@ -159,7 +202,11 @@ const StartWorkout = (props) => {
   };
 
   useEffect(() => {
-    if (props.route.params?.exercise && updating) {
+    if (props.route.params?.template) {
+      console.log(props.route.params?.template.exercises);
+      setExercises(props.route.params?.template.exercises)
+      setPulls(pulls + 1)
+    } else if (props.route.params?.exercise && updating) {
       updateWorkout(props.route.params?.exercise);
     } else if (props.route.params?.replace) {
       updateWorkout(props.route.params.exercises[0]);
@@ -173,12 +220,14 @@ const StartWorkout = (props) => {
         )
       );
       setPulls(pulls + 1);
+      console.log(props.route.params?.exercises);
     }
     setUpdating(false);
   }, [
     props.route.params?.exercises,
     props.route.params?.exercise,
     props.route.params?.replace,
+    props.route.params?.template
   ]);
 
   return (
@@ -191,16 +240,13 @@ const StartWorkout = (props) => {
         {workoutStatus == "Not Started" ? (
           <View>
             <Stopwatch
-              msecs
               start={isStopwatchStart}
               //To start
               reset={false}
               //To reset
               options={options}
               //options for the styling
-              getTime={(time) => {
-                setTimeNow(time)
-              }}
+              getTime={(time) => {}}
             />
             <TouchableOpacity
               onPress={() => {
@@ -214,15 +260,45 @@ const StartWorkout = (props) => {
         ) : workoutStatus == "Continue" ? (
           <View>
             <Stopwatch
-              msecs
               start={isStopwatchStart}
               //To start
               reset={false}
               //To reset
               options={options}
               //options for the styling
-              getTime={() => {
+              getTime={(time) => {}}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                setStatus("Paused");
+                setIsStopwatchStart(false);
               }}
+            >
+              <AntDesign name="pausecircle" size={24} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setStatus("Stopped");
+                setIsStopwatchStart(false);
+              }}
+            >
+              <MaterialCommunityIcons
+                name="stop-circle"
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
+        ) : workoutStatus == "Paused" ? (
+          <View>
+            <Stopwatch
+              start={isStopwatchStart}
+              //To start
+              reset={false}
+              //To reset
+              options={options}
+              //options for the styling
+              getTime={() => {}}
             />
             <TouchableOpacity
               onPress={() => {
@@ -255,8 +331,7 @@ const StartWorkout = (props) => {
               //To reset
               options={options}
               //options for the styling
-              getTime={(time) => {
-              }}
+              getTime={(time) => {}}
             />
             <TouchableOpacity
               onPress={() => {
@@ -282,18 +357,17 @@ const StartWorkout = (props) => {
         ) : (
           <View>
             <Stopwatch
-              msecs
               start={isStopwatchStart}
               //To start
               reset={false}
               //To reset
               options={options}
               //options for the styling
-              getTime={(time) => {
-              }}
+              getTime={(time) => {}}
             />
           </View>
         )}
+          <Button title='finish' color='green' onPress={() => finishWorkout()}/>
         <FlatList
           data={exercises}
           keyExtractor={(item) => item.key}
@@ -305,6 +379,7 @@ const StartWorkout = (props) => {
           // }}
         />
       </View>
+    
       <View
         style={{
           flex: 1,

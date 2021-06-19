@@ -10,13 +10,14 @@ import EditExercise from "../screens/editWorkout";
 
 const Stack = createStackNavigator();
 
-const addWorkoutStack = ({ navigation }) => {
+const addWorkoutStack = ({ navigation , route}) => {
   return (
     <>
       <Stack.Navigator>
         <Stack.Screen
           name="Start Workout"
           component={StartWorkout}
+          initialParams={{ template: route.params}}
         ></Stack.Screen>
         <Stack.Screen
           name="Add Exercises"
@@ -26,7 +27,8 @@ const addWorkoutStack = ({ navigation }) => {
           name="Exercise Details"
           component={ExerciseDetails}
         ></Stack.Screen>
-        <Stack.Screen name="Map" component={Map}></Stack.Screen>
+        {/* pass status of exercise into map navigation to display polyline */}
+        <Stack.Screen name="Map" component={Map}></Stack.Screen> 
         <Stack.Screen
           name="Edit"
           component={EditExercise}

@@ -162,7 +162,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 5,
     fontSize: 16,
-    borderBottomWidth: 1,
     width: "77%",
   },
 

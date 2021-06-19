@@ -33,6 +33,7 @@ const WorkoutSearch = ({ navigation, workouts }) => {
             navigation.navigate("Workout Details", {
               workout: item.data,
               date: null,
+              duration: item.data.duration
             })
           }
         >
