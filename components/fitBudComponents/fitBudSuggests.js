@@ -12,26 +12,10 @@ import { Card } from "react-native-paper";
 import { getWorkouts } from "../../Api/workoutApi";
 
 const FitBudSuggests = ({ navigation }) => {
-  const title = "Fit-Bud Suggests:";
 
   const [workout, setWorkout] = useState({});
   const [loading, setLoading] = useState(true);
 
-  const options = [
-    {
-      source: workout.data?.imageURL
-        ? { uri: workout.data.imageURL }
-        : require("../../assets/suggestionSample.jpeg"),
-    },
-  ];
-
-  // suggestion = () => (
-  //     //get workout object from database
-  //     <View>
-  //       <Text>History has not been made</Text>
-  //     </View>
-  // );
-  // get workouts
   useEffect(() => {
     const fetchWorkouts = getWorkouts()
       .limit(3)
@@ -67,8 +51,6 @@ const FitBudSuggests = ({ navigation }) => {
           !loading &&
           navigation.navigate("Workout Details", {
             workout: workout.data,
-            date: null,
-            duration: workout.data.duration
           })
         }
       >
@@ -80,7 +62,7 @@ const FitBudSuggests = ({ navigation }) => {
           }
           imageStyle={{ borderRadius: 15 }}
           style={styles.image}
-          blurRadius={5}
+          blurRadius={6}
         >
           <Text style={styles.text}>{!loading && workout.data.name}</Text>
         </ImageBackground>
@@ -92,7 +74,7 @@ const FitBudSuggests = ({ navigation }) => {
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
           style={[styles.image, { width: "48%" }]}
-          onPress={() => navigation.navigate("Maps")}
+          onPress={() => navigation.navigate("Map")}
         >
           <MapView
             style={styles.map}

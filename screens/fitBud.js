@@ -7,6 +7,7 @@ import WorkoutSearch from "../components/fitBudComponents/workoutSearch";
 import { connect } from "react-redux";
 import Spinner from "../components/Spinner";
 import { getUserHistory } from "../store/actions/user";
+import { Divider } from "react-native-elements";
 
 
  function FitBud(props) {
@@ -44,19 +45,20 @@ import { getUserHistory } from "../store/actions/user";
       style={{ flex: 1, backgroundColor: "#f2f2f2" }}
       scrollEnabled={true}
     >
-      <Text style={styles.headers}>Do it again!</Text>
+      <View style={{ marginTop: 5, marginBottom: 10 }}>
+        <WorkoutSearch navigation={props.navigation} workouts={workouts} />
+      </View>
+      <Divider width={1} style={{marginVertical: 10}}/>
+        
 
+      
+      <Text style={styles.headers}>Try something New!</Text>
+      <FitBudSuggests navigation={props.navigation} />
+      <Divider width={1} style={{marginVertical: 10}}/>
+      <Text style={styles.headers}>Do it again!</Text>
       <SafeAreaView>
         {history ? <HistoryBar navigation={props.navigation} hist={history} /> : <Spinner/>}
       </SafeAreaView>
-
-      <View style={styles.divider}></View>
-      <Text style={styles.headers}>Try something New!</Text>
-      <FitBudSuggests navigation={props.navigation} />
-      <View style={{ marginVertical: 20 }}>
-        <Text style={styles.headers}>Find a Workout</Text>
-        <WorkoutSearch navigation={props.navigation} workouts={workouts} />
-      </View>
     </ScrollView>
   );
 }

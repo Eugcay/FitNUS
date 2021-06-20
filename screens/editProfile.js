@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ScrollView
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { updateUser } from "../store/actions/user";
@@ -72,7 +73,7 @@ function EditProfile(props) {
   };
 
   const update = async (url) => {
-    await props.uploadChanges(
+    await props.uploadChanges({
       name,
       email,
       bio,
@@ -81,7 +82,7 @@ function EditProfile(props) {
       durationGoal,
       distanceGoal,
       workoutGoal
-    );
+    });
     props.navigation.goBack();
   };
 
@@ -127,7 +128,8 @@ function EditProfile(props) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView >
+      <View style={styles.container}>
       <TouchableOpacity onPress={setDP}>
         <Image
           source={
@@ -221,32 +223,19 @@ function EditProfile(props) {
       >
         <Text style={{ color: "#FFFFF0" }}>Save</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     uploadChanges: (
-      name,
-      email,
-      bio,
-      photoURL,
-      caloriesGoal,
-      durationGoal,
-      distanceGoal,
-      workoutGoal
+      user
     ) =>
       dispatch(
         updateUser(
-          name,
-          email,
-          bio,
-          photoURL,
-          caloriesGoal,
-          durationGoal,
-          distanceGoal,
-          workoutGoal
+          user
         )
       ),
   };
@@ -257,8 +246,8 @@ export default connect(null, mapDispatchToProps)(EditProfile);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     marginTop: 10,
+    alignItems: 'center'
   },
 
   label: {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "react-native";
+import { Button, Text } from "react-native";
 
 import { createStackNavigator } from "@react-navigation/stack";
 import StartWorkout from "../screens/startworkout";
@@ -18,6 +18,9 @@ const addWorkoutStack = ({ navigation , route}) => {
           name="Start Workout"
           component={StartWorkout}
           initialParams={{ template: route.params}}
+          options={{
+            headerRight: () => (<Text style={{color: "midnightblue", fontSize: 17, marginRight: 10}} onPress={() => navigation.navigate('Map')}>Map</Text>)
+          }}
         ></Stack.Screen>
         <Stack.Screen
           name="Add Exercises"

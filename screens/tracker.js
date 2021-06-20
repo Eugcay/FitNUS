@@ -42,15 +42,16 @@ const Tracker = (props) => {
     };
 
     const today = new Date();
+    const hist = props.history.map(doc => doc.data)
 
-    const tot = getStats(props.history);
+    const tot = getStats(hist);
     const week = getStats(
-      props.history.filter(
+      hist.filter(
         (doc) => Date.now() - doc.date.seconds * 1000 < 7 * 24 * 3600 * 1000
       )
     );
     const month = getStats(
-      props.history.filter(
+      hist.filter(
         (doc) =>
           today.getMonth() === new Date(doc.date.seconds * 1000).getMonth()
       )

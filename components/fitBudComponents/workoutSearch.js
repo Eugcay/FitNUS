@@ -31,9 +31,7 @@ const WorkoutSearch = ({ navigation, workouts }) => {
           style={styles.searchItem}
           onPress={() =>
             navigation.navigate("Workout Details", {
-              workout: item.data,
-              date: null,
-              duration: item.data.duration
+              workout: item.data
             })
           }
         >
@@ -44,9 +42,9 @@ const WorkoutSearch = ({ navigation, workouts }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Searchbar
-        placeholder="Workout name"
+        placeholder="Find a Workout"
         theme={{ roundness: 10 }}
         style={{ color: "#C0C0C0" }}
         onChangeText={(text) => onChangeSearch(text)}
@@ -57,7 +55,7 @@ const WorkoutSearch = ({ navigation, workouts }) => {
         keyExtractor={(item) => item.key}
         renderItem={renderItem}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -1,28 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import {
   Text,
   View,
   Image,
   StyleSheet,
   ScrollView,
-  touchableOpacity,
   FlatList,
+  Button,
 } from "react-native";
 import { timestampToDate } from "../helpers";
 import { ListItem } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Divider } from "react-native-elements";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { set } from "react-native-reanimated";
+import { connect } from "react-redux";
+import { removeWorkout } from "../store/actions/user";
 
-export default function WorkoutDetails({ route, navigation }) {
-  const duration = route.params.duration;
-  const workout = route.params.workout;
-  const date = route.params.date;
-  const achievements = route.params.achievements
-    ? route.params.achievements
+function WorkoutDetails(props) {
+  const duration = props.route.params.workout.duration;
+  const workout = props.route.params.workout;
+  const date = props.route.params.workout?.date
+    ? props.route.params.workout?.date
+    : null;
+  const achievements = props.route.params.workout.achievements
+    ? props.route.params.workout.achievements
     : 0;
+  const id = props.route.params?.id ? props.route.params?.id : "";
 
+  useLayoutEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () =>
+        date && <Button title="Delete" color="red" onPress={deleteWorkout} />,
+    });
+  }, []);
 
   const renderItem = ({ item }) => {
     return (
@@ -50,73 +60,111 @@ export default function WorkoutDetails({ route, navigation }) {
     );
   };
 
+  const deleteWorkout = () => {
+    props.delete(id);
+    props.navigation.goBack();
+  };
+
   return (
     <View style={styles.container}>
-      {workout?.imageURL && (
-        <Image source={{ uri: workout.imageURL }} style={styles.image} />
-      )}
-      <View style={styles.top}>
-        <Text style={styles.title}>
-          {workout.name ? workout.name : "Custom Workout"}
-        </Text>
-        <Text>{date ? timestampToDate(date.seconds) : ""}</Text>
-      </View>
-      <Text style={{paddingBottom: 10, fontWeight: 'bold'}}>Description</Text>
-      <Text style={styles.body}>
-        {workout?.description ? workout?.description : ""}
-      </Text>
-      <View style={styles.statbar}>
-        <View style={styles.statbox}>
-          <MaterialCommunityIcons name="timer" size={17} color="red" />
-          <Text>{date ? "" : "Expected"} Duration</Text>
-          <Text style={{ fontWeight: "bold" }}>{duration}</Text>
+      <ScrollView>
+        {workout.imageURL !== "" && (
+          <Image source={{ uri: workout.imageURL }} style={styles.image} />
+        )}
+        {date && <Button title="delete" onPress={deleteWorkout} />}
+        <View style={styles.top}>
+          <Text style={styles.title}>
+            {workout.name ? workout.name : "Custom Workout"}
+          </Text>
+          {date && <Text>{timestampToDate(date.seconds)}</Text>}
         </View>
-        <Divider orientation="vertical" />
-        <View style={styles.statbox}>
-          <MaterialCommunityIcons
-            name="format-list-bulleted-square"
-            size={20}
-            color="blue"
-          />
-          <Text>Sets</Text>
-          <Text>
-            {workout.exercises ? workout?.exercises
-              .map((exercise) => exercise.sets.length)
-              .reduce((x, y) => x + y, 0) : '0'}
+        <View>
+          <Text
+            style={[
+              { paddingTop: 5, marginHorizontal: 10, fontWeight: "bold" },
+            ]}
+          >
+            Description
+          </Text>
+          <Text style={styles.body}>
+            {workout?.description ? workout?.description : ""}
           </Text>
         </View>
-        <Divider orientation="vertical" />
-        <View style={styles.statbox}>
-          <MaterialCommunityIcons
-            name="emoticon-happy-outline"
-            size={20}
-            color="green"
-          />
-          <Text>Achievements</Text>
-          <Text>{achievements}</Text>
+        <View style={styles.statbar}>
+          <View style={styles.statbox}>
+            <MaterialCommunityIcons name="timer" size={17} color="red" />
+            <Text>{date ? "" : "Expected"} Duration</Text>
+            <Text style={{ fontWeight: "bold" }}>{duration}</Text>
+          </View>
+          <Divider orientation="vertical" />
+          <View style={styles.statbox}>
+            <MaterialCommunityIcons
+              name="format-list-bulleted-square"
+              size={20}
+              color="blue"
+            />
+            <Text>Sets</Text>
+            <Text>
+              {workout.exercises
+                ? workout?.exercises
+                    .map((exercise) => exercise.sets.length)
+                    .reduce((x, y) => x + y, 0)
+                : "0"}
+            </Text>
+          </View>
+          <Divider orientation="vertical" />
+          <View style={styles.statbox}>
+            <MaterialCommunityIcons
+              name="emoticon-happy-outline"
+              size={20}
+              color="green"
+            />
+            <Text>Achievements</Text>
+            <Text>{achievements}</Text>
+          </View>
         </View>
-      </View>
-      {workout.exercises && <FlatList
-        data={workout?.exercises}
-        keyExtractor={(item) => item.key}
-        renderItem={renderItem}
-      />}
-      {workout.exercises && <TouchableOpacity
-        onPress={() =>
-          navigation.navigate("Start Workout", {
-            exercises: workout?.exercises.map((exercise) => ({
-              ...exercise,
-              sets: exercise.sets.map((set) => ({ ...set, completed: false })),
-            })),
-          })
-        }
-        style={styles.start}
-      >
-        <Text>Begin Workout</Text>
-      </TouchableOpacity>}
+
+        {workout.exercises && (
+          <View style={{ marginBottom: 60 }}>
+            <FlatList
+              data={workout?.exercises}
+              keyExtractor={(item) => item.key}
+              renderItem={renderItem}
+              scrollEnabled={false}
+            />
+          </View>
+        )}
+      </ScrollView>
+      {workout.exercises && (
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation.navigate("Start Workout", {
+              workout: {
+                ...workout,
+                exercises: workout?.exercises.map((exercise) => ({
+                  ...exercise,
+                  sets: exercise.sets.map((set) => ({
+                    ...set,
+                    completed: false,
+                  })),
+                })),
+              },
+            })
+          }
+          style={styles.start}
+        >
+          <Text>Begin Workout</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
+
+const mapDispatchToProps = (dispatch) => ({
+  delete: (id) => dispatch(removeWorkout(id)),
+});
+
+export default connect(null, mapDispatchToProps)(WorkoutDetails);
 
 const styles = StyleSheet.create({
   container: {
@@ -125,7 +173,7 @@ const styles = StyleSheet.create({
 
   image: {
     width: "100%",
-    height: "45%",
+    height: "20%",
     minHeight: 250,
   },
 
@@ -141,7 +189,7 @@ const styles = StyleSheet.create({
   },
 
   body: {
-    marginTop: 10,
+    marginVertical: 5,
     marginHorizontal: 10,
     textAlign: "justify",
   },
@@ -179,8 +227,8 @@ const styles = StyleSheet.create({
 
   start: {
     backgroundColor: "lightgreen",
-    marginBottom: 10,
-    width: "94%",
+    marginVertical: 10,
+    width: "95%",
     alignSelf: "center",
     height: 40,
     alignItems: "center",

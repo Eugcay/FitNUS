@@ -18,7 +18,8 @@ const FitBudStack = ({ navigation }) => {
     <>
       <Stack.Navigator initialRouteName="">
         <Stack.Screen name="Fit Bud" component={FitBud} />
-        <Stack.Screen name="Workout Details" component={WorkoutDetails}></Stack.Screen> 
+        <Stack.Screen name="Workout Details" component={WorkoutDetails}></Stack.Screen>
+        <Stack.Screen name="Map" component={Map}></Stack.Screen> 
       </Stack.Navigator>
     </>
   );

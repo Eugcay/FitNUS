@@ -8,7 +8,7 @@ import {
 export default function Background({ children }) {
   return (
     <ImageBackground source={require("../assets/BG.png")} style={styles.image}>
-      <KeyboardAvoidingView behavior={Platform.Os == "ios" ? "padding" : "height" } style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? "padding" : 'height'} style={styles.container}>
         {children}
       </KeyboardAvoidingView>
     </ImageBackground>

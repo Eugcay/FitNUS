@@ -62,7 +62,6 @@ import Spinner from "../Spinner";
 const HistoryBar = ({ navigation, hist }) => {
   const history = hist;
 
-  console.log(history);
   const images = [
     require("../../assets/bg1.jpeg"),
     require("../../assets/bg2.jpeg"),
@@ -73,7 +72,7 @@ const HistoryBar = ({ navigation, hist }) => {
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate("Start Workout")}
-        style={[styles.item]}
+        style={[styles.item, {backgroundColor: setRandomColor()}]}
       >
         <Text>Create new workout</Text>
       </TouchableOpacity>
@@ -86,23 +85,22 @@ const HistoryBar = ({ navigation, hist }) => {
       <TouchableOpacity
         onPress={() =>
           navigation.navigate("Workout Details", {
-            workout: item.workout,
-            date: item.date,
-            duration: item.duration
+            workout: item.data, 
+            id: item.id
           })
         }
         style={{ borderRadius: 8 }}
       >
         <ImageBackground
-          source={item.workout?.imageURL ? { uri: item.workout.imageURL } : img}
+          source={item.data?.imageURL ? { uri: item.data.imageURL } : img}
           style={[styles.item]}
           imageStyle={{ borderRadius: 8 }}
-          blurRadius={item.workout?.imageURL ? 4 : 0}
+          blurRadius={item.data.imageURL ? 6 : 0}
         >
           <Text style={[styles.title, styles.text]}>
-            {item.workout?.name ? item.workout?.name : "Custom Workout"}
+            {item.data?.name ? item.data?.name : "Custom Workout"}
           </Text>
-          <Text style={styles.text}>{timestampToDate(item.date.seconds)}</Text>
+          <Text style={styles.text}>{timestampToDate(item.data.date.seconds)}</Text>
         </ImageBackground>
       </TouchableOpacity>
     );
@@ -133,6 +131,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: 10
   },
 
   title: {

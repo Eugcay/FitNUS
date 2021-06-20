@@ -1,4 +1,4 @@
-import { SET_USER, SET_USER_HISTORY, ADD_WORKOUT, CLEAR, UPDATE_USER } from "../actions/types"
+import { SET_USER, SET_USER_HISTORY, ADD_WORKOUT, CLEAR, UPDATE_USER, REMOVE_FROM_HISTORY } from "../actions/types"
 
 const initialState= {
     currentUser: null,
@@ -28,6 +28,14 @@ export const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 history: state.history.concat(action.data)
+            }
+        case REMOVE_FROM_HISTORY:
+            const data = [...state.history]
+            const index = data.indexOf(action.workout)
+            data.splice(index, 1)
+            return {
+                ...state,
+                history: data
             }
         case CLEAR: 
             return initialState

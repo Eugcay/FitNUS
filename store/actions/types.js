@@ -2,6 +2,7 @@ export const SET_USER = 'SET_USER'
 export const UPDATE_USER = 'UPDATE_USER'
 export const SET_USER_HISTORY = 'SET_USER_HISTORY'
 export const ADD_WORKOUT = 'ADD_WORKOUT'
+export const REMOVE_FROM_HISTORY = 'REMOVE_FROM_HISTORY'
 export const CLEAR = 'CLEAR'
 
 export const CLEAR_WORKOUT = 'CLEAR_WORKOUT'

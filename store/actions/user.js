@@ -6,6 +6,7 @@ import {
   UPDATE_USER,
   SET_USER_HISTORY,
   ADD_WORKOUT,
+  REMOVE_FROM_HISTORY,
   CLEAR,
 } from "./types";
 
@@ -26,26 +27,7 @@ export function getUser() {
   };
 }
 
-export function updateUser(
-  name,
-  email,
-  bio,
-  photoURL,
-  caloriesGoal,
-  durationGoal,
-  distanceGoal,
-  workoutGoal
-) {
-  const user = {
-    name,
-    email,
-    bio,
-    photoURL,
-    caloriesGoal,
-    durationGoal,
-    distanceGoal,
-    workoutGoal,
-  };
+export function updateUser(user) {
   return async (dispatch) => {
     await firebase
       .firestore()
@@ -58,74 +40,59 @@ export function updateUser(
 }
 
 export function getUserHistory() {
-  return (dispatch) => {
-    firebase
+  return async (dispatch) => {
+    await firebase
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .collection("history")
       .orderBy("date", "desc")
-      .get()
-      .then((snapshot) => {
+      .onSnapshot((snapshot) => {
         const hist = [];
         snapshot.docs.forEach((doc) => {
-          if (doc.data()?.workoutData) {
-            hist.push({
-              id: doc.id,
-              date: doc.data().date,
-              workout: doc.data()?.workoutData,
-              calories: doc.data().calories,
-              duration: doc.data().duration,
-            });
-          } else {
-            doc
-              .data()
-              .workoutRef.get()
-              .then((snap) =>
-                hist.push({
-                  id: doc.id,
-                  date: doc.data().date,
-                  workout: snap.data(),
-                  calories: doc.data().calories,
-                  duration: doc.data().duration,
-                })
-              );
-          }
+          hist.push({ id: doc.id, data: doc.data() });
         });
-        return hist;
-      })
-      .then((hist) => dispatch({ type: SET_USER_HISTORY, history: hist }));
+        dispatch({ type: SET_USER_HISTORY, history: hist });
+      });
   };
 }
 
-export function addToHistory(workoutId, calories, duration, workoutData) {
+export function addToHistory(workout) {
   const date = firebase.firestore.FieldValue.serverTimestamp();
   return async (dispatch) => {
-    const workoutRef = `/Workout/${workoutId}`;
     await firebase
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .collection("history")
       .add({
+        ...workout,
         date,
-        workoutRef,
-        calories,
-        duration,
-        workoutData,
       });
 
     dispatch({
       type: ADD_WORKOUT,
       data: {
+        ...workout,
         date,
-        workoutData,
-        calories,
-        duration,
       },
     });
   };
 }
+
+export const removeWorkout = (id) => {
+  return (dispatch) => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("history")
+      .doc(id)
+      .delete()
+      .then(dispatch({ type: REMOVE_FROM_HISTORY, workout: id }));
+    //
+  };
+};
 
 export const clearData = () => {
   return (dispatch) => {

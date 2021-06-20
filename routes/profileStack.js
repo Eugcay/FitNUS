@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "react-native";
+import { Button, Text } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { logout } from "../Api/authApi";
 
@@ -13,7 +13,7 @@ const ProfileStack = () => {
       <Stack.Navigator initialRouteName="Profile">
         <Stack.Screen name="Profile" component={Profile} options={{
           headerRight: () => (
-            <Button onPress={logout} title='Logout' color='red'/>
+            <Text onPress={logout} style={{color: 'red', marginRight: 10, fontSize: 16, alignSelf: 'center'}}>Logout</Text>
           ) 
         }}/>
         <Stack.Screen name="Edit Profile" component={EditProfile} />

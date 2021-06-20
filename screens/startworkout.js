@@ -9,6 +9,7 @@ import {
   Button,
   FlatList,
   Alert,
+  Platform,
 } from "react-native";
 import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
@@ -19,11 +20,17 @@ import { Stopwatch } from "react-native-stopwatch-timer";
 import * as Location from "expo-location";
 
 const StartWorkout = (props) => {
+  const [name, setName] = useState("Custom Workout");
+  const [description, setDescription] = useState(
+    `Custom Workout on ${new Date(Date.now())}`
+  );
+  const [imageURL, setImageURL] = useState("");
   const [exercises, setExercises] = useState([]);
   const [replaced, setReplaced] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [pulls, setPulls] = useState(1);
   const [workoutStatus, setStatus] = useState("Not Started");
+  const achievements = [];
 
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
@@ -68,18 +75,6 @@ const StartWorkout = (props) => {
         };
       }
     }
-  }, []);
-
-  useLayoutEffect(() => {
-    props.navigation.setOptions({
-      headerRight: () => (
-        <Button
-          onPress={() => console.log(exercises)}
-          title="FINISH"
-          color="green"
-        />
-      ),
-    });
   }, []);
 
   const clearWorkout = () => {
@@ -128,7 +123,16 @@ const StartWorkout = (props) => {
 
   const finishWorkout = () => {
     if (workoutComplete()) {
-      props.finish("", 100, 30, { exercises });
+      const workout = {
+        name,
+        description,
+        duration: 50,
+        calories: 100,
+        imageURL,
+        exercises,
+        achievements,
+      };
+      props.finish(workout);
       props.navigation.navigate("Main");
     } else {
       Alert.alert("Workout incomplete!");
@@ -202,10 +206,14 @@ const StartWorkout = (props) => {
   };
 
   useEffect(() => {
-    if (props.route.params?.template) {
-      console.log(props.route.params?.template.exercises);
-      setExercises(props.route.params?.template.exercises)
-      setPulls(pulls + 1)
+    if (props.route.params?.template && pulls === 1) {
+      const template = props.route.params?.template.workout;
+      console.log(template);
+      setExercises(template.exercises);
+      setName(template.name);
+      setDescription(template.description);
+      setImageURL(template.imageURL);
+      setPulls(pulls + 1);
     } else if (props.route.params?.exercise && updating) {
       updateWorkout(props.route.params?.exercise);
     } else if (props.route.params?.replace) {
@@ -227,16 +235,13 @@ const StartWorkout = (props) => {
     props.route.params?.exercises,
     props.route.params?.exercise,
     props.route.params?.replace,
-    props.route.params?.template
+    props.route.params?.template,
   ]);
 
   return (
     <View style={{ flex: 1 }}>
-      <HeaderTop />
-      <View>
-        <TouchableOpacity onPress={() => props.navigation.navigate("Map")}>
-          <Text>Map</Text>
-        </TouchableOpacity>
+      {/* <HeaderTop /> */}
+      <View style={{ alignItems: "center" }}>
         {workoutStatus == "Not Started" ? (
           <View>
             <Stopwatch
@@ -367,31 +372,28 @@ const StartWorkout = (props) => {
             />
           </View>
         )}
-          <Button title='finish' color='green' onPress={() => finishWorkout()}/>
-        <FlatList
-          data={exercises}
-          keyExtractor={(item) => item.key}
-          renderItem={renderItem}
-          style={{ marginTop: 15, height: "63%" }}
-          extraData={exercises}
-          // ItemSeparatorComponent={() => {
-          //   return <Divider />;
-          // }}
-        />
+        <Button title="finish" color="green" onPress={() => finishWorkout()} />
+        {exercises.length === 0 && (
+          <Text style={{ marginVertical: "60%", fontSize: 24 }}>
+            Lets get Started!
+          </Text>
+        )}
+        <View>
+          <FlatList
+            data={exercises}
+            keyExtractor={(item) => item.key}
+            renderItem={renderItem}
+            style={{ marginTop: 15, height: "63%" }}
+            extraData={exercises}
+
+            // ItemSeparatorComponent={() => {
+            //   return <Divider />;
+            // }}
+          />
+        </View>
       </View>
-    
-      <View
-        style={{
-          flex: 1,
-          position: "absolute",
-          bottom: 40,
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          alignSelf: "center",
-          height: "5%",
-        }}
-      >
+
+      <View style={styles.bottombar}>
         <TouchableOpacity
           style={[styles.bottomButton, { backgroundColor: "#00BFFF" }]}
           onPress={() => props.navigation.navigate("Add Exercises")}
@@ -410,8 +412,7 @@ const StartWorkout = (props) => {
 };
 
 const maptDispatchToProps = (dispatch) => ({
-  finish: (id, calories, duration, workoutData) =>
-    dispatch(addToHistory(id, calories, duration, workoutData)),
+  finish: (workout) => dispatch(addToHistory(workout)),
 });
 
 export default connect(null, maptDispatchToProps)(StartWorkout);
@@ -421,12 +422,6 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: "contain",
     alignItems: "center",
-  },
-
-  bottom: {
-    width: "100%",
-    flex: 1,
-    justifyContent: "flex-end",
   },
 
   caption: {
@@ -479,11 +474,22 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 5,
   },
+
+  bottombar: {
+    flex: 1,
+    position: "absolute",
+    bottom: Platform.OS === 'ios' ? 36 : 15,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    height: "5%",
+  },
 });
 
 const options = {
   container: {
-    backgroundColor: "#FF0000",
+    backgroundColor: "darkblue",
     padding: 5,
     borderRadius: 5,
     width: 200,
