@@ -128,7 +128,8 @@ const StartWorkout = (props) => {
 
   const finishWorkout = () => {
     if (workoutComplete()) {
-      props.finish("", 100, 30, { exercises });
+      console.log(exercises);
+      props.finish("", 100, 30, exercises);
       props.navigation.navigate("Main");
     } else {
       Alert.alert("Workout incomplete!");
@@ -280,6 +281,7 @@ const StartWorkout = (props) => {
               onPress={() => {
                 setStatus("Stopped");
                 setIsStopwatchStart(false);
+                finishWorkout();
               }}
             >
               <MaterialCommunityIcons
