@@ -40,42 +40,57 @@ const StartWorkout = (props) => {
   //Track location stuff => Calcdistance, Watch poition, Polyline
   const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setNewDistance] = useState(0);
-  const [LocList, setLocList] = useState(0);
+  const [locList, setLocList] = useState([]);
+  const [remove, setRemove] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const calcDistance = (prevLatLng, newLatLng) => {
     return haversine(prevLatLng, newLatLng) || 0;
   };
 
   //OnPress, start tracking:
-  
-
-  useEffect(() => {
-    console.log("here");
-    if (workoutStatus != "Not Started") {
-        console.log("hi");
-        async () => {
-          let { status } = await Location.requestForegroundPermissionsAsync();
-          if (status !== "granted") {
-            console.log("denieeed");
-          }
-          let locations = await Location.watchPositionAsync(
-            {
-              accuracy: Location.Accuracy.Highest,
-              timeInterval: 100,
-              distanceInterval: 1,
-            },
-            (loc) => {
-              setNewDistance(
-                distance + calcDistance(currentLocation, loc.coords)
-              );
-              setCurrentLocation(loc.coords);
-            }
-          );
-          console.log(locations);
-          setLocList(locations);
-        };
+  const start = () => {
+    setStatus("Continue");
+    console.log("Hello");
+    async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status == "granted") {
+        let { status2 } = await Location.requestBackgroundPermissionsAsync();
+        if (status2 !== "granted") {
+          setErrorMsg("Permission to access background location was denied");
+          return;
+        }
+      } else {
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          return;
+        }
       }
-  }, []);
+      //potential problems here
+      let loc = await Location.getCurrentPositionAsync({});
+      setCurrentLocation({latitude: loc.coords.latitude, longitude: loc.coords.longitude});
+      setLocList(locList.concat([{latitude: loc.coords.latitude, longitude: loc.coords.longitude}]));
+
+      let locations = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 100,
+          distanceInterval: 1,
+        },
+        (loc) => { //currentLocation could be null for the first one
+          const latlon = {latitude: loc.coords.latitude, longitude: loc.coords.longitude}
+          setNewDistance(distance + calcDistance(currentLocation, latlon));
+          setCurrentLocation(latlon);
+          setLocList(locList.concat([latlon]));
+        }
+      );
+      setRemove(locations);
+    };
+  };
+
+  const stop = () => {
+    remove;
+  }
 
   const clearWorkout = () => {
     setExercises([]);
@@ -120,6 +135,7 @@ const StartWorkout = (props) => {
 
   const finishWorkout = () => {
     if (workoutComplete()) {
+      stop();
       const workout = {
         name,
         description,
@@ -252,7 +268,7 @@ const StartWorkout = (props) => {
               <TouchableOpacity
                 style={[styles.button, { backgroundColor: "#00BFFF" }]}
                 onPress={() => {
-                  setStatus("Continue");
+                  start();
                   setIsStopwatchStart(true);
                 }}
               >
@@ -275,6 +291,7 @@ const StartWorkout = (props) => {
                 onPress={() => {
                   setStatus("Paused");
                   setIsStopwatchStart(false);
+                  console.log(currentLocation);
                 }}
               >
                 <Text>Pause</Text>
