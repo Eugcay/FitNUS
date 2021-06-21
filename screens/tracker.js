@@ -14,7 +14,7 @@ import DayPicker from "../components/trackerComponents/dayPicker";
 import StatBar from "../components/trackerComponents/statBar";
 import Donut from "../components/Donut";
 import { connect } from "react-redux";
-import Dropdown from "react-native-material-dropdown/src/components/dropdown";
+//import Dropdown from "react-native-material-dropdown/src/components/dropdown";
 
 const Tracker = (props) => {
   const [user, setUser] = useState(null);
@@ -159,11 +159,11 @@ const Tracker = (props) => {
         {statsType === "monthly" && <Calendar />}
       </View>
       <View style={styles.dropdown}>
-        <Dropdown
+        {/* <Dropdown
           label="select"
           data={data}
           onChangeText={(value) => setDonut(value)}
-        />
+        /> */}
       </View>
       <View style={styles.statchart}>
         {donut === "calories" && (

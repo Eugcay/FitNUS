@@ -4,6 +4,7 @@ import {
   View,
   Text,
   ImageBackground,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   Button,
@@ -45,17 +46,17 @@ const StartWorkout = (props) => {
     return haversine(prevLatLng, newLatLng) || 0;
   };
 
+  //OnPress, start tracking:
+  
+
   useEffect(() => {
     console.log("here");
     if (workoutStatus != "Not Started") {
-      console.log("Started");
-      if (workoutStatus != "Stopped") {
-      } else {
         console.log("hi");
-        _getLocationAsync = async () => {
+        async () => {
           let { status } = await Location.requestForegroundPermissionsAsync();
           if (status !== "granted") {
-            console.log("debieeed");
+            console.log("denieeed");
           }
           let locations = await Location.watchPositionAsync(
             {
@@ -74,12 +75,10 @@ const StartWorkout = (props) => {
           setLocList(locations);
         };
       }
-    }
   }, []);
 
   const clearWorkout = () => {
     setExercises([]);
-    console.log(exercises);
   };
 
   const deleteItem = (item) => {
@@ -87,7 +86,6 @@ const StartWorkout = (props) => {
     const data = [...exercises];
     data.splice(index, 1);
     setExercises(data);
-    console.log(exercises);
   };
 
   const replaceItem = (item) => {
@@ -110,7 +108,6 @@ const StartWorkout = (props) => {
     const data = [...exercises];
     data.splice(index, 1, item);
     setExercises(data);
-    console.log(exercises[index]);
   };
 
   const workoutComplete = () => {
@@ -208,7 +205,6 @@ const StartWorkout = (props) => {
   useEffect(() => {
     if (props.route.params?.template && pulls === 1) {
       const template = props.route.params?.template.workout;
-      console.log(template);
       setExercises(template.exercises);
       setName(template.name);
       setDescription(template.description);
@@ -228,7 +224,6 @@ const StartWorkout = (props) => {
         )
       );
       setPulls(pulls + 1);
-      console.log(props.route.params?.exercises);
     }
     setUpdating(false);
   }, [
@@ -240,174 +235,92 @@ const StartWorkout = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* <HeaderTop /> */}
-      <View style={{ alignItems: "center" }}>
-        {workoutStatus == "Not Started" ? (
-          <View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={(time) => {}}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Continue");
-                setIsStopwatchStart(true);
-              }}
-            >
-              <AntDesign name="play" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
-        ) : workoutStatus == "Continue" ? (
-          <View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={(time) => {}}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Paused");
-                setIsStopwatchStart(false);
-              }}
-            >
-              <AntDesign name="pausecircle" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Stopped");
-                setIsStopwatchStart(false);
-                finishWorkout();
-              }}
-            >
-              <MaterialCommunityIcons
-                name="stop-circle"
-                size={24}
-                color="black"
+      <ScrollView>
+        <HeaderTop />
+        <View style={{ alignItems: "center" }}>
+          {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
+            <View>
+              <Stopwatch
+                start={isStopwatchStart}
+                //To start
+                reset={false}
+                //To reset
+                options={options}
+                //options for the styling
+                getTime={(time) => {}}
               />
-            </TouchableOpacity>
-          </View>
-        ) : workoutStatus == "Paused" ? (
-          <View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={() => {}}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Paused");
-                setIsStopwatchStart(false);
-              }}
-            >
-              <AntDesign name="pausecircle" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Stopped");
-                setIsStopwatchStart(false);
-              }}
-            >
-              <MaterialCommunityIcons
-                name="stop-circle"
-                size={24}
-                color="black"
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: "#00BFFF" }]}
+                onPress={() => {
+                  setStatus("Continue");
+                  setIsStopwatchStart(true);
+                }}
+              >
+                <Text>Start</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View>
+              <Stopwatch
+                start={isStopwatchStart}
+                //To start
+                reset={false}
+                //To reset
+                options={options}
+                //options for the styling
+                getTime={(time) => {}}
               />
-            </TouchableOpacity>
-          </View>
-        ) : workoutStatus == "Paused" ? (
-          <View>
-            <Stopwatch
-              msecs
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={(time) => {}}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Continue");
-                setIsStopwatchStart(true);
-              }}
-            >
-              <AntDesign name="play" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Stopped");
-                setIsStopwatchStart(false);
-              }}
-            >
-              <MaterialCommunityIcons
-                name="stop-circle"
-                size={24}
-                color="black"
-              />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={(time) => {}}
-            />
-          </View>
-        )}
-        <Button title="finish" color="green" onPress={() => finishWorkout()} />
-        {exercises.length === 0 && (
-          <Text style={{ marginVertical: "60%", fontSize: 24 }}>
-            Lets get Started!
-          </Text>
-        )}
-        <View>
-          <FlatList
-            data={exercises}
-            keyExtractor={(item) => item.key}
-            renderItem={renderItem}
-            style={{ marginTop: 15, height: "63%" }}
-            extraData={exercises}
-
-            // ItemSeparatorComponent={() => {
-            //   return <Divider />;
-            // }}
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: "#00BFFF" }]}
+                onPress={() => {
+                  setStatus("Paused");
+                  setIsStopwatchStart(false);
+                }}
+              >
+                <Text>Pause</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          <Button
+            title="finish"
+            color="green"
+            onPress={() => finishWorkout()}
           />
-        </View>
-      </View>
+          {exercises.length === 0 && (
+            <Text style={{ marginVertical: "60%", fontSize: 24 }}>
+              Lets get Started!
+            </Text>
+          )}
+          <View>
+            <FlatList
+              data={exercises}
+              keyExtractor={(item) => item.key}
+              renderItem={renderItem}
+              style={{ marginTop: 15, height: "63%" }}
+              extraData={exercises}
 
-      <View style={styles.bottombar}>
-        <TouchableOpacity
-          style={[styles.bottomButton, { backgroundColor: "#00BFFF" }]}
-          onPress={() => props.navigation.navigate("Add Exercises")}
-        >
-          <Text>Add exercises</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.bottomButton, { backgroundColor: "#F08080" }]}
-          onPress={clearWorkout}
-        >
-          <Text>Clear Workout</Text>
-        </TouchableOpacity>
-      </View>
+              // ItemSeparatorComponent={() => {
+              //   return <Divider />;
+              // }}
+            />
+          </View>
+        </View>
+
+        <View style={styles.bottombar}>
+          <TouchableOpacity
+            style={[styles.bottomButton, { backgroundColor: "#00BFFF" }]}
+            onPress={() => props.navigation.navigate("Add Exercises")}
+          >
+            <Text>Add exercises</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.bottomButton, { backgroundColor: "#F08080" }]}
+            onPress={clearWorkout}
+          >
+            <Text>Clear Workout</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -423,6 +336,15 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: "contain",
     alignItems: "center",
+  },
+
+  button: {
+    marginHorizontal: 8,
+    width: "45%",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "20%",
+    borderRadius: 5,
   },
 
   caption: {
@@ -479,7 +401,7 @@ const styles = StyleSheet.create({
   bottombar: {
     flex: 1,
     position: "absolute",
-    bottom: Platform.OS === 'ios' ? 36 : 15,
+    bottom: Platform.OS === "ios" ? 36 : 15,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
