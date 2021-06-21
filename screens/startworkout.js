@@ -285,6 +285,7 @@ const StartWorkout = (props) => {
               onPress={() => {
                 setStatus("Stopped");
                 setIsStopwatchStart(false);
+                finishWorkout();
               }}
             >
               <MaterialCommunityIcons

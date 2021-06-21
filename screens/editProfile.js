@@ -77,7 +77,7 @@ function EditProfile(props) {
       name,
       email,
       bio,
-      url,
+      photoURL: url,
       calGoal,
       durationGoal,
       distanceGoal,
