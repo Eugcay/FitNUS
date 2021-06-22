@@ -55,10 +55,8 @@ export default HeaderTop;
 
 const styles = StyleSheet.create({
   imageheader: {
-    width: Dimensions.get("window").width,
-    height: 180,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    width: "100%",
+    minHeight: 250,
     overflow: "hidden",
   },
   heart: {

@@ -4,6 +4,7 @@ import {
   View,
   Text,
   ImageBackground,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   Button,
@@ -39,47 +40,60 @@ const StartWorkout = (props) => {
   //Track location stuff => Calcdistance, Watch poition, Polyline
   const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setNewDistance] = useState(0);
-  const [LocList, setLocList] = useState(0);
+  const [locList, setLocList] = useState([]);
+  const [remove, setRemove] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const calcDistance = (prevLatLng, newLatLng) => {
     return haversine(prevLatLng, newLatLng) || 0;
   };
 
-  useEffect(() => {
-    console.log("here");
-    if (workoutStatus != "Not Started") {
-      console.log("Started");
-      if (workoutStatus != "Stopped") {
+  //OnPress, start tracking:
+  const start = () => {
+    setStatus("Continue");
+    console.log("Hello");
+    async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status == "granted") {
+        let { status2 } = await Location.requestBackgroundPermissionsAsync();
+        if (status2 !== "granted") {
+          setErrorMsg("Permission to access background location was denied");
+          return;
+        }
       } else {
-        console.log("hi");
-        _getLocationAsync = async () => {
-          let { status } = await Location.requestForegroundPermissionsAsync();
-          if (status !== "granted") {
-            console.log("debieeed");
-          }
-          let locations = await Location.watchPositionAsync(
-            {
-              accuracy: Location.Accuracy.Highest,
-              timeInterval: 100,
-              distanceInterval: 1,
-            },
-            (loc) => {
-              setNewDistance(
-                distance + calcDistance(currentLocation, loc.coords)
-              );
-              setCurrentLocation(loc.coords);
-            }
-          );
-          console.log(locations);
-          setLocList(locations);
-        };
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          return;
+        }
       }
-    }
-  }, []);
+      //potential problems here
+      let loc = await Location.getCurrentPositionAsync({});
+      setCurrentLocation({latitude: loc.coords.latitude, longitude: loc.coords.longitude});
+      setLocList(locList.concat([{latitude: loc.coords.latitude, longitude: loc.coords.longitude}]));
+
+      let locations = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 100,
+          distanceInterval: 1,
+        },
+        (loc) => { //currentLocation could be null for the first one
+          const latlon = {latitude: loc.coords.latitude, longitude: loc.coords.longitude}
+          setNewDistance(distance + calcDistance(currentLocation, latlon));
+          setCurrentLocation(latlon);
+          setLocList(locList.concat([latlon]));
+        }
+      );
+      setRemove(locations);
+    };
+  };
+
+  const stop = () => {
+    remove;
+  }
 
   const clearWorkout = () => {
     setExercises([]);
-    console.log(exercises);
   };
 
   const deleteItem = (item) => {
@@ -87,7 +101,6 @@ const StartWorkout = (props) => {
     const data = [...exercises];
     data.splice(index, 1);
     setExercises(data);
-    console.log(exercises);
   };
 
   const replaceItem = (item) => {
@@ -110,7 +123,6 @@ const StartWorkout = (props) => {
     const data = [...exercises];
     data.splice(index, 1, item);
     setExercises(data);
-    console.log(exercises[index]);
   };
 
   const workoutComplete = () => {
@@ -123,6 +135,7 @@ const StartWorkout = (props) => {
 
   const finishWorkout = () => {
     if (workoutComplete()) {
+      stop();
       const workout = {
         name,
         description,
@@ -208,7 +221,6 @@ const StartWorkout = (props) => {
   useEffect(() => {
     if (props.route.params?.template && pulls === 1) {
       const template = props.route.params?.template.workout;
-      console.log(template);
       setExercises(template.exercises);
       setName(template.name);
       setDescription(template.description);
@@ -228,7 +240,6 @@ const StartWorkout = (props) => {
         )
       );
       setPulls(pulls + 1);
-      console.log(props.route.params?.exercises);
     }
     setUpdating(false);
   }, [
@@ -240,174 +251,93 @@ const StartWorkout = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* <HeaderTop /> */}
-      <View style={{ alignItems: "center" }}>
-        {workoutStatus == "Not Started" ? (
-          <View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={(time) => {}}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Continue");
-                setIsStopwatchStart(true);
-              }}
-            >
-              <AntDesign name="play" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
-        ) : workoutStatus == "Continue" ? (
-          <View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={(time) => {}}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Paused");
-                setIsStopwatchStart(false);
-              }}
-            >
-              <AntDesign name="pausecircle" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Stopped");
-                setIsStopwatchStart(false);
-                finishWorkout();
-              }}
-            >
-              <MaterialCommunityIcons
-                name="stop-circle"
-                size={24}
-                color="black"
+      <ScrollView>
+        <HeaderTop />
+        <View style={{ alignItems: "center" }}>
+          {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
+            <View>
+              <Stopwatch
+                start={isStopwatchStart}
+                //To start
+                reset={false}
+                //To reset
+                options={options}
+                //options for the styling
+                getTime={(time) => {}}
               />
-            </TouchableOpacity>
-          </View>
-        ) : workoutStatus == "Paused" ? (
-          <View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={() => {}}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Paused");
-                setIsStopwatchStart(false);
-              }}
-            >
-              <AntDesign name="pausecircle" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Stopped");
-                setIsStopwatchStart(false);
-              }}
-            >
-              <MaterialCommunityIcons
-                name="stop-circle"
-                size={24}
-                color="black"
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: "#00BFFF" }]}
+                onPress={() => {
+                  start();
+                  setIsStopwatchStart(true);
+                }}
+              >
+                <Text>Start</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View>
+              <Stopwatch
+                start={isStopwatchStart}
+                //To start
+                reset={false}
+                //To reset
+                options={options}
+                //options for the styling
+                getTime={(time) => {}}
               />
-            </TouchableOpacity>
-          </View>
-        ) : workoutStatus == "Paused" ? (
-          <View>
-            <Stopwatch
-              msecs
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={(time) => {}}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Continue");
-                setIsStopwatchStart(true);
-              }}
-            >
-              <AntDesign name="play" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setStatus("Stopped");
-                setIsStopwatchStart(false);
-              }}
-            >
-              <MaterialCommunityIcons
-                name="stop-circle"
-                size={24}
-                color="black"
-              />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getTime={(time) => {}}
-            />
-          </View>
-        )}
-        <Button title="finish" color="green" onPress={() => finishWorkout()} />
-        {exercises.length === 0 && (
-          <Text style={{ marginVertical: "60%", fontSize: 24 }}>
-            Lets get Started!
-          </Text>
-        )}
-        <View>
-          <FlatList
-            data={exercises}
-            keyExtractor={(item) => item.key}
-            renderItem={renderItem}
-            style={{ marginTop: 15, height: "63%" }}
-            extraData={exercises}
-
-            // ItemSeparatorComponent={() => {
-            //   return <Divider />;
-            // }}
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: "#00BFFF" }]}
+                onPress={() => {
+                  setStatus("Paused");
+                  setIsStopwatchStart(false);
+                  console.log(currentLocation);
+                }}
+              >
+                <Text>Pause</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          <Button
+            title="finish"
+            color="green"
+            onPress={() => finishWorkout()}
           />
-        </View>
-      </View>
+          {exercises.length === 0 && (
+            <Text style={{ marginVertical: "60%", fontSize: 24 }}>
+              Lets get Started!
+            </Text>
+          )}
+          <View>
+            <FlatList
+              data={exercises}
+              keyExtractor={(item) => item.key}
+              renderItem={renderItem}
+              style={{ marginTop: 15, height: "63%" }}
+              extraData={exercises}
 
-      <View style={styles.bottombar}>
-        <TouchableOpacity
-          style={[styles.bottomButton, { backgroundColor: "#00BFFF" }]}
-          onPress={() => props.navigation.navigate("Add Exercises")}
-        >
-          <Text>Add exercises</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.bottomButton, { backgroundColor: "#F08080" }]}
-          onPress={clearWorkout}
-        >
-          <Text>Clear Workout</Text>
-        </TouchableOpacity>
-      </View>
+              // ItemSeparatorComponent={() => {
+              //   return <Divider />;
+              // }}
+            />
+          </View>
+        </View>
+
+        <View style={styles.bottombar}>
+          <TouchableOpacity
+            style={[styles.bottomButton, { backgroundColor: "#00BFFF" }]}
+            onPress={() => props.navigation.navigate("Add Exercises")}
+          >
+            <Text>Add exercises</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.bottomButton, { backgroundColor: "#F08080" }]}
+            onPress={clearWorkout}
+          >
+            <Text>Clear Workout</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -423,6 +353,15 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: "contain",
     alignItems: "center",
+  },
+
+  button: {
+    marginHorizontal: 8,
+    width: "45%",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "20%",
+    borderRadius: 5,
   },
 
   caption: {
@@ -479,7 +418,7 @@ const styles = StyleSheet.create({
   bottombar: {
     flex: 1,
     position: "absolute",
-    bottom: Platform.OS === 'ios' ? 36 : 15,
+    bottom: Platform.OS === "ios" ? 36 : 15,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
