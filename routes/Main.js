@@ -12,6 +12,7 @@ import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";
 
 import { clearData, getUser, getUserHistory } from "../store/actions/user";
+import { getUserStats } from "../store/actions/statistics";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -20,6 +21,7 @@ export const Main = (props) => {
     props.clearData();
     props.getUser();
     props.getUserHistory();
+    props.getUserStats();
   }, []);
 
   return (
@@ -83,6 +85,9 @@ const mapStateToProps = (store) => ({
 });
 
 const mapDispatchProps = (dispatch) =>
-  bindActionCreators({ getUser, getUserHistory, clearData }, dispatch);
+  bindActionCreators(
+    { getUser, getUserHistory, clearData, getUserStats },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchProps)(Main);

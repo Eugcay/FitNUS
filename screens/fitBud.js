@@ -19,7 +19,6 @@ import { Divider } from "react-native-elements";
   useEffect(() => {
     setHistory(props.history)
     setUser(props.user)
-    console.log(history)
   }, [props.user, props.history]);
 
   // get workouts

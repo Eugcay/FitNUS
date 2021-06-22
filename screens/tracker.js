@@ -7,70 +7,75 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { WeekCalendar, Calendar } from "react-native-calendars";
-
+import { WeekCalendar, Calendar, Agenda } from "react-native-calendars";
+import Dropdown from "react-native-material-dropdown/src/components/dropdown";
 import Greeting from "../components/trackerComponents/greeting";
-import DayPicker from "../components/trackerComponents/dayPicker";
-import StatBar from "../components/trackerComponents/statBar";
 import Donut from "../components/Donut";
 import { connect } from "react-redux";
-import Dropdown from "react-native-material-dropdown/src/components/dropdown";
+import {
+  getCurrMonth,
+  getCurrWeek,
+  getStats,
+  changeMonth,
+  changeWeek,
+} from "../helpers";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import moment from "moment";
 
 const Tracker = (props) => {
   const [user, setUser] = useState(null);
-  const [day, setDay] = useState();
+  const [month, setMonth] = useState(getCurrMonth());
+  const [week, setWeek] = useState(getCurrWeek());
   const [total, setTotal] = useState({});
   const [weekly, setWeekly] = useState({});
   const [monthly, setMonthly] = useState({});
   const [goals, setGoals] = useState({});
 
   useEffect(() => {
-    const getStats = (arr) => {
-      const workouts = arr.length
-      const temp = arr.reduce(
-        (x, y) => ({
-          calories: x.calories + y.calories,
-          duration: x.duration + y.duration,
-        }),
-        {
-          calories: 0,
-          duration: 0,
-        }
-      );
-      temp.workouts = workouts
-      return temp
-    };
-
-    const today = new Date();
-    const hist = props.history.map(doc => doc.data)
-
-    const tot = getStats(hist);
-    const week = getStats(
-      hist.filter(
-        (doc) => Date.now() - doc.date.seconds * 1000 < 7 * 24 * 3600 * 1000
-      )
+    const hist = props.history;
+    const tot = props.stats;
+    const w = getStats(
+      hist
+        .map((doc) => doc.data)
+        .filter(
+          (doc) =>
+            doc.date.seconds * 1000 <= Date.parse(week.end) &&
+            doc.date.seconds * 1000 >= Date.parse(week.start)
+        )
     );
-    const month = getStats(
-      hist.filter(
-        (doc) =>
-          today.getMonth() === new Date(doc.date.seconds * 1000).getMonth()
-      )
+    const m = getStats(
+      hist
+        .map((doc) => doc.data)
+        .filter(
+          (doc) =>
+            doc.date.seconds * 1000 <= Date.parse(month.end) &&
+            doc.date.seconds * 1000 >= Date.parse(month.start)
+        )
     );
 
     setUser(props.currentUser);
     setTotal(tot);
-    setWeekly(week);
-    setMonthly(month);
+    setWeekly(w);
+    setMonthly(m);
 
     setGoals({
-      calories: props.currentUser.caloriesGoal,
+      calories: props.currentUser.calGoal,
       duration: props.currentUser.durationGoal,
       distance: props.currentUser.distanceGoal,
       workouts: props.currentUser.workoutGoal,
     });
 
-    console.log(month);
-  }, [props.history, props.currentUser]);
+    console.log(m);
+  }, [props.history, props.currentUser, props.stats]);
+
+  const toggleStats = (direction) => {
+    if (statsType === 'weekly') {
+      if (new Date().getMonth() >= week.start.getMonth() - 1 && new Date().getMonth() <= week.start.getMonth() + 1 )
+      setWeek(changeWeek(week, direction))
+    } else {
+      setMonth(changeMonth(month, direction))
+    }
+  }
 
   const calories = {
     val: 1405,
@@ -154,16 +159,26 @@ const Tracker = (props) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.daypicker}>
-        {statsType === "weekly" && <WeekCalendar />}
-        {statsType === "monthly" && <Calendar />}
-      </View>
+      {/* <View style={styles.daypicker}>
+        {statsType === "weekly" && <WeekCalendar onDayPress={day => console.log(day)}/>}
+        {statsType === "monthly" && <Calendar  onMonthChange={(month) => console.log(month)} />}
+      </View> */}
       <View style={styles.dropdown}>
-        <Dropdown
+        {/* <Dropdown
+          value={donut}
           label="select"
           data={data}
           onChangeText={(value) => setDonut(value)}
-        />
+        /> */}
+      </View>
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+        <TouchableOpacity onPress={() => toggleStats('back')}>
+          <MaterialCommunityIcons name="chevron-left" size={20} color="gray" />
+        </TouchableOpacity>
+        <Text style={{fontSize: 20, marginHorizontal: 10}}>{statsType === 'weekly' ? `${moment(week.start).format('DD MMM')} - ${moment(week.end).format('DD MMM')}` : moment(month.start).format("MMMM YY")}</Text>
+        <TouchableOpacity onPress={() => toggleStats('next')}>
+          <MaterialCommunityIcons name="chevron-right" size={20} color="gray" />
+        </TouchableOpacity>
       </View>
       <View style={styles.statchart}>
         {donut === "calories" && (
@@ -199,9 +214,7 @@ const Tracker = (props) => {
           />
         )}
       </View>
-      <View style={styles.statbar}>
-        <StatBar />
-      </View>
+      <View style={styles.statbar}>{/* <StatBar /> */}</View>
     </ScrollView>
   );
 };
@@ -265,30 +278,12 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   history: store.user.history,
   currentUser: store.user.currentUser,
+  stats: store.stats.statistics,
 });
 
+// const mapDispatchToProps = (dispatch) => ({
+//   statsBetween: (start, end, period) =>
+//     dispatch(getStatsByPeriod(start, end, period)),
+// });
+
 export default connect(mapStateToProps, null)(Tracker);
-
-// export default function Tracker({ navigation }) {
-//   const [calories, setCalories] = useState(0);
-//   const [loading, setLoading] = useState(true)
-
-//   useEffect(() => {
-//     const getCalories = async () => {
-//         await getUserHistory().onSnapshot(snapshot => {
-//             const cal = snapshot.data().calories ? snapshot.data().calories : 0
-//             setCalories(cal)
-//             console.log(calories)
-//         })
-//         setLoading(false)
-//     }
-
-//     getCalories()
-//   }, []);
-
-//   return (
-//     <View>
-//       { loading ? (<Text>Fitness Tracker</Text>) : (<Text>{calories}</Text>)}
-//     </View>
-//   );
-// }

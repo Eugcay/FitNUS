@@ -5,6 +5,10 @@ export const ADD_WORKOUT = 'ADD_WORKOUT'
 export const REMOVE_FROM_HISTORY = 'REMOVE_FROM_HISTORY'
 export const CLEAR = 'CLEAR'
 
+export const SET_STATS = 'SET_STATS'
+export const SET_WEEKLY_STATS = 'SET_WEEKLY_STATS'
+export const SET_MONTHLY_STATS = 'SET_MONTHLY_STATS'
+
 export const CLEAR_WORKOUT = 'CLEAR_WORKOUT'
 export const ADD_EXERCISE = 'ADD_EXERCISE'
 export const UPDATE_EXERCISE = 'UPDATE_EXERCISE'

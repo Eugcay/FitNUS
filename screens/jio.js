@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
   View,
   Text,
@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+
 export default function Jio({ navigation }) {
+
   return (
     <ImageBackground source={require("../assets/jio.png")} style={styles.image}>
       <View style={styles.bottom}>

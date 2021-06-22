@@ -16,8 +16,7 @@ export function getUser() {
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
-      .get()
-      .then((snapshot) => {
+      .onSnapshot((snapshot) => {
         if (snapshot.exists) {
           dispatch({ type: SET_USER, currentUser: snapshot.data() });
         } else {
@@ -40,8 +39,8 @@ export function updateUser(user) {
 }
 
 export function getUserHistory() {
-  return async (dispatch) => {
-    await firebase
+  return (dispatch) => {
+    firebase
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
