@@ -220,7 +220,7 @@ const StartWorkout = (props) => {
 
   useEffect(() => {
     if (props.route.params?.template && pulls === 1) {
-      const template = props.route.params?.template.workout;
+      const template = props.route.params?.template
       setExercises(template.exercises);
       setName(template.name);
       setDescription(template.description);

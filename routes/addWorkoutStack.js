@@ -19,7 +19,6 @@ const addWorkoutStack = ({ navigation, route }) => {
         <Stack.Screen
           name="Start Workout"
           component={StartWorkout}
-          initialParams={{ template: route.params }}
           options={{
             headerRight: () => (
               <Text
@@ -34,7 +33,7 @@ const addWorkoutStack = ({ navigation, route }) => {
         <Stack.Screen
           name="Select Workout Type"
           component={SelectWorkoutType}
-          options={{ headerShown: false }}
+          options={{ headerTitle: 'Choose Workout Type', headerTintColor: 'blue'}}
         ></Stack.Screen>
         <Stack.Screen
           name="Add Exercises"

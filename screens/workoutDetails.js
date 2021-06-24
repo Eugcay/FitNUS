@@ -7,9 +7,9 @@ import {
   ScrollView,
   FlatList,
   Button,
-  Alert
+  Alert,
 } from "react-native";
-import { timestampToDate} from "../helpers";
+import { timestampToDate } from "../helpers";
 import { ListItem } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Divider } from "react-native-elements";
@@ -68,21 +68,22 @@ function WorkoutDetails(props) {
         onPress: () => console.log("Cancel Pressed"),
         style: "cancel",
       },
-      { text: "Delete", onPress: () => {
-        props.delete(id);
-        props.navigation.goBack();
-      } },
-    ]); 
+      {
+        text: "Delete",
+        onPress: () => {
+          props.delete(id);
+          props.navigation.goBack();
+        },
+      },
+    ]);
   };
-
-  
 
   return (
     <View style={styles.container}>
       <ScrollView>
         {workout.imageURL !== "" && (
           <Image source={{ uri: workout.imageURL }} style={styles.image} />
-        )} 
+        )}
         <View style={styles.top}>
           <Text style={styles.title}>
             {workout.name ? workout.name : "Custom Workout"}
@@ -150,15 +151,18 @@ function WorkoutDetails(props) {
         <TouchableOpacity
           onPress={() =>
             props.navigation.navigate("Start Workout", {
-              workout: {
-                ...workout,
-                exercises: workout?.exercises.map((exercise) => ({
-                  ...exercise,
-                  sets: exercise.sets.map((set) => ({
-                    ...set,
-                    completed: false,
+              screen: "Start Workout",
+              params: {
+                template: {
+                  ...workout,
+                  exercises: workout?.exercises.map((exercise) => ({
+                    ...exercise,
+                    sets: exercise.sets.map((set) => ({
+                      ...set,
+                      completed: false,
+                    })),
                   })),
-                })),
+                },
               },
             })
           }
