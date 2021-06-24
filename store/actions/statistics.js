@@ -1,12 +1,6 @@
 import firebase from "firebase";
 import { SET_STATS, SET_WEEKLY_STATS, SET_MONTHLY_STATS } from "./types";
 
-const ref = firebase
-  .firestore()
-  .collection("users")
-  .doc(firebase.auth().currentUser.uid)
-  .collection("history");
-
 const getStats = (arr) => {
   const stats = arr.reduce(
     (x, y) => ({
@@ -22,7 +16,11 @@ const getStats = (arr) => {
 
 export const getUserStats = () => {
   return (dispatch) => {
-    ref.onSnapshot((snapshot) => {
+  firebase
+  .firestore()
+  .collection("users")
+  .doc(firebase.auth().currentUser.uid)
+  .collection("history").onSnapshot((snapshot) => {
       const hist = [];
       snapshot.docs.forEach((doc) => {
         hist.push(doc.data());
@@ -33,17 +31,4 @@ export const getUserStats = () => {
   };
 };
 
-export const getStatsByPeriod = (start, end, period) => {
-  ref
-    .where("date", ">=", start)
-    .where("date", "<=", end)
-    .get()
-    .then((snapshot) => {
-      const hist = [];
-      snapshot.docs.forEach((doc) => {
-        hist.push(doc.data());
-      });
-      const stats = getStats(hist);
-      console.log(stats);
-    });
-};
+

@@ -7,20 +7,34 @@ import Map from "../screens/map";
 import AddExercises from "../screens/addExercises";
 import { ExerciseDetails } from "../screens/exerciseDetails";
 import EditExercise from "../screens/editWorkout";
+import workoutDetails from "../screens/workoutDetails";
+import SelectWorkoutType from "../screens/selectWorkoutType";
 
 const Stack = createStackNavigator();
 
-const addWorkoutStack = ({ navigation , route}) => {
+const addWorkoutStack = ({ navigation, route }) => {
   return (
     <>
       <Stack.Navigator>
         <Stack.Screen
           name="Start Workout"
           component={StartWorkout}
-          initialParams={{ template: route.params}}
+          initialParams={{ template: route.params }}
           options={{
-            headerRight: () => (<Text style={{color: "midnightblue", fontSize: 17, marginRight: 10}} onPress={() => navigation.navigate('Map')}>Map</Text>)
+            headerRight: () => (
+              <Text
+                style={{ color: "midnightblue", fontSize: 17, marginRight: 10 }}
+                onPress={() => navigation.navigate("Map")}
+              >
+                Map
+              </Text>
+            ),
           }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="Select Workout Type"
+          component={SelectWorkoutType}
+          options={{ headerShown: false }}
         ></Stack.Screen>
         <Stack.Screen
           name="Add Exercises"
@@ -31,11 +45,9 @@ const addWorkoutStack = ({ navigation , route}) => {
           component={ExerciseDetails}
         ></Stack.Screen>
         {/* pass status of exercise into map navigation to display polyline */}
-        <Stack.Screen name="Map" component={Map}></Stack.Screen> 
-        <Stack.Screen
-          name="Edit"
-          component={EditExercise}
-        ></Stack.Screen>
+        <Stack.Screen name="Map" component={Map}></Stack.Screen>
+        <Stack.Screen name="Edit" component={EditExercise}></Stack.Screen>
+        <Stack.Screen name="Workout Summary" component={workoutDetails} />
       </Stack.Navigator>
     </>
   );

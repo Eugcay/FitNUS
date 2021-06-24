@@ -13,7 +13,8 @@ export async function signUp(name, email, password) {
       bio: "",
       photoURL: "",
       caloriesGoal: "",
-      durationGoal: ""
+      durationGoal: "",
+      pb: []
     });
   } catch (error) {
     alert(error);

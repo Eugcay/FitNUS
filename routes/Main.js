@@ -6,7 +6,6 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { TrackerStack } from "./trackerStack";
-import Tracker from "../screens/tracker";
 import FitBudStack from "./fitBudStack";
 import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";

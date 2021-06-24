@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { WeekCalendar, Calendar, Agenda } from "react-native-calendars";
-import Dropdown from "react-native-material-dropdown/src/components/dropdown";
 import Greeting from "../components/trackerComponents/greeting";
 import Donut from "../components/Donut";
+import { Divider } from "react-native-elements";
 import { connect } from "react-redux";
 import {
   getCurrMonth,
@@ -18,64 +18,66 @@ import {
   getStats,
   changeMonth,
   changeWeek,
+  reloadPeriod,
+  favExercises,
 } from "../helpers";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import moment from "moment";
+import Spinner from "../components/Spinner";
+import MuscleCategoryPie from "../components/trackerComponents/MuscleCategoryPie";
+import PieLegend from "../components/trackerComponents/MuscleCategoryLegend";
+import { Favourites } from "../components/trackerComponents/Favourites";
+import { BarChart, Grid, PieChart } from "react-native-svg-charts";
 
 const Tracker = (props) => {
   const [user, setUser] = useState(null);
   const [month, setMonth] = useState(getCurrMonth());
   const [week, setWeek] = useState(getCurrWeek());
-  const [total, setTotal] = useState({});
-  const [weekly, setWeekly] = useState({});
-  const [monthly, setMonthly] = useState({});
+  const [total, setTotal] = useState(null);
+  const [weekly, setWeekly] = useState(null);
+  const [monthly, setMonthly] = useState(null);
   const [goals, setGoals] = useState({});
+  const [statsType, setType] = useState("weekly");
+  const [period, setPeriod] = useState(weekly);
+  const [favs, setFavs] = useState([]);
 
   useEffect(() => {
-    const hist = props.history;
-    const tot = props.stats;
-    const w = getStats(
-      hist
-        .map((doc) => doc.data)
-        .filter(
-          (doc) =>
-            doc.date.seconds * 1000 <= Date.parse(week.end) &&
-            doc.date.seconds * 1000 >= Date.parse(week.start)
-        )
-    );
-    const m = getStats(
-      hist
-        .map((doc) => doc.data)
-        .filter(
-          (doc) =>
-            doc.date.seconds * 1000 <= Date.parse(month.end) &&
-            doc.date.seconds * 1000 >= Date.parse(month.start)
-        )
-    );
+    const tot = props.history
+      ? getStats(props.history.map((doc) => doc.data))
+      : null;
+    const w = props.history ? reloadPeriod(week, props.history) : null;
+    const m = props.history ? reloadPeriod(month, props.history) : null;
+    const favourites = favExercises(props.history.map((doc) => doc.data));
 
     setUser(props.currentUser);
     setTotal(tot);
     setWeekly(w);
     setMonthly(m);
-
+    setFavs(favourites);
     setGoals({
       calories: props.currentUser.calGoal,
       duration: props.currentUser.durationGoal,
       distance: props.currentUser.distanceGoal,
       workouts: props.currentUser.workoutGoal,
     });
-
-    console.log(m);
-  }, [props.history, props.currentUser, props.stats]);
+  }, [props.history, props.currentUser, week, month]);
 
   const toggleStats = (direction) => {
-    if (statsType === 'weekly') {
-      if (new Date().getMonth() >= week.start.getMonth() - 1 && new Date().getMonth() <= week.start.getMonth() + 1 )
-      setWeek(changeWeek(week, direction))
+    if (statsType === "weekly") {
+      if (
+        new Date().getMonth() >= week.start.getMonth() - 1 &&
+        new Date().getMonth() <= week.start.getMonth() + 1
+      ) {
+        setWeek(changeWeek(week, direction));
+        setPeriod(weekly);
+      }
     } else {
-      setMonth(changeMonth(month, direction))
+      setMonth(changeMonth(month, direction));
+      setPeriod(monthly);
     }
-  }
+  };
+
+  const dats = [50, 10, 40, 95, 85];
 
   const calories = {
     val: 1405,
@@ -105,14 +107,6 @@ const Tracker = (props) => {
     color: "midnightblue",
   };
 
-  const data = [
-    { value: "calories" },
-    { value: "time" },
-    { value: "distance" },
-    { value: "workouts" },
-  ];
-
-  const [statsType, setType] = useState("weekly");
   const [donut, setDonut] = useState("calories");
 
   return (
@@ -137,6 +131,7 @@ const Tracker = (props) => {
             style={styles.button}
             onPress={() => {
               setType("weekly");
+              setPeriod(weekly);
             }}
           >
             <Text style={styles.text}>Weekly</Text>
@@ -145,6 +140,7 @@ const Tracker = (props) => {
             style={styles.button}
             onPress={() => {
               setType("monthly");
+              setPeriod(monthly);
             }}
           >
             <Text style={styles.text}>Monthly</Text>
@@ -152,7 +148,8 @@ const Tracker = (props) => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              setType("overall");
+              setType("total");
+              setPeriod(total);
             }}
           >
             <Text style={styles.text}>Overall</Text>
@@ -171,16 +168,136 @@ const Tracker = (props) => {
           onChangeText={(value) => setDonut(value)}
         /> */}
       </View>
-      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-        <TouchableOpacity onPress={() => toggleStats('back')}>
-          <MaterialCommunityIcons name="chevron-left" size={20} color="gray" />
-        </TouchableOpacity>
-        <Text style={{fontSize: 20, marginHorizontal: 10}}>{statsType === 'weekly' ? `${moment(week.start).format('DD MMM')} - ${moment(week.end).format('DD MMM')}` : moment(month.start).format("MMMM YY")}</Text>
-        <TouchableOpacity onPress={() => toggleStats('next')}>
-          <MaterialCommunityIcons name="chevron-right" size={20} color="gray" />
-        </TouchableOpacity>
+      {statsType !== "total" && (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <TouchableOpacity onPress={() => toggleStats("back")}>
+            <MaterialCommunityIcons
+              name="chevron-left"
+              size={20}
+              color="gray"
+            />
+          </TouchableOpacity>
+          <Text style={{ fontSize: 20, marginHorizontal: 10 }}>
+            {statsType === "weekly"
+              ? `${moment(week.start).format("DD MMM")} - ${moment(
+                  week.end
+                ).format("DD MMM")}`
+              : moment(month.start).format("MMMM YY")}
+          </Text>
+          <TouchableOpacity onPress={() => toggleStats("next")}>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={20}
+              color="gray"
+            />
+          </TouchableOpacity>
+        </View>
+      )}
+      {period ? (
+        <View style={styles.statContainer}>
+          <Text style={styles.statsTitle}>General Stats</Text>
+          <View
+            style={{ flexDirection: "row", height: 200, paddingVertical: 16 }}
+          >
+            {period ? (
+              <BarChart
+                style={{ flex: 1, marginLeft: 8 }}
+                data={dats}
+                svg={{ fill: "rgba(134, 65, 244, 0.8)" }}
+                contentInset={{ top: 10, bottom: 10 }}
+                spacing={0.2}
+                gridMin={0}
+              >
+                <Grid direction={Grid.Direction.HORIZONTAL} />
+              </BarChart>
+            ) : (
+              <Spinner />
+            )}
+          </View>
+          {statsType === "total" && <Favourites favs={favs} />}
+          <View style={{ backgroundColor: "white", borderRadius: 10, flex: 1 }}>
+            <View style={{ padding: 10 }}>
+              <Text>Workouts</Text>
+              <Text>{period.workouts}</Text>
+            </View>
+            <Divider />
+            <View style={{ padding: 10 }}>
+              <View>
+                <Text>Total Duration</Text>
+                <Text>{(period.duration / 60).toFixed(1)} hrs</Text>
+              </View>
+            </View>
+            <View style={{ padding: 10 }}>
+              <View>
+                <Text>Average Workout Duration</Text>
+                <Text>
+                  {period.workouts === 0
+                    ? 0
+                    : Math.round(period.duration / period.workouts)}{" "}
+                  min
+                </Text>
+              </View>
+            </View>
+            <View style={{ padding: 10 }}>
+              <View>
+                <Text>Sets completed</Text>
+                <Text>{period.sets} </Text>
+              </View>
+            </View>
+            <View style={{ padding: 10 }}>
+              <View>
+                <Text>Distance Run</Text>
+                <Text>{period.distance} km</Text>
+              </View>
+            </View>
+          </View>
+          {period && (
+            <View
+              style={{
+                backgroundColor: "white",
+                marginHorizontal: 5,
+                marginVertical: 15,
+              }}
+            >
+              <Text style={{ padding: 10, fontSize: 16, fontWeight: "bold" }}>
+                Muscles Used
+              </Text>
+              <MuscleCategoryPie data={period.categories} max={period.sets} />
+              <PieLegend data={period.categories} />
+            </View>
+          )}
+        </View>
+      ) : (
+        <Spinner />
+      )}
+      <View style={styles.statContainer}>
+        <Text style={styles.statsTitle}>Run Stats</Text>
+        <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
+          <View style={styles.runStat}>
+            <Text>Average Pace</Text>
+            <Text>0</Text>
+          </View>
+          <View style={styles.runStat}>
+            <Text>Runs</Text>
+            <Text>0</Text>
+          </View>
+          <View style={styles.runStat}>
+            <Text>Distance Per Run</Text>
+            <Text>0</Text>
+          </View>
+          <View style={styles.runStat}>
+            <Text>Longest Run</Text>
+            <Text>0</Text>
+          </View>
+        </View>
       </View>
-      <View style={styles.statchart}>
+      {/* <View style={styles.statchart}>
         {donut === "calories" && (
           <Donut
             val={calories.val}
@@ -213,7 +330,8 @@ const Tracker = (props) => {
             units={workoutsPerWeek.units}
           />
         )}
-      </View>
+      </View> */}
+      <View></View>
       <View style={styles.statbar}>{/* <StatBar /> */}</View>
     </ScrollView>
   );
@@ -273,17 +391,35 @@ const styles = StyleSheet.create({
     width: "20%",
     marginHorizontal: 15,
   },
+
+  statsTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+
+  individualStats: {
+    flexDirection: "row",
+    padding: 10,
+  },
+
+  statContainer: {
+    marginHorizontal: 20,
+    marginVertical: 10,
+  },
+
+  runStat: {
+    width: "48%",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "white",
+    margin: 3,
+  },
 });
 
 const mapStateToProps = (store) => ({
   history: store.user.history,
   currentUser: store.user.currentUser,
-  stats: store.stats.statistics,
 });
-
-// const mapDispatchToProps = (dispatch) => ({
-//   statsBetween: (start, end, period) =>
-//     dispatch(getStatsByPeriod(start, end, period)),
-// });
 
 export default connect(mapStateToProps, null)(Tracker);

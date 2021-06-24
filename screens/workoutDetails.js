@@ -7,8 +7,9 @@ import {
   ScrollView,
   FlatList,
   Button,
+  Alert
 } from "react-native";
-import { timestampToDate } from "../helpers";
+import { timestampToDate} from "../helpers";
 import { ListItem } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Divider } from "react-native-elements";
@@ -61,17 +62,27 @@ function WorkoutDetails(props) {
   };
 
   const deleteWorkout = () => {
-    props.delete(id);
-    props.navigation.goBack();
+    Alert.alert("Confirm Delete?", "", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      { text: "Delete", onPress: () => {
+        props.delete(id);
+        props.navigation.goBack();
+      } },
+    ]); 
   };
+
+  
 
   return (
     <View style={styles.container}>
       <ScrollView>
         {workout.imageURL !== "" && (
           <Image source={{ uri: workout.imageURL }} style={styles.image} />
-        )}
-        {date && <Button title="delete" onPress={deleteWorkout} />}
+        )} 
         <View style={styles.top}>
           <Text style={styles.title}>
             {workout.name ? workout.name : "Custom Workout"}

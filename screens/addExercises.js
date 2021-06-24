@@ -12,6 +12,8 @@ import {
 import { CheckBox } from "react-native-elements";
 import { Searchbar } from "react-native-paper";
 import firebase from "firebase";
+import { getCat } from "../helpers";
+import { Divider } from "react-native-elements";
 
 export default function AddExercises(props) {
   const [exercises, setExercises] = useState([]);
@@ -73,7 +75,7 @@ export default function AddExercises(props) {
     const check = selected.includes(item);
 
     return (
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", marginVertical: 2, backgroundColor: check ? 'azure' : 'whitesmoke'}}>
         <TouchableOpacity
           style={{ flexDirection: "row" }}
           onPress={() =>
@@ -88,7 +90,10 @@ export default function AddExercises(props) {
             }
             style={styles.image}
           />
-          <Text style={styles.searchResult}>{item.data.name}</Text>
+          <View style={styles.searchResult}>
+          <Text >{item.data.name}</Text>
+          <Text style={{fontSize: 12}}>{getCat(item.data.category)}</Text>
+          </View>
         </TouchableOpacity>
         <CheckBox
           center
@@ -142,6 +147,7 @@ export default function AddExercises(props) {
         keyExtractor={(item) => item.key}
         renderItem={renderItem}
         extraData={selected}
+        ItemSeparatorComponent={() => (<Divider/>)}
       />
       <TouchableOpacity style={styles.addAll} onPress={() => addToWorkout()}>
         <Text>Add to workout ({selected.length})</Text>
