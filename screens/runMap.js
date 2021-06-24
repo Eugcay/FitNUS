@@ -231,6 +231,17 @@ export default function RunMap(props) {
     return haversine(prevLatLng, newLatLng) || 0;
   };
 
+  const onPostionChange = (loc) => {
+    //currentLocation could be null for the first one
+    const latlon = {
+      latitude: loc.coords.latitude,
+      longitude: loc.coords.longitude,
+    };
+    //setNewDistance(distance + calcDistance(currentLocation, latlon));
+    setCurrentLocation(latlon);
+    setLocList(locList.push(latlon));
+  };
+
   //OnPress, start tracking:
   useEffect(() => {
     (async () => {
@@ -262,23 +273,17 @@ export default function RunMap(props) {
       let locations = await Location.watchPositionAsync(
         {
           enableHighAccuracy: true,
-          timeInterval: 100,
+          timeInterval: 1000,
           distanceInterval: 1,
         },
-        (loc) => {
-          //currentLocation could be null for the first one
-          const latlon = {
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-          };
-          //setNewDistance(distance + calcDistance(currentLocation, latlon));
-          setCurrentLocation(latlon);
-          setLocList(locList.push(latlon));
-        }
+        onPostionChange
       );
       setRemove(locations);
     })();
-  }, []);
+    return () => {
+        remove.remove()
+    }
+  }, [loclist]);
 
   const start = () => {
     setStatus("Continue");
