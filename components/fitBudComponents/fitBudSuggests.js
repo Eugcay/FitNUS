@@ -259,7 +259,7 @@ const FitBudSuggests = ({ navigation }) => {
           </MapView>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Start Workout", {}, NavigationActions.navigate({routeName: 'Select Workout Type'}))}
+          onPress={() => navigation.navigate("Start Workout", {})}
           style={[styles.image, {}]}
         >
           <Text style={styles.text}>Create Custom Workout</Text>

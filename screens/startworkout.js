@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import haversine from "haversine";
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
 import { Stopwatch } from "react-native-stopwatch-timer";
 import * as Location from "expo-location";
+import { getCurrentTimeInSeconds } from "expo-auth-session/build/TokenRequest";
 
 const StartWorkout = (props) => {
   const [name, setName] = useState("Custom Workout");
@@ -36,6 +37,12 @@ const StartWorkout = (props) => {
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
   const [timeNow, setTimeNow] = useState(0);
+
+  const setTime = useRef((someNewValue) => {
+    setTimeout(() => {
+     setTimeNow(someNewValue);
+    }, 0);
+  }).current;
 
   //Track location stuff => Calcdistance, Watch poition, Polyline
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -136,10 +143,11 @@ const StartWorkout = (props) => {
   const finishWorkout = () => {
     if (workoutComplete()) {
       stop();
+      console.log(timeNow)
       const workout = {
         name,
         description,
-        duration: 50,
+        duration: timeNow / 1000,
         calories: 100,
         imageURL,
         exercises,
@@ -251,7 +259,6 @@ const StartWorkout = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView>
         <HeaderTop />
         <View style={{ alignItems: "center" }}>
           {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
@@ -263,7 +270,7 @@ const StartWorkout = (props) => {
                 //To reset
                 options={options}
                 //options for the styling
-                getTime={(time) => {}}
+                getMsecs={(time) => setTime(time)}
               />
               <TouchableOpacity
                 style={[styles.button, { backgroundColor: "#00BFFF" }]}
@@ -284,14 +291,13 @@ const StartWorkout = (props) => {
                 //To reset
                 options={options}
                 //options for the styling
-                getTime={(time) => {}}
+                getMsecs={(time) => setTime(time)}
               />
               <TouchableOpacity
                 style={[styles.button, { backgroundColor: "#00BFFF" }]}
                 onPress={() => {
                   setStatus("Paused");
                   setIsStopwatchStart(false);
-                  console.log(currentLocation);
                 }}
               >
                 <Text>Pause</Text>
@@ -315,10 +321,6 @@ const StartWorkout = (props) => {
               renderItem={renderItem}
               style={{ marginTop: 15, height: "63%" }}
               extraData={exercises}
-
-              // ItemSeparatorComponent={() => {
-              //   return <Divider />;
-              // }}
             />
           </View>
         </View>
@@ -337,7 +339,6 @@ const StartWorkout = (props) => {
             <Text>Clear Workout</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
     </View>
   );
 };
