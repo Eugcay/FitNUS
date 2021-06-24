@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import MapView from "react-native-maps";
-import { Card } from "react-native-paper";
+
 
 import { getWorkouts } from "../../Api/workoutApi";
 
