@@ -97,7 +97,15 @@ export const getStats = (arr) => {
   return temp;
 };
 
-export const yearlyData = () => {};
+export const yearlyData = (hist) => {
+  let months = []
+  for (let i = 0; i < 12; i++) {
+    months.push(i)
+  }
+
+  const DataPerMonth = months.map(month => hist.filter(workout => new Date(workout.date.seconds * 1000).getMonth() === month).length)
+  return DataPerMonth
+};
 
 export const getSetsByCat = (hist) => {
   const setsByCat = []
@@ -133,8 +141,6 @@ export const reloadPeriod = (period, hist) => {
       )
   );
 };
-
-
 
 export const getCat = (cat) => {
   switch (cat) {

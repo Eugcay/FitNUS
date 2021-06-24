@@ -20,6 +20,7 @@ import {
   changeWeek,
   reloadPeriod,
   favExercises,
+  yearlyData
 } from "../helpers";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import moment from "moment";
@@ -60,6 +61,7 @@ const Tracker = (props) => {
       distance: props.currentUser.distanceGoal,
       workouts: props.currentUser.workoutGoal,
     });
+    console.log(yearlyData(props.history.map(doc => doc.data)))
   }, [props.history, props.currentUser, week, month]);
 
   const toggleStats = (direction) => {
