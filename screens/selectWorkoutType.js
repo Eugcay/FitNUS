@@ -1,5 +1,11 @@
 import React from "react";
-import { View, ImageBackground, TouchableOpacity, Text } from "react-native";
+import {
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+} from "react-native";
 
 const SelectWorkoutType = ({ navigation }) => {
   return (
@@ -10,17 +16,17 @@ const SelectWorkoutType = ({ navigation }) => {
       >
         <ImageBackground
           source={require("../assets/runworkout1.jpeg")}
-          style={{ widht: "100%", height: "100%" }}
+          style={styles.image}
         >
-          <Text></Text>
+          <Text style={styles.title}>Static Workout</Text>
         </ImageBackground>
       </TouchableOpacity>
       <TouchableOpacity style={{ height: "50%", width: "100%" }}>
         <ImageBackground
           source={require("../assets/static1.jpeg")}
-          style={{ widht: "100%", height: "100%" }}
+          style={styles.image}
         >
-          <Text></Text>
+          <Text style={styles.title}>Run</Text>
         </ImageBackground>
       </TouchableOpacity>
     </View>
@@ -28,3 +34,18 @@ const SelectWorkoutType = ({ navigation }) => {
 };
 
 export default SelectWorkoutType;
+
+const styles = StyleSheet.create({
+  image: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  title: {
+      fontSize: 40,
+      color: 'whitesmoke',
+      fontFamily: ''
+  }
+});
