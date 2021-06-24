@@ -196,12 +196,6 @@ const FitBudSuggests = ({ navigation }) => {
     return fetchWorkouts;
   }, []);
 
-  //   <ImageBackground
-  //         source={require("../../assets/suggestionSample.jpeg")}
-  //         style={styles.image}
-  //         blurRadius={5}
-  //       >
-  // </ImageBackground>
 
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>

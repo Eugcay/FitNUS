@@ -21,7 +21,9 @@ const SelectWorkoutType = ({ navigation }) => {
           <Text style={styles.title}>Static Workout</Text>
         </ImageBackground>
       </TouchableOpacity>
-      <TouchableOpacity style={{ height: "50%", width: "100%" }}>
+      <TouchableOpacity
+      onPress={() => navigation.navigate("Run Map")}
+      style={{ height: "50%", width: "100%" }}>
         <ImageBackground
           source={require("../assets/static1.jpeg")}
           style={styles.image}
