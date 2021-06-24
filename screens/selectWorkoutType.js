@@ -14,7 +14,7 @@ const SelectWorkoutType = ({ navigation }) => {
     <View style={{ flex: 1 }}>
       
       <View style={{ height: "50%", width: "100%" }}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Run Map')}>
           <ImageBackground
             source={require("../assets/runworkout1.jpeg")}
             style={styles.image}
@@ -47,7 +47,7 @@ const SelectWorkoutType = ({ navigation }) => {
         </Text>
       </TouchableOpacity>
       <View style={styles.label}>
-        <Text>Select Workout Type</Text>
+        <Text style={{fontSize: 17}}>Select Workout Type</Text>
       </View>
     </View>
   );
@@ -78,13 +78,13 @@ const styles = StyleSheet.create({
 
   label: {
     width: "50%",
-    borderRadius: 100,
-    height: "4%",
+    borderRadius: 130,
+    height: "5%",
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
     position: "absolute",
-    bottom: Dimensions.get("screen").height / 2.1,
+    bottom: Dimensions.get("screen").height * 47.5/100,
     backgroundColor: "lightblue",
   },
 

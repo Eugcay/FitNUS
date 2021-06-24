@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from "react";
-import MapView from "react-native-maps";
-import { StyleSheet, Text, View, Dimensions, Switch } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import MapView, { Polyline } from "react-native-maps";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import * as Location from "expo-location";
 import { mapDark, mapStandard } from "../mapConfig";
+import { Stopwatch } from "react-native-stopwatch-timer";
 
-
-
-export default function Map(props) {
+export default function RunMap(props) {
   const [mTop, setMargin] = useState(0);
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
   const [text, setText] = useState(null);
   const [dark, setDark] = useState(false);
+
   var presetLocations = [
     {
       latlng: {
@@ -172,6 +176,19 @@ export default function Map(props) {
       index: 15,
     },
   ];
+
+  const [workoutStatus, setStatus] = useState("Not Started");
+
+  //Stopwatch stuff
+  const [isStopwatchStart, setIsStopwatchStart] = useState(false);
+  const [timeNow, setTimeNow] = useState(0);
+
+  const setTime = useRef((someNewValue) => {
+    setTimeout(() => {
+      setTimeNow(someNewValue);
+    }, 0);
+  }).current;
+
   useEffect(() => {
     props.navigation.setOptions({
       headerStyle: {
@@ -184,6 +201,37 @@ export default function Map(props) {
     });
   }, []);
 
+  //Track location stuff => Calcdistance, Watch poition, Polyline
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [distance, setNewDistance] = useState(0);
+  const [locList, setLocList] = useState([]);
+  const [remove, setRemove] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const polylinearray = [
+    {
+      latitude: 1.3050038005230384,
+      longitude: 103.77226573268865,
+    },
+    {
+      latitude: 1.3049399787896439,
+      longitude: 103.77313671368337,
+    },
+    {
+      latitude: 1.300432226076777,
+      longitude: 103.77610168353331,
+    },
+    {
+      latitude: 1.3695049662681242,
+      longitude: 103.95023556819342,
+    },
+  ];
+
+  const calcDistance = (prevLatLng, newLatLng) => {
+    return haversine(prevLatLng, newLatLng) || 0;
+  };
+
+  //OnPress, start tracking:
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -199,19 +247,78 @@ export default function Map(props) {
           return;
         }
       }
-
       let loc = await Location.getCurrentPositionAsync({});
-      setLocation(loc);
-      
-      if (errorMsg) {
-        setText(errorMsg);
-      } else if (location) {
-        setText(JSON.stringify(location));
-      }
+      console.log("hello again");
+      setCurrentLocation({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+      });
+      setLocList(
+        locList.concat([
+          { latitude: loc.coords.latitude, longitude: loc.coords.longitude },
+        ])
+      );
+
+      let locations = await Location.watchPositionAsync(
+        {
+          enableHighAccuracy: true,
+          timeInterval: 100,
+          distanceInterval: 1,
+        },
+        (loc) => {
+          //currentLocation could be null for the first one
+          const latlon = {
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+          };
+          //setNewDistance(distance + calcDistance(currentLocation, latlon));
+          setCurrentLocation(latlon);
+          setLocList(locList.push(latlon));
+        }
+      );
+      setRemove(locations);
     })();
   }, []);
 
+  const start = () => {
+    setStatus("Continue");
+    console.log("Hello");
+    async () => {
+      //   let loc = await Location.getCurrentPositionAsync({});
+      //   console.log("hello again");
+      //   setCurrentLocation({
+      //     latitude: loc.coords.latitude,
+      //     longitude: loc.coords.longitude,
+      //   });
+      //   setLocList(
+      //     locList.concat([
+      //       { latitude: loc.coords.latitude, longitude: loc.coords.longitude },
+      //     ])
+      //   );
+      //   let locations = await Location.watchPositionAsync(
+      //     {
+      //       accuracy: Location.Accuracy.High,
+      //       timeInterval: 100,
+      //       distanceInterval: 1,
+      //     },
+      //     (loc) => {
+      //       //currentLocation could be null for the first one
+      //       const latlon = {
+      //         latitude: loc.coords.latitude,
+      //         longitude: loc.coords.longitude,
+      //       };
+      //       setNewDistance(distance + calcDistance(currentLocation, latlon));
+      //       setCurrentLocation(latlon);
+      //       setLocList(locList.concat([latlon]));
+      //     }
+      //   );
+      //   setRemove(locations);
+    };
+  };
 
+  const stop = () => {
+    remove;
+  };
 
   const _onMapReady = () => setMargin(60);
 
@@ -231,8 +338,8 @@ export default function Map(props) {
         initialRegion={{
           latitude: 1.3702303096151767,
           longitude: 103.94958799677016,
-          latitudeDelta: 0.09,
-          longitudeDelta: 0.05,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}
         provider="google"
         mapType="hybrid"
@@ -241,21 +348,62 @@ export default function Map(props) {
         showsCompass={true}
         onMapReady={_onMapReady}
         customMapStyle={dark ? mapDark : mapStandard}
-      >{presetLocations.map((marker) => (
-        <MapView.Marker
-          key={marker.index}
-          coordinate={marker.latlng}
-          title={marker.title}
-          description={marker.description}
-        />
-      ))}
-        
-        {/* <Switch //causes probs to above
-          onChange={() => toggleMode()}
-          style={{ position: "absolute", top: 20, right: 10 }}
-          value={dark}
-        /> */}
+      >
+        {presetLocations.map((marker) => (
+          <MapView.Marker
+            key={marker.index}
+            coordinate={marker.latlng}
+            title={marker.title}
+            description={marker.description}
+          />
+        ))}
+        <Polyline coordinates={locList} strokeWidth={5} />
       </MapView>
+      <View style={styles.overlay}>
+        {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
+          <View>
+            <Stopwatch
+              start={isStopwatchStart}
+              //To start
+              reset={false}
+              //To reset
+              options={options}
+              //options for the styling
+              getMsecs={(time) => setTime(time)}
+            />
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: "#00BFFF" }]}
+              onPress={() => {
+                start();
+                setIsStopwatchStart(true);
+              }}
+            >
+              <Text>Start</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View>
+            <Stopwatch
+              start={isStopwatchStart}
+              //To start
+              reset={false}
+              //To reset
+              options={options}
+              //options for the styling
+              getMsecs={(time) => setTime(time)}
+            />
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: "#00BFFF" }]}
+              onPress={() => {
+                setStatus("Paused");
+                setIsStopwatchStart(false);
+              }}
+            >
+              <Text>Pause</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
@@ -271,4 +419,25 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
   },
+  overlay: {
+    position: "absolute",
+    bottom: 50,
+    backgroundColor: "rgba(255, 255, 255, 1)",
+    alignItems: "center",
+  },
 });
+
+const options = {
+  container: {
+    backgroundColor: "darkblue",
+    padding: 5,
+    borderRadius: 5,
+    width: 200,
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 25,
+    color: "#FFF",
+    marginLeft: 7,
+  },
+};

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
 import { WeekCalendar, Calendar, Agenda } from "react-native-calendars";
 import Greeting from "../components/trackerComponents/greeting";
@@ -51,7 +52,7 @@ const Tracker = (props) => {
     const favourites = favExercises(props.history.map((doc) => doc.data));
 
     setUser(props.currentUser);
-    setTotal(tot);
+    setTotal({...tot, workoutsPerMonth: yearlyData(props.history.map(doc => doc.data))})
     setWeekly(w);
     setMonthly(m);
     setFavs(favourites);
@@ -61,7 +62,9 @@ const Tracker = (props) => {
       distance: props.currentUser.distanceGoal,
       workouts: props.currentUser.workoutGoal,
     });
-    console.log(yearlyData(props.history.map(doc => doc.data)))
+
+    
+    console.log(total.workoutsPerMonth)
   }, [props.history, props.currentUser, week, month]);
 
   const toggleStats = (direction) => {
@@ -210,7 +213,7 @@ const Tracker = (props) => {
             {period ? (
               <BarChart
                 style={{ flex: 1, marginLeft: 8 }}
-                data={dats}
+                data={total?.workoutsPerMonth ? total?.workoutsPerMonth : dats}
                 svg={{ fill: "rgba(134, 65, 244, 0.8)" }}
                 contentInset={{ top: 10, bottom: 10 }}
                 spacing={0.2}
@@ -222,7 +225,7 @@ const Tracker = (props) => {
               <Spinner />
             )}
           </View>
-          {statsType === "total" && <Favourites favs={favs} />}
+          {statsType === "total" && <Favourites favs={favs} pb={props.currentUser.pb}/>}
           <View style={{ backgroundColor: "white", borderRadius: 10, flex: 1 }}>
             <View style={{ padding: 10 }}>
               <Text>Workouts</Text>
