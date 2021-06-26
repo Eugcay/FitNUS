@@ -21,22 +21,23 @@ const HeaderTop = ({ name, image, desc }) => {
   const [title, onChangeTitle] = useState(null);
   const [heart, onLike] = useState(false);
   const onLikePress = () => onLike(!heart);
+  const [description, onChangeDescription] = useState(desc);
 
   const _renderTruncatedFooter = (handlePress) => {
     return (
-      <Text style={{color: "#007FFF", marginTop: 5}} onPress={handlePress}>
+      <Text style={{ color: "#007FFF", marginTop: 5 }} onPress={handlePress}>
         Read more
       </Text>
     );
-  }
- 
+  };
+
   const _renderRevealedFooter = (handlePress) => {
     return (
-      <Text style={{color: "#007FFF", marginTop: 5}} onPress={handlePress}>
+      <Text style={{ color: "#007FFF", marginTop: 5 }} onPress={handlePress}>
         Show less
       </Text>
     );
-  }
+  };
 
   return (
     <View>
@@ -48,8 +49,8 @@ const HeaderTop = ({ name, image, desc }) => {
       <View style={styles.top}>
         <TextInput
           style={{ height: 40, borderWidth: 0, fontSize: 22 }}
-          onChangeTitle={(text) => onChangeTitle(text)}
-          title={title}
+          onChangeText={(text) => onChangeTitle(text)}
+          value={title}
           maxLength={40}
           defaultValue={name !== "" ? name : "Custom Workout"}
         />
@@ -61,13 +62,30 @@ const HeaderTop = ({ name, image, desc }) => {
           Description
         </Text>
         <View style={styles.body}>
-          <ReadMore
-            numberOfLines={3}
-            renderTruncatedFooter={_renderTruncatedFooter}
-            renderRevealedFooter={_renderRevealedFooter}
-          >
-            <Text style={styles.body}>{desc ? desc : ""}</Text>
-          </ReadMore>
+          {desc.length <= 60 ? (
+            <TextInput
+              style={{
+                marginVertical: 5,
+                textAlign: "justify",
+              }}
+              onChangeText={(text) => onChangeDescription(text)}
+              value={description}
+              defaultValue={
+                desc !== ""
+                  ? desc
+                  : "Fill in your workout's description"
+              }
+              multiline={true}
+            />
+          ) : (
+            <ReadMore
+              numberOfLines={3}
+              renderTruncatedFooter={_renderTruncatedFooter}
+              renderRevealedFooter={_renderRevealedFooter}
+            >
+              <Text style={styles.body}>{desc ? desc : ""}</Text>
+            </ReadMore>
+          )}
         </View>
       </View>
     </View>
