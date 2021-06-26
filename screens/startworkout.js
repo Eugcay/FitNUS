@@ -15,11 +15,9 @@ import {
 import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
 import { addToHistory } from "../store/actions/user";
-import haversine from "haversine";
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
 import { Stopwatch } from "react-native-stopwatch-timer";
-import * as Location from "expo-location";
-import { getCurrentTimeInSeconds } from "expo-auth-session/build/TokenRequest";
+import { Divider } from "react-native-elements";
 
 const StartWorkout = (props) => {
   const [name, setName] = useState("Custom Workout");
@@ -40,64 +38,9 @@ const StartWorkout = (props) => {
 
   const setTime = useRef((someNewValue) => {
     setTimeout(() => {
-     setTimeNow(someNewValue);
+      setTimeNow(someNewValue);
     }, 0);
   }).current;
-
-  //Track location stuff => Calcdistance, Watch poition, Polyline
-  const [currentLocation, setCurrentLocation] = useState(null);
-  const [distance, setNewDistance] = useState(0);
-  const [locList, setLocList] = useState([]);
-  const [remove, setRemove] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-
-  const calcDistance = (prevLatLng, newLatLng) => {
-    return haversine(prevLatLng, newLatLng) || 0;
-  };
-
-  //OnPress, start tracking:
-  const start = () => {
-    setStatus("Continue");
-    console.log("Hello");
-    async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status == "granted") {
-        let { status2 } = await Location.requestBackgroundPermissionsAsync();
-        if (status2 !== "granted") {
-          setErrorMsg("Permission to access background location was denied");
-          return;
-        }
-      } else {
-        if (status !== "granted") {
-          setErrorMsg("Permission to access location was denied");
-          return;
-        }
-      }
-      //potential problems here
-      let loc = await Location.getCurrentPositionAsync({});
-      setCurrentLocation({latitude: loc.coords.latitude, longitude: loc.coords.longitude});
-      setLocList(locList.concat([{latitude: loc.coords.latitude, longitude: loc.coords.longitude}]));
-
-      let locations = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.High,
-          timeInterval: 100,
-          distanceInterval: 1,
-        },
-        (loc) => { //currentLocation could be null for the first one
-          const latlon = {latitude: loc.coords.latitude, longitude: loc.coords.longitude}
-          setNewDistance(distance + calcDistance(currentLocation, latlon));
-          setCurrentLocation(latlon);
-          setLocList(locList.concat([latlon]));
-        }
-      );
-      setRemove(locations);
-    };
-  };
-
-  const stop = () => {
-    remove;
-  }
 
   const clearWorkout = () => {
     setExercises([]);
@@ -143,7 +86,7 @@ const StartWorkout = (props) => {
   const finishWorkout = () => {
     if (workoutComplete()) {
       stop();
-      console.log(timeNow)
+      console.log(timeNow);
       const workout = {
         name,
         description,
@@ -228,11 +171,11 @@ const StartWorkout = (props) => {
 
   useEffect(() => {
     if (props.route.params?.template && pulls === 1) {
-      const template = props.route.params?.template
+      const template = props.route.params?.template;
       setExercises(template.exercises);
-      setName(template.name);
-      setDescription(template.description);
-      setImageURL(template.imageURL);
+      setName(template.name); //name
+      setDescription(template.description); //desc
+      setImageURL(template.imageURL); //ImageUrl
       setPulls(pulls + 1);
     } else if (props.route.params?.exercise && updating) {
       updateWorkout(props.route.params?.exercise);
@@ -259,8 +202,42 @@ const StartWorkout = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-        <HeaderTop />
-        <View style={{ alignItems: "center" }}>
+      <View style={{ flex: 1 }}>
+        <ScrollView>
+          <HeaderTop name={name} image={imageURL} desc={description} />
+          <View style={styles.statbar}>
+            <View style={styles.statbox}>
+              <MaterialCommunityIcons name="timer" size={17} color="red" />
+              <Text style={{ fontWeight: "bold" }}>huh</Text>
+            </View>
+            <Divider orientation="vertical" />
+            <View style={styles.statbox}>
+              <MaterialCommunityIcons
+                name="format-list-bulleted-square"
+                size={20}
+                color="blue"
+              />
+              <Text>Sets</Text>
+              <Text>
+                {exercises
+                  ? exercises
+                      .map((exercise) => exercise.sets.length)
+                      .reduce((x, y) => x + y, 0)
+                  : "0"}
+              </Text>
+            </View>
+            <Divider orientation="vertical" />
+            <View style={styles.statbox}>
+              <MaterialCommunityIcons
+                name="emoticon-happy-outline"
+                size={20}
+                color="green"
+              />
+              <Text>Achievements</Text>
+              <Text>hi</Text>
+            </View>
+          </View>
+          {/* <View>
           {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
             <View>
               <Stopwatch
@@ -304,41 +281,42 @@ const StartWorkout = (props) => {
               </TouchableOpacity>
             </View>
           )}
-          <Button
-            title="finish"
-            color="green"
-            onPress={() => finishWorkout()}
-          />
+        </View> */}
+          {/* <View>
           {exercises.length === 0 && (
             <Text style={{ marginVertical: "60%", fontSize: 24 }}>
               Lets get Started!
             </Text>
           )}
-          <View>
-            <FlatList
-              data={exercises}
-              keyExtractor={(item) => item.key}
-              renderItem={renderItem}
-              style={{ marginTop: 15, height: "63%" }}
-              extraData={exercises}
-            />
-          </View>
+        </View>
+        <View>
+          <FlatList
+            data={exercises}
+            keyExtractor={(item) => item.key}
+            renderItem={renderItem}
+            style={{ marginTop: 15, height: "63%" }}
+            extraData={exercises}
+          />
+        </View> */}
+        </ScrollView>
         </View>
 
-        <View style={styles.bottombar}>
-          <TouchableOpacity
-            style={[styles.bottomButton, { backgroundColor: "#00BFFF" }]}
-            onPress={() => props.navigation.navigate("Add Exercises")}
-          >
-            <Text>Add exercises</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.bottomButton, { backgroundColor: "#F08080" }]}
-            onPress={clearWorkout}
-          >
-            <Text>Clear Workout</Text>
-          </TouchableOpacity>
-        </View>
+      {/* <Button title="finish" color="green" onPress={() => finishWorkout()} /> */}
+
+      <View style={styles.bottombar}>
+        <TouchableOpacity
+          style={[styles.bottomButton, { backgroundColor: "#00BFFF" }]}
+          onPress={() => props.navigation.navigate("Add Exercises")}
+        >
+          <Text>Add exercises</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.bottomButton, { backgroundColor: "#F08080" }]}
+          onPress={clearWorkout}
+        >
+          <Text>Clear Workout</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -425,6 +403,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     height: "5%",
+  },
+  statbar: {
+    flexDirection: "row",
+    marginHorizontal: 10,
+    marginVertical: 5,
+    borderTopColor: "#C0C0C0",
+    borderBottomColor: "#C0C0C0",
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statbox: {
+    width: "30%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 5,
   },
 });
 

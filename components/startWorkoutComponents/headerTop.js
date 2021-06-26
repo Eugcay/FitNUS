@@ -2,52 +2,55 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  ImageBackground,
+  Image,
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  ScrollView,
   Dimensions,
 } from "react-native";
 import Svg, { G, Circle } from "react-native-svg";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Divider } from "react-native-elements";
+import ReadMore from "react-native-read-more-text";
+
 const image = "../../assets/logan-weaver-9D_rUDe7xvA-unsplash.jpg";
 
-const HeaderTop = () => {
+const HeaderTop = ({ name, image, desc }) => {
   const [title, onChangeTitle] = useState(null);
   const [heart, onLike] = useState(false);
   const onLikePress = () => onLike(!heart);
-  // heartshap icon on press: <Ionicons name="heart-sharp" size={24} color="black" />
 
   return (
-    <ImageBackground source={require(image)} style={styles.imageheader}>
-      <View>
+    <View>
+      {image !== "" ? (
+        <Image source={{ uri: image }} style={styles.image} />
+      ) : (
+        <View />
+      )}
+      <View style={styles.top}>
         <TextInput
-          style={{ height: 40, borderColor: "gray", borderWidth: 1}}
+          style={{ height: 40, borderWidth: 0, fontSize: 22 }}
           onChangeTitle={(text) => onChangeTitle(text)}
           title={title}
           maxLength={40}
-          defaultValue={"Custom Workout"}
+          defaultValue={name !== "" ? name : "Custom Workout"}
         />
       </View>
       <View>
-        <View>
-          <Text>Time</Text>
-        </View>
-        <View>
-          <Text>Location</Text>
-        </View>
-        <View>
-          <Text>Calories</Text>
+        <Text
+          style={[{ paddingTop: 5, marginHorizontal: 10, fontWeight: "bold" }]}
+        >
+          Description
+        </Text>
+        <View style={styles.body}>
+          <ReadMore numberOfLines={3}>
+            <Text style={styles.body}>{desc ? desc : ""}</Text>
+          </ReadMore>
         </View>
       </View>
-      <TouchableOpacity style={styles.heart} onPress={onLikePress}>
-        <Ionicons
-          name={heart ? "heart-sharp" : "heart-outline"}
-          size={24}
-          color="black"
-        />
-      </TouchableOpacity>
-    </ImageBackground>
+    </View>
   );
 };
 
@@ -63,5 +66,21 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 20,
     left: 100,
+  },
+  image: {
+    width: "100%",
+    height: "20%",
+    minHeight: 250,
+  },
+  body: {
+    marginVertical: 5,
+    marginHorizontal: 10,
+    textAlign: "justify"
+  },
+  top: {
+    marginVertical: 5,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#C0C0C0",
   },
 });

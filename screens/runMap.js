@@ -283,7 +283,7 @@ export default function RunMap(props) {
     return () => {
         remove.remove()
     }
-  }, [loclist]);
+  }, [locList]);
 
   const start = () => {
     setStatus("Continue");
