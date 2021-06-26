@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Image,
   SafeAreaView,
-  Alert
+  Alert,
 } from "react-native";
 import { CheckBox } from "react-native-elements";
 import { Searchbar } from "react-native-paper";
@@ -20,7 +20,7 @@ export default function AddExercises(props) {
   const [filtered, setFiltered] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState([]);
-  const [replace, setReplace] = useState(false)
+  const [replace, setReplace] = useState(false);
 
   const onChangeSearch = (text) => {
     if (text) {
@@ -47,7 +47,7 @@ export default function AddExercises(props) {
     setSelected(data);
     console.log(selected);
     if (replace) {
-      addToWorkout(data)
+      addToWorkout(data);
     }
   };
 
@@ -64,18 +64,23 @@ export default function AddExercises(props) {
 
   const confirmSubmit = (data) => {
     props.navigation.navigate({
-      name: "Start Workout",
+      name: props.route.params?.dashboard ? "Tracker" : "Start Workout",
       params: { exercises: data, replace: replace },
       merge: true,
     });
-  }
-
+  };
 
   const renderItem = ({ item }) => {
     const check = selected.includes(item);
 
     return (
-      <View style={{ flexDirection: "row", marginVertical: 2, backgroundColor: check ? 'azure' : 'whitesmoke'}}>
+      <View
+        style={{
+          flexDirection: "row",
+          marginVertical: 2,
+          backgroundColor: check ? "azure" : "whitesmoke",
+        }}
+      >
         <TouchableOpacity
           style={{ flexDirection: "row" }}
           onPress={() =>
@@ -91,15 +96,11 @@ export default function AddExercises(props) {
             style={styles.image}
           />
           <View style={styles.searchResult}>
-          <Text >{item.data.name}</Text>
-          <Text style={{fontSize: 12}}>{getCat(item.data.category)}</Text>
+            <Text>{item.data.name}</Text>
+            <Text style={{ fontSize: 12 }}>{getCat(item.data.category)}</Text>
           </View>
         </TouchableOpacity>
-        <CheckBox
-          center
-          checked={check}
-          onPress={() => selectExercise(item)}
-        />
+        <CheckBox center checked={check} onPress={() => selectExercise(item)} />
       </View>
     );
   };
@@ -108,7 +109,7 @@ export default function AddExercises(props) {
     const fetchExercises = firebase
       .firestore()
       .collection("exercise")
-      .orderBy("name") 
+      .orderBy("name")
       .onSnapshot((querySnapshot) => {
         const complete = [];
         querySnapshot.forEach((documentSnapshot) => {
@@ -126,10 +127,10 @@ export default function AddExercises(props) {
 
   useEffect(() => {
     if (props.route.params?.item) {
-      setReplace(true)
-      console.log(replace)
+      setReplace(true);
+      console.log(replace);
     }
-  }, [props.route.params?.item])
+  }, [props.route.params?.item]);
 
   return (
     <SafeAreaView style={{ marginHorizontal: 10, marginBottom: 130 }}>
@@ -147,16 +148,19 @@ export default function AddExercises(props) {
         keyExtractor={(item) => item.key}
         renderItem={renderItem}
         extraData={selected}
-        ItemSeparatorComponent={() => (<Divider/>)}
+        ItemSeparatorComponent={() => <Divider />}
       />
       <TouchableOpacity style={styles.addAll} onPress={() => addToWorkout()}>
-        <Text>Add to workout ({selected.length})</Text>
+        <Text>
+          {props.route.params?.dashboard
+            ? "Add to Tracker "
+            : "Add to Workout "}
+          ({selected.length})
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   searchBar: {

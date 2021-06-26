@@ -5,7 +5,7 @@ const colors = ['gold', 'silver', 'firebrick']
 
 export const Favourites = (props) => {
   const pb = props.pb
-  const favs = props.favs.map(fav => ({...fav, best: pb.find(record => fav.name === record.exercise).best}));
+  const favs = props.favs.map(fav => ({...fav, best: pb.find(record => fav.name === record.exercise) && pb.find(record => fav.name === record.exercise).best }));
   
   return (
     <View style={styles.containter}>

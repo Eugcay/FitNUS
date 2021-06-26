@@ -13,7 +13,7 @@ const WorkoutSearch = ({ navigation, workouts }) => {
     if (text) {
       const results = complete.filter((item) => {
         const check = item.data.name.toUpperCase();
-        return check.indexOf(text.toUpperCase()) === 0;
+        return check.indexOf(text.toUpperCase()) > -1;
       });
       setFiltered(results);
       setSearchQuery(text);

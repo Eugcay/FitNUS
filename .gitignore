@@ -87,3 +87,9 @@ config.js
 .history
 json_to_firestore/service_key.json
 node_modules
+.vs 
+.vscode
+.idea
+.history
+.expo
+.exposhared

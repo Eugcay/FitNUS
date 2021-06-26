@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { PieChart } from "react-native-svg-charts";
 import { Text } from "react-native-svg";
+import { NoData } from "./NoData";
 
 export default class MuscleCategoryPie extends Component {
   constructor(props) {
@@ -9,7 +10,10 @@ export default class MuscleCategoryPie extends Component {
     this.state = {
       selectedSlice: "",
     };
+    console.log(props.data)
   }
+
+  
 
   render() {
     const data = this.props.data;
@@ -46,11 +50,11 @@ export default class MuscleCategoryPie extends Component {
         },
         arc: {
           outerRadius: this.state.selectedSlice === cat.id ? "100%" : "95%",
-          padAngle: this.state.selectedSlice === cat.id ? 0.08 : 0.04
+          padAngle: this.state.selectedSlice === cat.id ? 0.08 : 0.04,
         },
       }));
 
-    return (
+    return total > 0 ? (
       <PieChart
         style={{ height: 240, marginVertical: 10 }}
         data={pieData}
@@ -59,6 +63,8 @@ export default class MuscleCategoryPie extends Component {
       >
         <Labels />
       </PieChart>
+    ) : (
+      <NoData/> 
     );
   }
 }

@@ -265,9 +265,9 @@ export default function RunMap(props) {
         longitude: loc.coords.longitude,
       });
       setLocList(
-        locList.concat([
+        locList.concat(
           { latitude: loc.coords.latitude, longitude: loc.coords.longitude },
-        ])
+        )
       );
 
       let locations = await Location.watchPositionAsync(
@@ -283,7 +283,7 @@ export default function RunMap(props) {
     return () => {
         remove.remove()
     }
-  }, [loclist]);
+  }, [locList]);
 
   const start = () => {
     setStatus("Continue");

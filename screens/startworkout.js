@@ -148,6 +148,7 @@ const StartWorkout = (props) => {
         name,
         description,
         duration: timeNow / 1000,
+        distance: 0,
         calories: 100,
         imageURL,
         exercises,
@@ -258,9 +259,9 @@ const StartWorkout = (props) => {
   ]);
 
   return (
-    <View style={{ flex: 1 }}>
-        <HeaderTop />
-        <View style={{ alignItems: "center" }}>
+    <View style={{ flex: 1, alignItems: 'center'}}>
+        {/* <HeaderTop /> */}
+        
           {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
             <View>
               <Stopwatch
@@ -310,11 +311,10 @@ const StartWorkout = (props) => {
             onPress={() => finishWorkout()}
           />
           {exercises.length === 0 && (
-            <Text style={{ marginVertical: "60%", fontSize: 24 }}>
+            <Text style={{ marginVertical: "20%", fontSize: 24 }}>
               Lets get Started!
             </Text>
           )}
-          <View>
             <FlatList
               data={exercises}
               keyExtractor={(item) => item.key}
@@ -322,8 +322,8 @@ const StartWorkout = (props) => {
               style={{ marginTop: 15, height: "63%" }}
               extraData={exercises}
             />
-          </View>
-        </View>
+          
+        
 
         <View style={styles.bottombar}>
           <TouchableOpacity
