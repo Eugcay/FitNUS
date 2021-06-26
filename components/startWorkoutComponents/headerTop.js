@@ -22,6 +22,22 @@ const HeaderTop = ({ name, image, desc }) => {
   const [heart, onLike] = useState(false);
   const onLikePress = () => onLike(!heart);
 
+  const _renderTruncatedFooter = (handlePress) => {
+    return (
+      <Text style={{color: "#007FFF", marginTop: 5}} onPress={handlePress}>
+        Read more
+      </Text>
+    );
+  }
+ 
+  const _renderRevealedFooter = (handlePress) => {
+    return (
+      <Text style={{color: "#007FFF", marginTop: 5}} onPress={handlePress}>
+        Show less
+      </Text>
+    );
+  }
+
   return (
     <View>
       {image !== "" ? (
@@ -45,7 +61,11 @@ const HeaderTop = ({ name, image, desc }) => {
           Description
         </Text>
         <View style={styles.body}>
-          <ReadMore numberOfLines={3}>
+          <ReadMore
+            numberOfLines={3}
+            renderTruncatedFooter={_renderTruncatedFooter}
+            renderRevealedFooter={_renderRevealedFooter}
+          >
             <Text style={styles.body}>{desc ? desc : ""}</Text>
           </ReadMore>
         </View>
@@ -75,7 +95,7 @@ const styles = StyleSheet.create({
   body: {
     marginVertical: 5,
     marginHorizontal: 10,
-    textAlign: "justify"
+    textAlign: "justify",
   },
   top: {
     marginVertical: 5,

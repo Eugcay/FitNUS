@@ -202,119 +202,94 @@ const StartWorkout = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        <ScrollView>
-          <HeaderTop name={name} image={imageURL} desc={description} />
-          <View style={styles.statbar}>
-            <View style={styles.statbox}>
-              <MaterialCommunityIcons name="timer" size={17} color="red" />
-              <Text style={{ fontWeight: "bold" }}>huh</Text>
+      <View>
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={{ flexGrow: 1, justifyContent: "space-between" }}>
+            <View style={{paddingBottom: 10}}>
+              <HeaderTop name={name} image={imageURL} desc={description} />
             </View>
-            <Divider orientation="vertical" />
-            <View style={styles.statbox}>
-              <MaterialCommunityIcons
-                name="format-list-bulleted-square"
-                size={20}
-                color="blue"
-              />
-              <Text>Sets</Text>
-              <Text>
-                {exercises
-                  ? exercises
-                      .map((exercise) => exercise.sets.length)
-                      .reduce((x, y) => x + y, 0)
-                  : "0"}
-              </Text>
-            </View>
-            <Divider orientation="vertical" />
-            <View style={styles.statbox}>
-              <MaterialCommunityIcons
-                name="emoticon-happy-outline"
-                size={20}
-                color="green"
-              />
-              <Text>Achievements</Text>
-              <Text>hi</Text>
-            </View>
+            {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
+              <View style={styles.statbar}>
+                <TouchableOpacity
+                  style={styles.startstop}
+                  onPress={() => {
+                    setIsStopwatchStart(true);
+                    setStatus("Continue");
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF" }}>Start</Text>
+                </TouchableOpacity>
+                <Divider orientation="vertical" />
+                <Stopwatch
+                  start={isStopwatchStart}
+                  //To start
+                  reset={false}
+                  //To reset
+                  options={options}
+                  //options for the styling
+                  getMsecs={(time) => setTime(time)}
+                />
+              </View>
+            ) : (
+              <View style={styles.statbar}>
+                <TouchableOpacity
+                  style={styles.startstop}
+                  onPress={() => {
+                    setStatus("Paused");
+                    setIsStopwatchStart(false);
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF" }}>Pause</Text>
+                </TouchableOpacity>
+                <Divider orientation="vertical" />
+                <Stopwatch
+                  start={isStopwatchStart}
+                  //To start
+                  reset={false}
+                  //To reset
+                  options={options}
+                  //options for the styling
+                  getMsecs={(time) => setTime(time)}
+                />
+              </View>
+            )}
           </View>
-          {/* <View>
-          {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
+          <View>
             <View>
-              <Stopwatch
-                start={isStopwatchStart}
-                //To start
-                reset={false}
-                //To reset
-                options={options}
-                //options for the styling
-                getMsecs={(time) => setTime(time)}
-              />
-              <TouchableOpacity
-                style={[styles.button, { backgroundColor: "#00BFFF" }]}
-                onPress={() => {
-                  start();
-                  setIsStopwatchStart(true);
-                }}
-              >
-                <Text>Start</Text>
-              </TouchableOpacity>
+              {exercises.length === 0 && (
+                <Text style={{ fontSize: 24, alignSelf: 'center', margin: 80}}>Lets get Started!</Text>
+              )}
             </View>
-          ) : (
-            <View>
-              <Stopwatch
-                start={isStopwatchStart}
-                //To start
-                reset={false}
-                //To reset
-                options={options}
-                //options for the styling
-                getMsecs={(time) => setTime(time)}
-              />
-              <TouchableOpacity
-                style={[styles.button, { backgroundColor: "#00BFFF" }]}
-                onPress={() => {
-                  setStatus("Paused");
-                  setIsStopwatchStart(false);
-                }}
-              >
-                <Text>Pause</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View> */}
-          {/* <View>
-          {exercises.length === 0 && (
-            <Text style={{ marginVertical: "60%", fontSize: 24 }}>
-              Lets get Started!
-            </Text>
-          )}
-        </View>
-        <View>
-          <FlatList
-            data={exercises}
-            keyExtractor={(item) => item.key}
-            renderItem={renderItem}
-            style={{ marginTop: 15, height: "63%" }}
-            extraData={exercises}
-          />
-        </View> */}
+            {exercises && (
+              <View style={{ marginBottom: 60 }}>
+                <FlatList
+                  data={exercises}
+                  keyExtractor={(item) => item.key}
+                  renderItem={renderItem}
+                  scrollEnabled={false}
+                />
+              </View>
+            )}
+          </View>
         </ScrollView>
-        </View>
-
-      {/* <Button title="finish" color="green" onPress={() => finishWorkout()} /> */}
-
+      </View>
       <View style={styles.bottombar}>
         <TouchableOpacity
-          style={[styles.bottomButton, { backgroundColor: "#00BFFF" }]}
+          style={[styles.bottomButton, { backgroundColor: "#0B2A59" }]}
           onPress={() => props.navigation.navigate("Add Exercises")}
         >
-          <Text>Add exercises</Text>
+          <Text style={{ color: "#FFFFFF" }}>Add exercises</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.bottomButton, { backgroundColor: "#F08080" }]}
-          onPress={clearWorkout}
+          onPress={() => finishWorkout()}
         >
-          <Text>Clear Workout</Text>
+          <Text>Finish Workout</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -407,17 +382,25 @@ const styles = StyleSheet.create({
   statbar: {
     flexDirection: "row",
     marginHorizontal: 10,
-    marginVertical: 5,
+    marginVertical: 0,
     borderTopColor: "#C0C0C0",
     borderBottomColor: "#C0C0C0",
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    paddingVertical: 10,
     alignItems: "center",
     justifyContent: "center",
   },
-  statbox: {
+  startstop: {
     width: "30%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 5,
+    backgroundColor: "#0B2A59",
+    borderRadius: 5,
+    height: 25,
+  },
+  stopwatch: {
+    width: "70%",
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 5,
@@ -426,15 +409,15 @@ const styles = StyleSheet.create({
 
 const options = {
   container: {
-    backgroundColor: "darkblue",
-    padding: 5,
-    borderRadius: 5,
-    width: 200,
     alignItems: "center",
+    width: "70%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 5,
   },
   text: {
     fontSize: 25,
-    color: "#FFF",
+    color: "#000000",
     marginLeft: 7,
   },
 };
