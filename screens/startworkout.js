@@ -36,6 +36,7 @@ const StartWorkout = (props) => {
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
   const [timeNow, setTimeNow] = useState(0);
+  const here = <HeaderTop name={name} image={imageURL} desc={description}/>
 
   const setTime = useRef((someNewValue) => {
     setTimeout(() => {
@@ -407,7 +408,7 @@ const styles = StyleSheet.create({
   bottombar: {
     flex: 1,
     position: "absolute",
-    bottom: Platform.OS === "ios" ? 36 : 15,
+    bottom: Platform.OS === "ios" ? 15 : 0,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
