@@ -1,14 +1,15 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { BarChart, XAxis, YAxis, Grid } from "react-native-svg-charts";
-import { Defs, LinearGradient, Stop } from "react-native-svg";
+import { Defs, LinearGradient, Stop, Line } from "react-native-svg";
 import moment from "moment";
 
 import * as scale from "d3-scale";
 
 export const FrequencyBarChart = (props) => {
   const type = props.type;
-  const data = props.data;
+  const data = props.data
+  const goal = props.goal;
 
   const yaxis = type === "total" ? data : data.map((week) => week.count);
   let max = yaxis.reduce((x, y) => Math.max(x, y), 0);
@@ -33,6 +34,18 @@ export const FrequencyBarChart = (props) => {
       </LinearGradient>
     </Defs>
   );
+  const HorizontalLine = (({ y }) => (
+    <Line
+        key={ 'goal' }
+        x1={ '0%' }
+        x2={ '100%' }
+        y1={ y(goal) }
+        y2={ y(goal) }
+        stroke={ 'grey' }
+        strokeDasharray={ [ 4, 8 ] }
+        strokeWidth={ 2 }
+    />
+))
 
   return (
     <View style={{ flex: 1, height: 270 }}>
@@ -63,6 +76,7 @@ export const FrequencyBarChart = (props) => {
             svg={{ fill: "lightgray" }}
           />
           <Gradient />
+          {type === 'monthly' && <HorizontalLine />}
         </BarChart>
       </View>
       <XAxis

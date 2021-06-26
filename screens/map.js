@@ -202,7 +202,7 @@ export default function Map(props) {
 
       let loc = await Location.getCurrentPositionAsync({});
       setLocation(loc);
-      
+
       if (errorMsg) {
         setText(errorMsg);
       } else if (location) {
@@ -229,10 +229,10 @@ export default function Map(props) {
       <MapView
         style={[styles.map, { marginTop: mTop }]}
         initialRegion={{
-          latitude: 1.3702303096151767,
-          longitude: 103.94958799677016,
-          latitudeDelta: 0.09,
-          longitudeDelta: 0.05,
+          latitude: 1.30120,
+          longitude: 103.77442,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}
         provider="google"
         mapType="hybrid"

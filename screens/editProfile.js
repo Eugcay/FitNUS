@@ -75,6 +75,7 @@ function EditProfile(props) {
 
   const update = async (url) => {
     await props.uploadChanges({
+      ...user,
       name,
       email,
       bio,

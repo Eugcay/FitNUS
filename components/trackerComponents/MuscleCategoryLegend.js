@@ -6,7 +6,7 @@ export default function PieLegend(props) {
   return <View style={styles.legend}>
       {data.map(cat => {
           return (
-              <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 3}}>
+              <View key={cat.key} style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 3}}>
                   <View style={[styles.circle, {backgroundColor: cat.color}]}></View>
                   <Text style={{fontSize: 13}}>{cat.key}</Text>
               </View>

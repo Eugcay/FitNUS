@@ -106,7 +106,7 @@ function WorkoutDetails(props) {
           <View style={styles.statbox}>
             <MaterialCommunityIcons name="timer" size={17} color="red" />
             <Text>{date ? "" : "Expected"} Duration</Text>
-            <Text style={{ fontWeight: "bold" }}>{duration}</Text>
+            <Text style={{ fontWeight: "bold" }}>{Math.round(duration / 60) + ':' + Math.round(duration % 60)}</Text>
           </View>
           <Divider orientation="vertical" />
           <View style={styles.statbox}>
