@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import * as Location from "expo-location";
+import haversine from "haversine";
 import { mapDark, mapStandard } from "../mapConfig";
 import { Stopwatch } from "react-native-stopwatch-timer";
 
@@ -178,10 +179,10 @@ export default function RunMap(props) {
   ];
 
   const [workoutStatus, setStatus] = useState("Not Started");
+  const [timeNow, setTimeNow] = useState(null);
 
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
-  const [timeNow, setTimeNow] = useState(0);
 
   const setTime = useRef((someNewValue) => {
     setTimeout(() => {
@@ -231,94 +232,72 @@ export default function RunMap(props) {
     return haversine(prevLatLng, newLatLng) || 0;
   };
 
-  const onPostionChange = (loc) => {
-    //currentLocation could be null for the first one
-    const latlon = {
-      latitude: loc.coords.latitude,
-      longitude: loc.coords.longitude,
-    };
-    //setNewDistance(distance + calcDistance(currentLocation, latlon));
-    setCurrentLocation(latlon);
-    setLocList(locList.push(latlon));
-  };
+  // const onPostionChange = (loc) => {
+  //   //currentLocation could be null for the first one
+  //   console.log("changed");
+  //   const latlon = {
+  //     latitude: loc.coords.latitude,
+  //     longitude: loc.coords.longitude,
+  //   };
+  //   setNewDistance(distance + calcDistance(currentLocation, latlon));
+  //   setCurrentLocation(latlon);
+  //   setLocList(locList.push(latlon));
+  // };
 
-  //OnPress, start tracking:
+  //Carry on
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status == "granted") {
-        let { status2 } = await Location.requestBackgroundPermissionsAsync();
-        if (status2 !== "granted") {
-          setErrorMsg("Permission to access background location was denied");
-          return;
-        }
-      } else {
+      console.log("rendered");
+      ////////////////////////////////////////////////////////////
+      let { currentStatus } = await Location.getForegroundPermissionsAsync();
+      if (currentStatus !== "granted") {
+        let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
           setErrorMsg("Permission to access location was denied");
+          console.log("Permission not granted!");
           return;
+        } else {
         }
       }
-      let loc = await Location.getCurrentPositionAsync({});
-      console.log("hello again");
-      setCurrentLocation({
-        latitude: loc.coords.latitude,
-        longitude: loc.coords.longitude,
-      });
-      setLocList(
-        locList.concat(
-          { latitude: loc.coords.latitude, longitude: loc.coords.longitude },
-        )
-      );
+      /////////////////////////////////////////////////////////////
 
+      if (currentLocation == null) {
+          let loc = await Location.getCurrentPositionAsync({});
+          console.log("Current Position got")
+          const newLocation = {
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+          };
+          setCurrentLocation(newLocation);
+          setLocList(locList.concat([newLocation]));
+      }
+
+      ////////////////////////////////////////////////////////////
+      //wacthasync eturns a promise resolving to a subscription object, remove (function) -- Call this function with no arguments to remove this subscription.
       let locations = await Location.watchPositionAsync(
         {
           enableHighAccuracy: true,
           timeInterval: 1000,
           distanceInterval: 1,
         },
-        onPostionChange
+        (loc) => {
+          console.log("changed");
+          const latlon = {
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+          };
+          setNewDistance(distance + calcDistance(currentLocation, latlon));
+          setCurrentLocation(latlon);
+          setLocList(locList.concat([latlon]));
+        }
       );
       setRemove(locations);
     })();
-    return () => {
-        remove.remove()
-    }
-  }, [locList]);
+  }, [locList]); //only rerender if loclist changes
 
   const start = () => {
     setStatus("Continue");
-    console.log("Hello");
-    async () => {
-      //   let loc = await Location.getCurrentPositionAsync({});
-      //   console.log("hello again");
-      //   setCurrentLocation({
-      //     latitude: loc.coords.latitude,
-      //     longitude: loc.coords.longitude,
-      //   });
-      //   setLocList(
-      //     locList.concat([
-      //       { latitude: loc.coords.latitude, longitude: loc.coords.longitude },
-      //     ])
-      //   );
-      //   let locations = await Location.watchPositionAsync(
-      //     {
-      //       accuracy: Location.Accuracy.High,
-      //       timeInterval: 100,
-      //       distanceInterval: 1,
-      //     },
-      //     (loc) => {
-      //       //currentLocation could be null for the first one
-      //       const latlon = {
-      //         latitude: loc.coords.latitude,
-      //         longitude: loc.coords.longitude,
-      //       };
-      //       setNewDistance(distance + calcDistance(currentLocation, latlon));
-      //       setCurrentLocation(latlon);
-      //       setLocList(locList.concat([latlon]));
-      //     }
-      //   );
-      //   setRemove(locations);
-    };
+    console.log("Start Pressed")
   };
 
   const stop = () => {
@@ -347,7 +326,6 @@ export default function RunMap(props) {
           longitudeDelta: 0.01,
         }}
         provider="google"
-        mapType="hybrid"
         showsUserLocation={true}
         showsMyLocationButton={true}
         showsCompass={true}
@@ -362,11 +340,16 @@ export default function RunMap(props) {
             description={marker.description}
           />
         ))}
-        <Polyline coordinates={locList} strokeWidth={5} />
+        <Polyline coordinates={locList} strokeWidth={2} />
       </MapView>
       <View style={styles.overlay}>
         {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
           <View>
+            <View style={styles.timeBox}>
+              <Text style={styles.time}>
+                Time elapsed:
+              </Text>
+            </View>
             <Stopwatch
               start={isStopwatchStart}
               //To start
@@ -376,18 +359,31 @@ export default function RunMap(props) {
               //options for the styling
               getMsecs={(time) => setTime(time)}
             />
+            <View style={styles.ranBox}>
+              <Text style={styles.ran}>
+                Distance:
+              </Text>
+            </View>
+            <View style={styles.distanceBox}>
+              <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
+            </View>
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: "#00BFFF" }]}
+              style={styles.startButtonBox}
               onPress={() => {
                 start();
                 setIsStopwatchStart(true);
               }}
             >
-              <Text>Start</Text>
+              <Text style={styles.startButton}>Start</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <View>
+            <View style={styles.timeBox}>
+              <Text style={styles.time}>
+                Time elapsed:
+              </Text>
+            </View>
             <Stopwatch
               start={isStopwatchStart}
               //To start
@@ -397,14 +393,22 @@ export default function RunMap(props) {
               //options for the styling
               getMsecs={(time) => setTime(time)}
             />
+            <View style={styles.ranBox}>
+              <Text style={styles.ran}>
+                Distance:
+              </Text>
+            </View>
+            <View style={styles.distanceBox}>
+              <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
+            </View>
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: "#00BFFF" }]}
+              style={styles.pauseButtonBox}
               onPress={() => {
                 setStatus("Paused");
                 setIsStopwatchStart(false);
               }}
             >
-              <Text>Pause</Text>
+              <Text style={styles.pauseButton}>Pause</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -427,22 +431,74 @@ const styles = StyleSheet.create({
   overlay: {
     position: "absolute",
     bottom: 50,
-    backgroundColor: "rgba(255, 255, 255, 1)",
     alignItems: "center",
   },
+  distanceBox: {
+    alignSelf: 'center',
+    bottom: 360
+  },
+  distance: {
+    fontSize: 30,
+    color: "#0B2A59",
+    textShadowColor: "black",
+    textShadowOffset: {
+      width: 50,
+      height: -10
+    }
+  },
+  timeBox: {
+    bottom: 335,
+    left: 64
+  },
+  time: {
+    color: "#0B2A59",
+    fontSize: 15
+  },
+  ranBox: {
+    bottom: 354,
+    left: 125
+  },
+  ran: {
+    color: "#0B2A59",
+    fontSize: 15
+  },
+  startButtonBox: {
+    alignSelf: "center",
+    backgroundColor: "#0B2A59",
+    padding: 10,
+    borderRadius: 16,
+    width: 150,
+    bottom:  -20
+  },
+  startButton: {
+    alignSelf: 'center',
+    color: "white",
+    fontSize: 18
+  },
+  pauseButtonBox: {
+    alignSelf: "center",
+    backgroundColor: "#F08080",
+    padding: 10,
+    borderRadius: 16,
+    width: 150,
+    bottom:  -20
+  },
+  pauseButton: {
+    alignSelf: 'center',
+    color: "white",
+    fontSize: 18
+  }
 });
 
 const options = {
   container: {
-    backgroundColor: "darkblue",
-    padding: 5,
-    borderRadius: 5,
-    width: 200,
+    width: Dimensions.get("window").width,
     alignItems: "center",
+    bottom: 350
   },
   text: {
-    fontSize: 25,
-    color: "#FFF",
-    marginLeft: 7,
+    fontSize: 62,
+    color: "#0B2A59",
+    margin: 0,
   },
 };

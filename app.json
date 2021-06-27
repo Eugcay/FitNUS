@@ -22,14 +22,16 @@
       "bundleIdentifier": "fitNus",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Just say yes thank you - app.json infoPlist",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Just say yes thank you - app.json infoPlist"
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Just say yes thank you - app.json infoPlist",
+        "NSLocationAlwaysUsageDescription": "Hellos - app.json infoPlist"
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "ACCESS_BACKGROUND_LOCATION"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
