@@ -18,8 +18,8 @@ import { Divider } from "react-native-elements";
   // get history of user
   useEffect(() => {
     setHistory(props.history)
-    setUser(props.user)
-  }, [props.user, props.history]);
+    setUser(props.currentUser)
+  }, [props.currentUser, props.history]);
 
   // get workouts
   useEffect(() => {
@@ -48,8 +48,6 @@ import { Divider } from "react-native-elements";
         <WorkoutSearch navigation={props.navigation} workouts={workouts} />
       </View>
       <Divider width={1} style={{marginVertical: 10}}/>
-        
-
       
       <Text style={styles.headers}>Try something New!</Text>
       <FitBudSuggests navigation={props.navigation} />

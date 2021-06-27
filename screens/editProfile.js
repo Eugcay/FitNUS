@@ -19,6 +19,7 @@ function EditProfile(props) {
 
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
+
   const [bio, setBio] = useState(user?.bio);
   const [photoURL, setPhoto] = useState(user.photoURL ? user.photoURL : null);
   const [changePhoto, setChange] = useState(false);
@@ -74,13 +75,15 @@ function EditProfile(props) {
 
   const update = async (url) => {
     await props.uploadChanges({
+      ...user,
       name,
       email,
       bio,
       photoURL: url,
-      calGoal,
+      caloriesGoal: calGoal,
       durationGoal,
       distanceGoal,
+      pb: user?.pb ? user?.pb : [],
       workoutGoal
     });
     props.navigation.goBack();

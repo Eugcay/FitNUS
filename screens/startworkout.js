@@ -18,6 +18,7 @@ import { addToHistory } from "../store/actions/user";
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
 import { Stopwatch } from "react-native-stopwatch-timer";
 import { Divider } from "react-native-elements";
+import { updateUser } from "../store/actions/user";
 
 const StartWorkout = (props) => {
   const [name, setName] = useState("Custom Workout");
@@ -86,12 +87,15 @@ const StartWorkout = (props) => {
 
   const finishWorkout = () => {
     if (workoutComplete()) {
-      stop();
+      setStatus("Paused");
+      setIsStopwatchStart(false);
+      checkPb()
       console.log(timeNow);
       const workout = {
         name,
         description,
         duration: timeNow / 1000,
+        distance: 0,
         calories: 100,
         imageURL,
         exercises,
@@ -102,6 +106,29 @@ const StartWorkout = (props) => {
     } else {
       Alert.alert("Workout incomplete!");
     }
+  };
+
+  const checkPb = () => {
+    exercises.forEach((exe) => {
+      const exName = exe.data.name;
+      const max = exe.sets
+        .map((set) => set.weight)
+        .reduce((x, y) => Math.max(x, y), 0);
+      const doneBefore = props.currentUser.pb.find((ex) => ex.exercise === exName) 
+      const currPb = doneBefore
+        ? doneBefore.best
+        : 0;
+      if (max > currPb) {
+        if (doneBefore) {
+          const data = [...props.currentUser.pb];
+          const index = data.findIndex((ex) => ex.exercise === exName);
+          data.splice(index, 1, { exercise: exName, best: max });
+          updateUser({ ...props.currentUser, pb: data });
+        } else {
+          updateUser({...props.currentUser, pb: props.currentUser.pb.concat({exercise: exName, best: max})})
+        }
+      }
+    });
   };
 
   const renderItem = ({ item }) => {
@@ -199,6 +226,7 @@ const StartWorkout = (props) => {
     props.route.params?.exercise,
     props.route.params?.replace,
     props.route.params?.template,
+    props.currentUser,
   ]);
 
   return (
@@ -211,7 +239,7 @@ const StartWorkout = (props) => {
           }}
         >
           <View style={{ flexGrow: 1, justifyContent: "space-between" }}>
-            <View style={{paddingBottom: 10}}>
+            <View style={{ paddingBottom: 10 }}>
               <HeaderTop name={name} image={imageURL} desc={description} />
             </View>
             {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
@@ -263,7 +291,9 @@ const StartWorkout = (props) => {
           <View>
             <View>
               {exercises.length === 0 && (
-                <Text style={{ fontSize: 24, alignSelf: 'center', margin: 80}}>Lets get Started!</Text>
+                <Text style={{ fontSize: 24, alignSelf: "center", margin: 80 }}>
+                  Lets get Started!
+                </Text>
               )}
             </View>
             {exercises && (
@@ -297,11 +327,16 @@ const StartWorkout = (props) => {
   );
 };
 
-const maptDispatchToProps = (dispatch) => ({
-  finish: (workout) => dispatch(addToHistory(workout)),
+const mapStateToProps = (store) => ({
+  currentUser: store.user.currentUser,
 });
 
-export default connect(null, maptDispatchToProps)(StartWorkout);
+const mapDispatchToProps = (dispatch) => ({
+  finish: (workout) => dispatch(addToHistory(workout)),
+  updatePB: (user) => dispatch(updateUser(user)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(StartWorkout);
 
 const styles = StyleSheet.create({
   image: {
