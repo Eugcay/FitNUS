@@ -38,7 +38,7 @@ export const concatWithoutDupe = (arr, inputArr) => {
 export const getCurrWeek = () => {
   const curr = new Date();
   const first = curr.getDate() - curr.getDay();
-  const last = first + 6;
+  const last = first + 7;
   const start = new Date(curr.setDate(first));
   const end = new Date(curr.setDate(last));
   return { start, end };
@@ -229,7 +229,7 @@ export const reloadPeriod = (period, hist) => {
       .map((doc) => doc.data)
       .filter(
         (doc) =>
-          doc.date.seconds * 1000 <= Date.parse(period.end) &&
+          doc.date.seconds * 1000 < Date.parse(period.end) &&
           doc.date.seconds * 1000 >= Date.parse(period.start)
       )
   );

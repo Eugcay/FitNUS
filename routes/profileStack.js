@@ -11,11 +11,7 @@ const Stack = createStackNavigator();
 const ProfileStack = () => {
   return (
       <Stack.Navigator initialRouteName="Profile">
-        <Stack.Screen name="Profile" component={Profile} options={{
-          headerRight: () => (
-            <Text onPress={logout} style={{color: 'red', marginRight: 10, fontSize: 16, alignSelf: 'center'}}>Logout</Text>
-          ) 
-        }}/>
+        <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="Edit Profile" component={EditProfile} />
       </Stack.Navigator>
   );

@@ -18,7 +18,7 @@ export default function Jio({ navigation }) {
         
       </View>
       <View style={styles.buttonSurrounding}>
-      <TouchableOpacity style={styles.join}>
+      <TouchableOpacity onPress={() => navigation.navigate('Exercise Jio')} style={styles.join}>
           <Text>Find your friends</Text>
         </TouchableOpacity>
         </View>

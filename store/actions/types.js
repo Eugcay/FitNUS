@@ -1,9 +1,14 @@
 export const SET_USER = 'SET_USER'
 export const UPDATE_USER = 'UPDATE_USER'
 export const SET_USER_HISTORY = 'SET_USER_HISTORY'
+export const SET_USER_FOLLOWING = 'SET_USER_FOLLOWING'
+export const SET_USER_FOLLOWERS = 'SET_USER_FOLLOWERS'
 export const ADD_WORKOUT = 'ADD_WORKOUT'
 export const REMOVE_FROM_HISTORY = 'REMOVE_FROM_HISTORY'
 export const CLEAR = 'CLEAR'
+
+export const SET_USERS = 'SET_USERS'
+export const SET_CURRENT_USER = 'SET_CURRENT_USER'
 
 export const SET_STATS = 'SET_STATS'
 export const SET_WEEKLY_STATS = 'SET_WEEKLY_STATS'

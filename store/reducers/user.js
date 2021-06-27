@@ -5,13 +5,16 @@ import {
   CLEAR,
   UPDATE_USER,
   REMOVE_FROM_HISTORY,
+  SET_USER_FOLLOWING,
+  SET_USER_FOLLOWERS,
 } from "../actions/types";
 
 const initialState = {
   currentUser: null,
-  history: null,
+  history: [],
   rendered: false,
-  friends: [],
+  following: [],
+  followers: [],
 };
 
 export const userReducer = (state = initialState, action) => {
@@ -21,21 +24,25 @@ export const userReducer = (state = initialState, action) => {
         ...state,
         currentUser: action.currentUser,
       };
+
     case UPDATE_USER:
       return {
         ...state,
         currentUser: action.currentUser,
       };
+
     case SET_USER_HISTORY:
       return {
         ...state,
         history: action.history,
       };
+
     case ADD_WORKOUT:
       return {
         ...state,
         history: state.history.concat(action.data),
       };
+
     case REMOVE_FROM_HISTORY:
       const data = [...state.history];
       const index = data.indexOf(action.workout);
@@ -44,8 +51,22 @@ export const userReducer = (state = initialState, action) => {
         ...state,
         history: data,
       };
+
+    case SET_USER_FOLLOWING:
+      return {
+        ...state,
+        following: action.following,
+      };
+
+    case SET_USER_FOLLOWERS:
+      return {
+        ...state,
+        followers: action.followers,
+      };
+
     case CLEAR:
       return initialState;
+
     default:
       return state;
   }

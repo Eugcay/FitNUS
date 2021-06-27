@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import LoginStack from "./routes/loginStack";
-import Main from "./routes/Main";
-import addWorkoutStack from "./routes/addWorkoutStack";
 import firebase from "firebase";
 import { firebaseConfig } from "./config";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -12,6 +9,11 @@ import config from "./linking";
 import Spinner from "./components/Spinner";
 import { Provider } from "react-redux";
 import Store from "./store";
+
+import LoginStack from "./routes/loginStack";
+import Main from "./routes/Main";
+import addWorkoutStack from "./routes/addWorkoutStack";
+import JioStack from "./routes/jioStack";
 
 const prefix = Linking.createURL("/");
 
@@ -70,6 +72,7 @@ export class App extends Component {
               }}>
                 <Stack.Screen name="Main" component={Main} />
                 <Stack.Screen name="Start Workout" component={addWorkoutStack}/>
+                <Stack.Screen name="Exercise Jio" component={JioStack} />
               </Stack.Navigator>
             ) : (
               <LoginStack />

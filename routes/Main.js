@@ -7,10 +7,17 @@ import { bindActionCreators } from "redux";
 
 import { TrackerStack } from "./trackerStack";
 import FitBudStack from "./fitBudStack";
+import JioStack from "./jioStack";
 import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";
 
-import { clearData, getUser, getUserHistory } from "../store/actions/user";
+import {
+  clearData,
+  getUser,
+  getUserHistory,
+  getUserFollowing,
+  getUserFollowers,
+} from "../store/actions/user";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -19,8 +26,13 @@ export const Main = (props) => {
     props.clearData();
     props.getUser();
     props.getUserHistory();
-    
+    props.getUserFollowing();
+    props.getUserFollowers();
   }, []);
+
+  const EmptyScreen = () => {
+    return (null)
+  }
 
   return (
     <>
@@ -84,7 +96,7 @@ const mapStateToProps = (store) => ({
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
-    { getUser, getUserHistory, clearData, },
+    { getUser, getUserHistory, getUserFollowing, getUserFollowers, clearData },
     dispatch
   );
 

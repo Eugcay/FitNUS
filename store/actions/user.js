@@ -5,6 +5,8 @@ import {
   SET_USER,
   UPDATE_USER,
   SET_USER_HISTORY,
+  SET_USER_FOLLOWING,
+  SET_USER_FOLLOWERS,
   ADD_WORKOUT,
   REMOVE_FROM_HISTORY,
   CLEAR,
@@ -52,6 +54,38 @@ export function getUserHistory() {
           hist.push({ id: doc.id, data: doc.data() });
         });
         dispatch({ type: SET_USER_HISTORY, history: hist });
+      });
+  };
+}
+
+export function getUserFollowing() {
+  return (dispatch) => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("following")
+      .orderBy("dateFollowed")
+      .onSnapshot((snapshot) => {
+        const following = [];
+        snapshot.docs.forEach((doc) => following.push(doc.id));
+        dispatch({ type: SET_USER_FOLLOWING, following });
+      });
+  };
+}
+
+export function getUserFollowers() {
+  return (dispatch) => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("followers")
+      .orderBy("dateFollowed")
+      .onSnapshot((snapshot) => {
+        const followers = [];
+        snapshot.docs.forEach((doc) => followers.push(doc.id));
+        dispatch({ type: SET_USER_FOLLOWERS, followers });
       });
   };
 }

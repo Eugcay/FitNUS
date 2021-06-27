@@ -23,15 +23,13 @@ import {
   yearlyData,
   monthlyData,
   concatWithoutDupe,
-  statsByEx,
 } from "../helpers";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import moment from "moment";
-import { LineChart, Grid, XAxis, YAxis } from "react-native-svg-charts";
-import { Circle, Path } from "react-native-svg";
 import Spinner from "../components/Spinner";
 import MuscleCategoryPie from "../components/trackerComponents/MuscleCategoryPie";
 import PieLegend from "../components/trackerComponents/MuscleCategoryLegend";
+import ExStats from "../components/trackerComponents/ExStats";
 import { FrequencyBarChart } from "../components/trackerComponents/FrequencyBarChart";
 import { Favourites } from "../components/trackerComponents/Favourites";
 
@@ -52,22 +50,22 @@ const Tracker = (props) => {
     const tot = props.history
       ? getStats(props.history.map((doc) => doc.data))
       : null;
-    const w = props.history ? reloadPeriod(week, props.history) : null;
+    const workoutsPerMonth = props.history ? yearlyData(props.history.map((doc) => doc.data))  : null
     const m = props.history ? reloadPeriod(month, props.history) : null;
+    const workoutsPerWeek = props.history ? monthlyData(props.history.map((doc) => doc.data), month) : null 
+    const w = props.history ? reloadPeriod(week, props.history) : null;
+    
     const favourites = favExercises(props.history.map((doc) => doc.data));
 
     setUser(props.currentUser);
     setTotal({
       ...tot,
-      workoutFreq: yearlyData(props.history.map((doc) => doc.data)),
+      workoutFreq: workoutsPerMonth,
     });
     setWeekly(w);
     setMonthly({
       ...m,
-      workoutFreq: monthlyData(
-        props.history.map((doc) => doc.data),
-        month
-      ),
+      workoutFreq: workoutsPerWeek,
     });
     setFavs(favourites);
     setExercises(props.currentUser?.tracked ? props.currentUser?.tracked : []);
@@ -80,8 +78,8 @@ const Tracker = (props) => {
 
     setType(statsType);
     setPeriod(period);
-    console.log(exercises)
-  }, [props.history, props.currentUser, week, month]);
+    console.log(exercises);
+  }, [props.history, props.currentUser, week, month, period]);
 
   useEffect(() => {
     const ex = props.route.params?.exercises;
@@ -115,149 +113,6 @@ const Tracker = (props) => {
     const dat = [...exercises];
     dat.splice(exercises.indexOf(ex), 1);
     props.updateTracker({ ...props.currentUser, tracked: dat });
-  };
-
-//   const Decorator = ({ x, y, data }) => {
-//     return data.map((value, index) => (
-//         <Circle
-//             key={ index }
-//             cx={ x(index) }
-//             cy={ y(value) }
-//             r={ 4 }
-//             stroke={ 'rgb(134, 65, 244)' }
-//             fill={ 'white' }
-//         />
-//     ))
-// }
-
-  const ExStats = ({ item }) => {
-    const stat = statsByEx(
-      item,
-      props.history.map((doc) => doc.data)
-    );
-    const chartData = stat?.exHist && [...stat.exHist].sort(
-      (x, y) => x.date.seconds - y.date.seconds
-    );
-    const pb = props.currentUser.pb.find((ex) => ex.exercise === item.data.name)
-      ? props.currentUser.pb.find((ex) => ex.exercise === item.data.name).best +
-        " kg"
-      : "No PB found";
-
-    return (
-      <View
-        style={{ marginVertical: 10, justifyContent: "center", marginLeft: 10 }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 7,
-          }}
-        >
-          <Image
-            source={
-              item.data.photo
-                ? { uri: item.data.photo }
-                : require("../assets/boxing.jpeg")
-            }
-            style={{ height: 40, width: 40, marginRight: 10, borderRadius: 8 }}
-          />
-          <Text style={{ fontSize: 16, fontWeight: "bold", width: "77%" }}>
-            {item.data.name}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              deleteEx(item);
-            }}
-            style={{
-              alignSelf: "flex-start",
-              fontSize: 13,
-              alignItems: "center",
-            }}
-          >
-            <MaterialCommunityIcons name="delete" size={17} color="crimson" />
-          </TouchableOpacity>
-        </View>
-        <Divider />
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 10,
-            marginBottom: 15,
-          }}
-        >
-          <View style={{ width: "33%", alignItems: "center" }}>
-            <MaterialCommunityIcons
-              name="clock-time-ten"
-              color="maroon"
-              size={22}
-            />
-            <Text style={{ color: "gray" }}>Last completed</Text>
-            <Text>
-              {stat.date
-                ? moment(new Date(stat.date)).format("DD MMMM YYYY")
-                : "No Attempt"}
-            </Text>
-          </View>
-          <Divider orientation="vertical" />
-          <View style={{ width: "33%", alignItems: "center" }}>
-            <MaterialCommunityIcons name="podium" size={22} color="goldenrod" />
-            <Text style={{ color: "gray" }}>Personal Best</Text>
-            <Text>{pb}</Text>
-          </View>
-          <Divider orientation="vertical" />
-          <View style={{ width: "33%", alignItems: "center" }}>
-            <MaterialCommunityIcons
-              name="weight-lifter"
-              size={22}
-              color="green"
-            />
-            <Text style={{ color: "gray" }}>Sets Completed</Text>
-            <Text>{stat.exStats}</Text>
-          </View>
-        </View>
-
-         {stat.exHist ? <View style={{ flex: 1 }}>
-          <Text>Progress Chart</Text>
-          <View style={{ flex: 1, flexDirection: "row", padding: 5 }}>
-            <YAxis
-              data={chartData.map((item) => item.exs)}
-              style={{ width: "6%", justifyContent: "center" }}
-              contentInset={{ top: 10, bottom: 10 }}
-              svg={{ fontSize: 10, fill: "grey" }}
-              yMax={100}
-            />
-            <LineChart
-              style={{ flex: 1, minHeight: 150, maxHeight: 200, width: "96%" }}
-              data={chartData.map((item) => { console.log(item.exs); return item.exs})}
-              svg={{ stroke: 'rgb(134, 65, 244)'}}
-              contentInset={{ top: 10, bottom: 10 }}
-              ymin={100}
-              yMax={100}
-            >
-              <Grid />
-            </LineChart>
-          </View>
-          <XAxis
-            style={{ marginBottom: 12, width: "95%", alignSelf: "flex-end" }}
-            data={chartData}
-            formatLabel={(value, index) =>
-              moment(chartData[index].date.seconds * 1000).format("DD-MMM-YY")
-            }
-            svg={{ fontSize: 10, fill: "black" }}
-            contentInset={{ left: 30, right: 30 }}
-            spacingInner={0.2}
-          />
-        </View> : (
-          <View style={{flex: 1, height: 150, alignItems: "center", justifyContent: 'center'}}>
-            <Text style={{fontSize: 18}}>No Workout Data</Text>
-          </View>
-        )}
-        <Divider />
-      </View>
-    );
   };
 
   return (
@@ -343,7 +198,12 @@ const Tracker = (props) => {
         <View style={styles.statContainer}>
           <Text style={styles.statsTitle}>General Stats</Text>
           <View style={{ flexDirection: "row", marginBottom: 15 }}>
-          {statsType === "weekly" && <WeekCalendar minDate={moment(week.start).format('YYYY-MM-DD')} maxDate={moment(week.end).format('YYYY-MM-DD')}/>}
+            {statsType === "weekly" && (
+              <WeekCalendar
+                minDate={moment(week.start).format("YYYY-MM-DD")}
+                maxDate={moment(week.end).format("YYYY-MM-DD")}
+              />
+            )}
             {!period && <Spinner />}
             {statsType !== "weekly" && period && (
               <FrequencyBarChart
@@ -374,7 +234,9 @@ const Tracker = (props) => {
                 <Text>
                   {period.workouts === 0
                     ? 0
-                    : Math.round(period.duration / (60 * period.workouts)) + ':' + Math.round((period.duration / period.workouts) % 60)}{" "}
+                    : Math.round(period.duration / (60 * period.workouts)) +
+                      ":" +
+                      Math.round((period.duration / period.workouts) % 60)}{" "}
                   min
                 </Text>
               </View>
@@ -436,9 +298,26 @@ const Tracker = (props) => {
       <View style={styles.statbar}>
         <Text style={styles.statsTitle}>Exercise Stats</Text>
         <View style={styles.addEx}>
-          {exercises && props.history &&
+          {exercises &&
+            props.history &&
             exercises.map((item) => {
-              return <ExStats item={item} key={exercises.indexOf(item)} />;
+              return (
+                <ExStats
+                  item={item}
+                  key={exercises.indexOf(item)}
+                  hist={props.history}
+                  pb={
+                    props.currentUser.pb.find(
+                      (ex) => ex.exercise === item.data.name
+                    )
+                      ? props.currentUser.pb.find(
+                          (ex) => ex.exercise === item.data.name
+                        ).best + " kg"
+                      : "No PB found"
+                  }
+                  del={deleteEx}
+                />
+              );
             })}
           <TouchableOpacity
             onPress={() =>
