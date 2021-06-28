@@ -49,6 +49,11 @@ const StartWorkout = (props) => {
     setExercises([]);
   };
 
+  const headerTopUpdate = (name, desc) => {
+    setName(name);
+    setDescription(desc);
+  }
+
   const deleteItem = (item) => {
     const index = exercises.indexOf(item);
     const data = [...exercises];
@@ -244,7 +249,7 @@ const StartWorkout = (props) => {
         >
           <View style={{ flexGrow: 1, justifyContent: "space-between" }}>
             <View style={{ paddingBottom: 10 }}>
-              <HeaderTop name={name} image={imageURL} desc={description} />
+              <HeaderTop name={name} image={imageURL} desc={description} updater={headerTopUpdate}/>
             </View>
             {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
               <View style={styles.statbar}>
