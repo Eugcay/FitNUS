@@ -204,7 +204,7 @@ export default function RunMap(props) {
 
   //Track location stuff => Calcdistance, Watch poition, Polyline
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [distance, setNewDistance] = useState(0);
+  const [distance, setNewDistance] = useState(0.0001);
   const [locList, setLocList] = useState([]);
   const [remove, setRemove] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -232,22 +232,11 @@ export default function RunMap(props) {
     return haversine(prevLatLng, newLatLng) || 0;
   };
 
-  // const onPostionChange = (loc) => {
-  //   //currentLocation could be null for the first one
-  //   console.log("changed");
-  //   const latlon = {
-  //     latitude: loc.coords.latitude,
-  //     longitude: loc.coords.longitude,
-  //   };
-  //   setNewDistance(distance + calcDistance(currentLocation, latlon));
-  //   setCurrentLocation(latlon);
-  //   setLocList(locList.push(latlon));
-  // };
-
   //Carry on
   useEffect(() => {
     (async () => {
       console.log("Effect Rendered");
+
       ////////////////////////////////////////////////////////////
       let { currentStatus } = await Location.getForegroundPermissionsAsync();
       if (currentStatus !== "granted") {
@@ -256,9 +245,11 @@ export default function RunMap(props) {
           setErrorMsg("Permission to access location was denied");
           console.log("Permission not granted!");
           return;
-        } else {
         }
+      } else {
+        console.log("Permission is OK")
       }
+
       /////////////////////////////////////////////////////////////
 
       if (currentLocation == null) {
@@ -268,56 +259,42 @@ export default function RunMap(props) {
           longitude: loc.coords.longitude,
         };
         setCurrentLocation(newLocation);
-        setLocList(locList.concat([newLocation]));
-        console.log("Current Position got" + currentLocation);
+        setLocList(oldList => [...oldList, newLocation]);
+        console.log("Current Location Retrieved: " + "{ lat: " + newLocation.latitude + " lon: " + newLocation.longitude + " }");
+        console.log("Location List Initial Update: " + locList)
       } else {
-        console.log("Current Location is not null");
+        console.log("Initial Current Location is not null");
       }
 
       ////////////////////////////////////////////////////////////
-      //wacthasync eturns a promise resolving to a subscription object, remove (function) -- Call this function with no arguments to remove this subscription.
-      // let locations = await Location.watchPositionAsync(
-      //   {
-      //     enableHighAccuracy: true,
-      //     timeInterval: 1000,
-      //     distanceInterval: 1,
-      //   },
-      //   (loc) => {
-      //     console.log("changed" + distance);
-      //     const latlon = {
-      //       latitude: loc.coords.latitude,
-      //       longitude: loc.coords.longitude,
-      //     };
-
-      //     setNewDistance(distance + calcDistance(currentLocation, latlon));
-      //     setCurrentLocation(latlon);
-      //     setLocList(locList.concat([latlon]));
-      //   }
-      // );
-      // setRemove(locations);
     })();
-  }, [locList]); //only rerender if loclist changes
+  }, [currentLocation]); //only rerender if loclist changes
 
   const start = () => {
     setStatus("Continue");
     console.log("Start Pressed");
+    /////////////////////////////////////////////////////////////
     (async () => {
       let locations = await Location.watchPositionAsync(
         {
+          accuracy: 4,
           enableHighAccuracy: true,
           timeInterval: 1000,
           distanceInterval: 1,
         },
         (loc) => {
-          console.log("Location Changed" + distance);
           const latlon = {
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,
           };
-
+          
           setNewDistance(distance + calcDistance(currentLocation, latlon));
           setCurrentLocation(latlon);
-          setLocList(locList.concat([latlon]));
+          setLocList(oldList => [...oldList, latlon]);
+
+          console.log("Location Changed: " + "{ lat: " + latlon.latitude + " lon: " + latlon.longitude + " }");
+          console.log("Distance now: " + distance)
+          console.log(locList)
         }
       );
       setRemove(locations);
@@ -431,7 +408,7 @@ export default function RunMap(props) {
                 <Text style={styles.pauseButton}>Pause</Text>
               </TouchableOpacity>
               <TouchableOpacity //Finish
-                style={styles.pauseButtonBox}
+                style={styles.finishButtonBox}
                 onPress={() => {
                   setStatus("Not Started");
                   setIsStopwatchStart(false);
@@ -473,10 +450,11 @@ export default function RunMap(props) {
               <Text style={styles.startButton}>Continue</Text>
             </TouchableOpacity>
               <TouchableOpacity //Finish
-                style={styles.pauseButtonBox}
+                style={styles.finishButtonBox}
                 onPress={() => {
                   setStatus("Not Started");
                   setIsStopwatchStart(false);
+                  stop();
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -581,6 +559,15 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     color: "white",
     fontSize: 18,
+  },
+  finishButtonBox: {
+    alignSelf: "center",
+    backgroundColor: "lightgreen",
+    padding: 10,
+    borderRadius: 16,
+    margin: 10,
+    width: 135,
+    bottom: -20,
   },
 });
 
