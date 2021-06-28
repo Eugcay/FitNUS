@@ -247,7 +247,7 @@ export default function RunMap(props) {
   //Carry on
   useEffect(() => {
     (async () => {
-      console.log("rendered");
+      console.log("Effect Rendered");
       ////////////////////////////////////////////////////////////
       let { currentStatus } = await Location.getForegroundPermissionsAsync();
       if (currentStatus !== "granted") {
@@ -262,18 +262,46 @@ export default function RunMap(props) {
       /////////////////////////////////////////////////////////////
 
       if (currentLocation == null) {
-          let loc = await Location.getCurrentPositionAsync({});
-          console.log("Current Position got")
-          const newLocation = {
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-          };
-          setCurrentLocation(newLocation);
-          setLocList(locList.concat([newLocation]));
+        let loc = await Location.getCurrentPositionAsync({});
+        const newLocation = {
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+        };
+        setCurrentLocation(newLocation);
+        setLocList(locList.concat([newLocation]));
+        console.log("Current Position got" + currentLocation);
+      } else {
+        console.log("Current Location is not null");
       }
 
       ////////////////////////////////////////////////////////////
       //wacthasync eturns a promise resolving to a subscription object, remove (function) -- Call this function with no arguments to remove this subscription.
+      // let locations = await Location.watchPositionAsync(
+      //   {
+      //     enableHighAccuracy: true,
+      //     timeInterval: 1000,
+      //     distanceInterval: 1,
+      //   },
+      //   (loc) => {
+      //     console.log("changed" + distance);
+      //     const latlon = {
+      //       latitude: loc.coords.latitude,
+      //       longitude: loc.coords.longitude,
+      //     };
+
+      //     setNewDistance(distance + calcDistance(currentLocation, latlon));
+      //     setCurrentLocation(latlon);
+      //     setLocList(locList.concat([latlon]));
+      //   }
+      // );
+      // setRemove(locations);
+    })();
+  }, [locList]); //only rerender if loclist changes
+
+  const start = () => {
+    setStatus("Continue");
+    console.log("Start Pressed");
+    (async () => {
       let locations = await Location.watchPositionAsync(
         {
           enableHighAccuracy: true,
@@ -281,11 +309,12 @@ export default function RunMap(props) {
           distanceInterval: 1,
         },
         (loc) => {
-          console.log("changed");
+          console.log("Location Changed" + distance);
           const latlon = {
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,
           };
+
           setNewDistance(distance + calcDistance(currentLocation, latlon));
           setCurrentLocation(latlon);
           setLocList(locList.concat([latlon]));
@@ -293,11 +322,6 @@ export default function RunMap(props) {
       );
       setRemove(locations);
     })();
-  }, [locList]); //only rerender if loclist changes
-
-  const start = () => {
-    setStatus("Continue");
-    console.log("Start Pressed")
   };
 
   const stop = () => {
@@ -343,12 +367,10 @@ export default function RunMap(props) {
         <Polyline coordinates={locList} strokeWidth={2} />
       </MapView>
       <View style={styles.overlay}>
-        {workoutStatus == "Not Started" || workoutStatus == "Paused" ? (
+        {workoutStatus == "Not Started" ? (
           <View>
             <View style={styles.timeBox}>
-              <Text style={styles.time}>
-                Time elapsed:
-              </Text>
+              <Text style={styles.time}>Time elapsed:</Text>
             </View>
             <Stopwatch
               start={isStopwatchStart}
@@ -360,29 +382,28 @@ export default function RunMap(props) {
               getMsecs={(time) => setTime(time)}
             />
             <View style={styles.ranBox}>
-              <Text style={styles.ran}>
-                Distance:
-              </Text>
+              <Text style={styles.ran}>Distance:</Text>
             </View>
             <View style={styles.distanceBox}>
               <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
             </View>
-            <TouchableOpacity
+            <View style={styles.bottombar}>
+            <TouchableOpacity //Start
               style={styles.startButtonBox}
               onPress={() => {
                 start();
                 setIsStopwatchStart(true);
+                setStatus("Continue");
               }}
             >
               <Text style={styles.startButton}>Start</Text>
             </TouchableOpacity>
+            </View>
           </View>
-        ) : (
+        ) : workoutStatus == "Continue" ? ( //Pause and Finish
           <View>
             <View style={styles.timeBox}>
-              <Text style={styles.time}>
-                Time elapsed:
-              </Text>
+              <Text style={styles.time}>Time elapsed:</Text>
             </View>
             <Stopwatch
               start={isStopwatchStart}
@@ -394,23 +415,76 @@ export default function RunMap(props) {
               getMsecs={(time) => setTime(time)}
             />
             <View style={styles.ranBox}>
-              <Text style={styles.ran}>
-                Distance:
-              </Text>
+              <Text style={styles.ran}>Distance:</Text>
             </View>
             <View style={styles.distanceBox}>
               <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
             </View>
-            <TouchableOpacity
-              style={styles.pauseButtonBox}
+            <View style={styles.bottombar}>
+              <TouchableOpacity //Paused
+                style={styles.pauseButtonBox}
+                onPress={() => {
+                  setStatus("Paused");
+                  setIsStopwatchStart(false);
+                }}
+              >
+                <Text style={styles.pauseButton}>Pause</Text>
+              </TouchableOpacity>
+              <TouchableOpacity //Finish
+                style={styles.pauseButtonBox}
+                onPress={() => {
+                  setStatus("Not Started");
+                  setIsStopwatchStart(false);
+                }}
+              >
+                <Text style={styles.pauseButton}>Finish</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : workoutStatus == "Paused" ? ( //Finish and Continue
+          <View>
+            <View style={styles.timeBox}>
+              <Text style={styles.time}>Time elapsed:</Text>
+            </View>
+            <Stopwatch
+              start={isStopwatchStart}
+              //To start
+              reset={false}
+              //To reset
+              options={options}
+              //options for the styling
+              getMsecs={(time) => setTime(time)}
+            />
+            <View style={styles.ranBox}>
+              <Text style={styles.ran}>Distance:</Text>
+            </View>
+            <View style={styles.distanceBox}>
+              <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
+            </View>
+            <View style={styles.bottombar}>
+            <TouchableOpacity //Continue
+              style={styles.continueButtonBox}
               onPress={() => {
-                setStatus("Paused");
-                setIsStopwatchStart(false);
+                start();
+                setIsStopwatchStart(true);
+                setStatus("Continue");
               }}
             >
-              <Text style={styles.pauseButton}>Pause</Text>
+              <Text style={styles.startButton}>Continue</Text>
             </TouchableOpacity>
+              <TouchableOpacity //Finish
+                style={styles.pauseButtonBox}
+                onPress={() => {
+                  setStatus("Not Started");
+                  setIsStopwatchStart(false);
+                }}
+              >
+                <Text style={styles.pauseButton}>Finish</Text>
+              </TouchableOpacity>
+            </View>
           </View>
+        ) : (
+          <View />
         )}
       </View>
     </View>
@@ -433,9 +507,19 @@ const styles = StyleSheet.create({
     bottom: 50,
     alignItems: "center",
   },
+  bottombar: {
+    flex: 1,
+    position: "absolute",
+    bottom: Platform.OS === "ios" ? 15 : 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    height: "5%",
+  },
   distanceBox: {
-    alignSelf: 'center',
-    bottom: 360
+    alignSelf: "center",
+    bottom: 360,
   },
   distance: {
     fontSize: 30,
@@ -443,24 +527,24 @@ const styles = StyleSheet.create({
     textShadowColor: "black",
     textShadowOffset: {
       width: 50,
-      height: -10
-    }
+      height: -10,
+    },
   },
   timeBox: {
     bottom: 335,
-    left: 64
+    left: 64,
   },
   time: {
     color: "#0B2A59",
-    fontSize: 15
+    fontSize: 15,
   },
   ranBox: {
     bottom: 354,
-    left: 125
+    left: 125,
   },
   ran: {
     color: "#0B2A59",
-    fontSize: 15
+    fontSize: 15,
   },
   startButtonBox: {
     alignSelf: "center",
@@ -468,33 +552,43 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 16,
     width: 150,
-    bottom:  -20
+    bottom: -20,
   },
   startButton: {
-    alignSelf: 'center',
+    alignSelf: "center",
     color: "white",
-    fontSize: 18
+    fontSize: 18,
+  },
+  continueButtonBox: {
+    alignSelf: "center",
+    backgroundColor: "#0B2A59",
+    padding: 10,
+    borderRadius: 16,
+    margin: 10,
+    width: 135,
+    bottom: -20,
   },
   pauseButtonBox: {
     alignSelf: "center",
     backgroundColor: "#F08080",
     padding: 10,
     borderRadius: 16,
-    width: 150,
-    bottom:  -20
+    margin: 10,
+    width: 135,
+    bottom: -20,
   },
   pauseButton: {
-    alignSelf: 'center',
+    alignSelf: "center",
     color: "white",
-    fontSize: 18
-  }
+    fontSize: 18,
+  },
 });
 
 const options = {
   container: {
     width: Dimensions.get("window").width,
     alignItems: "center",
-    bottom: 350
+    bottom: 350,
   },
   text: {
     fontSize: 62,
