@@ -22,22 +22,26 @@ const Profile = (props) => {
   const [loading, setLoading] = useState(true);
   const [curr, setCurr] = useState(false);
   const [following, setFollow] = useState(false);
+  const [followers, setFollowers] = useState([])
   const [numFollowing, setNumFollowing] = useState(0);
   const [numFollowers, setNumFollowers] = useState(0);
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    const fetchUser = () => {
+    const fetchUser = async () => {
       if (props.route.params?.user) {
+        const uid = props.route.params?.user.id
+        await fetchfollowData(uid)
+        setUserId(uid);
         setUser(props.route.params?.user.data);
         setLoading(false);
-        if (props.following.indexOf(props.route.params?.user.id) > -1) {
+        if (props.following.indexOf(uid) > -1) {
           setFollow(true);
           console.log("ye");
         } else {
           setFollow(false);
         }
-        setUserId(props.route.params?.user.id);
+        
       } else {
         setUser(props.currentUser);
         setLoading(false);
@@ -45,26 +49,43 @@ const Profile = (props) => {
         setNumFollowing(props.following.length);
         setNumFollowers(props.followers.length);
         setUserId(firebase.auth().currentUser.uid);
+
+        props.navigation.setOptions({
+          headerRight: () => (
+            <Text onPress={logout} style={styles.delete}>
+              Logout
+            </Text>
+          ),
+        });
       }
     };
 
     fetchUser();
-
-    if (curr) {
-      props.navigation.setOptions({
-        headerRight: () => (
-          <Text onPress={logout} style={styles.delete}>
-            Logout
-          </Text>
-        ),
-      });
-    }
   }, [
     props.currentUser,
     props.following,
     props.followers,
     props.route.params?.user,
   ]);
+
+  const fetchfollowData = async (uid) => {
+    const ref = await firebase.firestore().collection('users').doc(uid)
+    await ref.collection('following').onSnapshot(snapshot => {
+      let following = []
+      snapshot.docs.forEach(doc => {
+        following.push(doc.id)
+      })
+      setNumFollowing(following.length)
+    })
+
+    ref.collection('followers').onSnapshot(snapshot => {
+      let followers = []
+      snapshot.docs.forEach(doc => {
+        followers.push(doc.id)
+      })
+      setNumFollowers(followers.length)
+    })
+  }
 
   const follow = async () => {
     const dateFollowed = firebase.firestore.FieldValue.serverTimestamp();

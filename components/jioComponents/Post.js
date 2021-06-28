@@ -11,9 +11,8 @@ import firebase from "firebase";
 import moment from "moment";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Divider } from "react-native-paper";
-import e from "cors";
 
-const Post = ({ item, currUser }) => {
+const Post = ({ navigation, item, currUser }) => {
   const [user, setUser] = useState({});
   const [liked, setLiked] = useState(false);
 
@@ -50,7 +49,7 @@ const Post = ({ item, currUser }) => {
     if (item.data.likes.findIndex((usr) => usr.uid === item.data.user) > -1) {
       setLiked(true);
     } else {
-        setLiked(false)
+      setLiked(false);
     }
     firebase
       .firestore()
@@ -60,8 +59,15 @@ const Post = ({ item, currUser }) => {
   }, [item]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={{ flexDirection: "row", padding: 5, alignItems: "center" }}>
+    <View style={styles.container}>
+      <View
+        style={{
+          flexDirection: "row",
+          paddingHorizontal: 5,
+          paddingVertical: 8,
+          alignItems: "center",
+        }}
+      >
         <Image
           source={
             user.photoURL
@@ -70,7 +76,7 @@ const Post = ({ item, currUser }) => {
           }
           style={styles.profilePic}
         />
-        <View>
+        <View style={{ width: "85%" }}>
           <Text>{user.name}</Text>
           <Text>
             {moment(new Date(item.data.creation.seconds * 1000)).format(
@@ -78,6 +84,14 @@ const Post = ({ item, currUser }) => {
             )}
           </Text>
         </View>
+        {/* <TouchableOpacity
+          onPress={navigation.navigate("Details", {
+            view: true,
+            details: item.data.details,
+          })}
+        >
+          <Text style={{ justifyContent: "flex-end" }}>Details</Text>
+        </TouchableOpacity> */}
       </View>
       {item.data.img && (
         <Image style={styles.image} source={{ uri: item.data.img }} />
@@ -124,9 +138,12 @@ const Post = ({ item, currUser }) => {
             color="red"
           />
         </TouchableOpacity>
-        <Text style={{marginTop: 3}}>{item.data.likes.length} likes</Text>
+        <Text style={{ marginTop: 3 }}>
+          {item.data.likes.length}{" "}
+          {item.data.likes.length === 1 ? "like" : "likes"}
+        </Text>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -146,7 +163,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    marginRight: 6,
+    marginRight: 8,
   },
 
   image: {
