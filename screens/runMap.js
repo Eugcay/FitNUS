@@ -310,7 +310,7 @@ export default function RunMap(props) {
             longitude: loc.coords.longitude,
           };
           const newDistance = calcDistance(currentLocation, latlon);
-          setNewDistance(distance + newDistance);
+          setNewDistance((distance) => distance + newDistance);
           setCurrentLocation(latlon);
           setLocList((oldList) => [...oldList, latlon]);
 
