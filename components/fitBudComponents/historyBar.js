@@ -100,7 +100,7 @@ const HistoryBar = ({ navigation, hist }) => {
           <Text style={[styles.title, styles.text]}>
             {item.data?.name ? item.data?.name : "Custom Workout"}
           </Text>
-          <Text style={styles.text}>{timestampToDate(item.data.date.seconds)}</Text>
+          <Text style={styles.text}>{item.data.date?.seconds && timestampToDate(item.data.date.seconds)}</Text>
         </ImageBackground>
       </TouchableOpacity>
     );

@@ -21,8 +21,8 @@ const JioFeed = (props) => {
 
   
   return (
-    <ScrollView>
-
+    <ScrollView horizontal={false}>
+      {/* <FlatList data={posts} keyExtractor={(item) => item.id} renderItem={(item) => <Post item={item} currUser={props.currUser}/>} /> */}
       {posts.map(item => <Post item={item} currUser={props.currUser}/>)}
     </ScrollView>
   );

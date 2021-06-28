@@ -60,7 +60,7 @@ const Post = ({ item, currUser }) => {
   }, [item]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={{ flexDirection: "row", padding: 5, alignItems: "center" }}>
         <Image
           source={
@@ -124,9 +124,9 @@ const Post = ({ item, currUser }) => {
             color="red"
           />
         </TouchableOpacity>
-        <Text style={{marginTop: 3}}>{item.data.likes.length} likes</Text>
+        <Text style={{marginTop: 3}}>{item.data.likes.length} {item.data.likes.length === 1 ? 'like' : 'likes'}</Text>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
