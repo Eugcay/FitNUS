@@ -17,7 +17,7 @@ import ReadMore from "react-native-read-more-text";
 
 const image = "../../assets/logan-weaver-9D_rUDe7xvA-unsplash.jpg";
 
-const HeaderTop = ({ name, image, desc }) => {
+const HeaderTop = ({ name, image, desc, updater }) => {
   const [title, onChangeTitle] = useState(null);
   const [heart, onLike] = useState(false);
   const onLikePress = () => onLike(!heart);
