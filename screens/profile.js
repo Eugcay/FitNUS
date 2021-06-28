@@ -6,12 +6,16 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import { Divider } from "react-native-elements";
 import { connect } from "react-redux";
 import Spinner from "../components/Spinner";
 import firebase from "firebase";
 import { logout } from "../Api/authApi";
+import { AntDesign } from "@expo/vector-icons";
+import { SimpleLineIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const Profile = (props) => {
   const [user, setUser] = useState(null);
@@ -102,85 +106,163 @@ const Profile = (props) => {
   };
 
   return !loading ? (
-    <View style={styles.container}>
-      <Image
-        source={
-          user.photoURL ? { uri: user.photoURL } : require("../assets/user.png")
-        }
-        style={styles.image}
-      />
-      <Text style={styles.text}>{user.name}</Text>
-      <Text>{curr && user.email}</Text>
-
-      <View style={styles.followers}>
-        <Divider orientation="vertical" />
-        <View
-          style={{
-            width: "36%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{fontSize: 16, fontWeight: "bold"}}>{numFollowers}</Text>
-          <Text>Followers</Text>
-          
-        </View>
-        <Divider orientation="vertical" />
-        <View
-          style={{
-            width: "36%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{fontSize: 16, fontWeight: "bold"}}>{numFollowing}</Text>
-          <Text>Following</Text>
-          
-        </View>
-        <Divider orientation="vertical" />
-      </View>
-
-      <Text style={styles.bio}>{user?.bio}</Text>
-
-      {curr && (
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() =>
-            props.navigation.navigate("Edit Profile", {
-              user: user,
-            })
+    <ScrollView>
+      <View style={styles.container}>
+        <Image
+          source={
+            user.photoURL
+              ? { uri: user.photoURL }
+              : require("../assets/user.png")
           }
-        >
-          <Text>Edit profile</Text>
-        </TouchableOpacity>
-      )}
+          style={styles.image}
+        />
+        <Text style={styles.text}>{user.name}</Text>
+        <Text>{curr && user.email}</Text>
 
-      {!curr && !following && (
-        <TouchableOpacity
-          style={[styles.editButton, { backgroundColor: "royalblue" }]}
-          onPress={() => follow()}
-        >
-          <Text style={{ color: "whitesmoke" }}>Follow</Text>
-        </TouchableOpacity>
-      )}
+        <View style={styles.followers}>
+          <Divider orientation="vertical" />
+          <View
+            style={{
+              width: "36%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+              {numFollowers}
+            </Text>
+            <Text>Followers</Text>
+          </View>
+          <Divider orientation="vertical" />
+          <View
+            style={{
+              width: "36%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+              {numFollowing}
+            </Text>
+            <Text>Following</Text>
+          </View>
+          <Divider orientation="vertical" />
+        </View>
 
-      {!curr && following && (
-        <TouchableOpacity
-          style={[styles.editButton, { backgroundColor: "silver" }]}
-          onPress={() => unfollow()}
-        >
-          <Text>Unfollow</Text>
-        </TouchableOpacity>
-      )}
-      <View
-        style={{
-          borderWidth: 1,
-          borderColor: "#D3D3D3",
-          width: "80%",
-          marginVertical: 15,
-        }}
-      ></View>
-    </View>
+        <Text style={styles.bio}>{user?.bio}</Text>
+
+        {curr && (
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() =>
+              props.navigation.navigate("Edit Profile", {
+                user: user,
+              })
+            }
+          >
+            <Text>Edit profile</Text>
+          </TouchableOpacity>
+        )}
+
+        {!curr && !following && (
+          <TouchableOpacity
+            style={[styles.editButton, { backgroundColor: "royalblue" }]}
+            onPress={() => follow()}
+          >
+            <Text style={{ color: "whitesmoke" }}>Follow</Text>
+          </TouchableOpacity>
+        )}
+
+        {!curr && following && (
+          <TouchableOpacity
+            style={[styles.editButton, { backgroundColor: "silver" }]}
+            onPress={() => unfollow()}
+          >
+            <Text>Unfollow</Text>
+          </TouchableOpacity>
+        )}
+        <View
+          style={{
+            borderWidth: 1,
+            borderColor: "#D3D3D3",
+            width: "90%",
+            marginVertical: 15,
+          }}
+        ></View>
+        <View style={styles.achievementMaster}>
+          <TouchableOpacity style={styles.achievementBox}>
+            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
+              <Text style={styles.achievementTitle}>Master Jioer!</Text>
+              <Text style={styles.achievementDescription}>
+                Jioed 5 people to exercise with you! Wah, popular sia!
+              </Text>
+            </View>
+            <View style={{ justifyContent: "center", right: 30 }}>
+              <AntDesign name="team" size={24} color="black" />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.achievementBox}>
+            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
+              <Text style={styles.achievementTitle}>Loyal Jioee!</Text>
+              <Text style={styles.achievementDescription}>Joined 5 jios!</Text>
+            </View>
+            <View style={{ justifyContent: "center", left: 170 }}>
+              <AntDesign name="team" size={24} color="black" />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.achievementBox}>
+            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
+              <Text style={styles.achievementTitle}>ON FIRE</Text>
+              <Text style={styles.achievementDescription}>
+                One workout everyday for a week! Damn you're on fire
+              </Text>
+            </View>
+            <View style={{ justifyContent: "center", right: 30 }}>
+              <SimpleLineIcons name="fire" size={24} color="black" />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.achievementBox}>
+            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
+              <Text style={styles.achievementTitle}>Meep Meep</Text>
+              <Text style={styles.achievementDescription}>
+                Ran more than 20% the speed of a roadrunner!
+              </Text>
+            </View>
+            <View style={{ justifyContent: "center", right: -8 }}>
+              <MaterialCommunityIcons name="run-fast" size={24} color="black" />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.achievementBox}>
+            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
+              <Text style={styles.achievementTitle}>Pulling your weight</Text>
+              <Text style={styles.achievementDescription}>
+                Deadlifted more than your own body weight!
+              </Text>
+            </View>
+            <View style={{ justifyContent: "center", left: 20 }}>
+              <MaterialCommunityIcons
+                name="weight-lifter"
+                size={24}
+                color="black"
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.achievementBox}>
+            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
+              <Text style={styles.achievementTitle}>Potty training</Text>
+              <Text style={styles.achievementDescription}>Squat more than your own body weight</Text>
+            </View>
+            <View style={{ justifyContent: "center", left: 45 }}>
+              <MaterialCommunityIcons
+                name="weight-lifter"
+                size={24}
+                color="black"
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ScrollView>
   ) : (
     <View>
       <Spinner />
@@ -247,6 +329,31 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "80%",
-    marginVertical: 12
+    marginVertical: 12,
+  },
+
+  achievementMaster: {
+    width: Dimensions.get("window").width * 0.85,
+    justifyContent: "space-between",
+    backgroundColor: "whitesmoke",
+    marginTop: 15,
+    marginBottom: 65,
+  },
+  achievementBox: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    marginVertical: 2,
+    height: 70,
+    backgroundColor: "#fff"
+  },
+  achievementTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  achievementDescription: {
+    fontSize: 12,
+    color: "grey",
+    width: "80%",
   },
 });

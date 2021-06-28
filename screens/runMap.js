@@ -18,7 +18,7 @@ export default function RunMap(props) {
   const [text, setText] = useState(null);
   const [dark, setDark] = useState(false);
 
-  var presetLocations = [
+  var presetLocations = [ //please put this in another file Eugene
     {
       latlng: {
         latitude: 1.3050038005230384,
