@@ -296,7 +296,7 @@ const StartWorkout = (props) => {
           <View>
             <View>
               {exercises.length === 0 && (
-                <Text style={{ fontSize: 24, alignSelf: "center", margin: 80 }}>
+                <Text style={{ fontSize: 24, alignSelf: "center", marginTop: 200}}>
                   Lets get Started!
                 </Text>
               )}
@@ -392,6 +392,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: "100%",
     borderRadius: 5,
+    marginBottom: 30
   },
 
   bottombar: {
