@@ -16,6 +16,7 @@ import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
 import { addToHistory } from "../store/actions/user";
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
+import ExercisesLogged from "../components/startWorkoutComponents/exercises";
 import { Stopwatch } from "react-native-stopwatch-timer";
 import { Divider } from "react-native-elements";
 import { updateUser } from "../store/actions/user";
@@ -36,7 +37,7 @@ const StartWorkout = (props) => {
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
   const [timeNow, setTimeNow] = useState(0);
-  const here = <HeaderTop name={name} image={imageURL} desc={description}/>
+  const here = <HeaderTop name={name} image={imageURL} desc={description} />;
 
   const setTime = useRef((someNewValue) => {
     setTimeout(() => {
@@ -89,7 +90,7 @@ const StartWorkout = (props) => {
     if (workoutComplete()) {
       setStatus("Paused");
       setIsStopwatchStart(false);
-      checkPb()
+      checkPb();
       console.log(timeNow);
       const workout = {
         name,
@@ -114,10 +115,10 @@ const StartWorkout = (props) => {
       const max = exe.sets
         .map((set) => set.weight)
         .reduce((x, y) => Math.max(x, y), 0);
-      const doneBefore = props.currentUser.pb.find((ex) => ex.exercise === exName) 
-      const currPb = doneBefore
-        ? doneBefore.best
-        : 0;
+      const doneBefore = props.currentUser.pb.find(
+        (ex) => ex.exercise === exName
+      );
+      const currPb = doneBefore ? doneBefore.best : 0;
       if (max > currPb) {
         if (doneBefore) {
           const data = [...props.currentUser.pb];
@@ -125,7 +126,10 @@ const StartWorkout = (props) => {
           data.splice(index, 1, { exercise: exName, best: max });
           updateUser({ ...props.currentUser, pb: data });
         } else {
-          updateUser({...props.currentUser, pb: props.currentUser.pb.concat({exercise: exName, best: max})})
+          updateUser({
+            ...props.currentUser,
+            pb: props.currentUser.pb.concat({ exercise: exName, best: max }),
+          });
         }
       }
     });
@@ -133,6 +137,7 @@ const StartWorkout = (props) => {
 
   const renderItem = ({ item }) => {
     return (
+
       <TouchableOpacity onPress={() => editExercise(item)}>
         <ListItem.Swipeable
           style={{
@@ -303,6 +308,7 @@ const StartWorkout = (props) => {
                   keyExtractor={(item) => item.key}
                   renderItem={renderItem}
                   scrollEnabled={false}
+                  editExercise={exercises}
                 />
               </View>
             )}
@@ -339,12 +345,6 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(mapStateToProps, mapDispatchToProps)(StartWorkout);
 
 const styles = StyleSheet.create({
-  image: {
-    flex: 1,
-    resizeMode: "contain",
-    alignItems: "center",
-  },
-
   button: {
     marginHorizontal: 8,
     width: "45%",
@@ -383,17 +383,6 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#000000a0",
     alignItems: "center",
-  },
-
-  circle: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "gray",
-    marginHorizontal: 12,
-    width: 50,
-    height: 50,
-    borderRadius: 50,
   },
 
   bottomButton: {
@@ -440,6 +429,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 5,
+  },
+
+  image: {
+    flex: 1,
+    resizeMode: "contain",
+    alignItems: "center",
+  },
+  
+  circle: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "gray",
+    marginHorizontal: 12,
+    width: 50,
+    height: 50,
+    borderRadius: 50,
   },
 });
 

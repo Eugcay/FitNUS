@@ -3,7 +3,6 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 
 import JioFeed from "../screens/jioFeed";
 import JioSearch from "../screens/jioSearch";
-import SelectWorkoutType from "../screens/selectWorkoutType";
 
 const Tab = createMaterialTopTabNavigator();
 

@@ -274,5 +274,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 5,
     backgroundColor: "darkgreen",
+    marginVertical: 5
   },
 });

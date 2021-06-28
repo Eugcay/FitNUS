@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { updateUser } from "../store/actions/user";
@@ -84,7 +84,7 @@ function EditProfile(props) {
       durationGoal,
       distanceGoal,
       pb: user?.pb ? user?.pb : [],
-      workoutGoal
+      workoutGoal,
     });
     props.navigation.goBack();
   };
@@ -131,101 +131,101 @@ function EditProfile(props) {
   };
 
   return (
-    <ScrollView >
+    <ScrollView>
       <View style={styles.container}>
-      <TouchableOpacity onPress={setDP}>
-        <Image
-          source={
-            image
-              ? { uri: image }
-              : photoURL
-              ? { uri: photoURL }
-              : require("../assets/user.png")
-          }
-          style={styles.image}
-        />
+        <TouchableOpacity onPress={setDP}>
+          <Image
+            source={
+              image
+                ? { uri: image }
+                : photoURL
+                ? { uri: photoURL }
+                : require("../assets/user.png")
+            }
+            style={styles.image}
+          />
 
-        <Text style={styles.text}>edit</Text>
-      </TouchableOpacity>
+          <Text style={styles.text}>edit</Text>
+        </TouchableOpacity>
 
-      <View style={styles.input}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.fields}
-          onChangeText={(text) => console.log(text)}
-          onChange={(text) => setName(text)}
-          placeholder="name"
-          value={name}
-        ></TextInput>
-      </View>
+        <View style={styles.input}>
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            style={styles.fields}
+            onChangeText={(text) => console.log(text)}
+            onChange={(text) => setName(text)}
+            placeholder="name"
+            value={name}
+          ></TextInput>
+        </View>
 
-      <View style={styles.input}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.fields}
-          onChangeText={(text) => setEmail(text)}
-          placeholder="email"
-          value={email}
-        ></TextInput>
-      </View>
+        <View style={styles.input}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.fields}
+            onChangeText={(text) => setEmail(text)}
+            placeholder="email"
+            value={email}
+          ></TextInput>
+        </View>
 
-      <View style={styles.input}>
-        <Text style={styles.label}>Bio</Text>
-        <TextInput
-          style={styles.fields}
-          onChangeText={(text) => setBio(text)}
-          placeholder="bio"
-          value={bio}
-        ></TextInput>
-      </View>
+        <View style={styles.input}>
+          <Text style={styles.label}>Bio</Text>
+          <TextInput
+            style={styles.fields}
+            onChangeText={(text) => setBio(text)}
+            placeholder="bio"
+            value={bio}
+          ></TextInput>
+        </View>
 
-      <View style={styles.input}>
-        <Text style={styles.label}>Calories Goal (cal)</Text>
-        <TextInput
-          style={styles.fields}
-          onChangeText={(text) => setCalGoal(text)}
-          placeholder="Set goal for calories burnt weekly"
-          value={calGoal}
-        ></TextInput>
-      </View>
+        <View style={styles.input}>
+          <Text style={styles.label}>Calories Goal (cal)</Text>
+          <TextInput
+            style={styles.fields}
+            onChangeText={(text) => setCalGoal(text)}
+            placeholder="Set goal for calories burnt weekly"
+            value={calGoal}
+          ></TextInput>
+        </View>
 
-      <View style={styles.input}>
-        <Text style={styles.label}>Duration Goal (min)</Text>
-        <TextInput
-          style={styles.fields}
-          onChangeText={(text) => setDurationGoal(text)}
-          placeholder="Set goal for total weekly workout duration"
-          value={durationGoal}
-        ></TextInput>
-      </View>
+        <View style={styles.input}>
+          <Text style={styles.label}>Duration Goal (min)</Text>
+          <TextInput
+            style={styles.fields}
+            onChangeText={(text) => setDurationGoal(text)}
+            placeholder="Set goal for total weekly workout duration"
+            value={durationGoal}
+          ></TextInput>
+        </View>
 
-      <View style={styles.input}>
-        <Text style={styles.label}>Distance Goal (km)</Text>
-        <TextInput
-          style={styles.fields}
-          onChangeText={(text) => setDistanceGoal(text)}
-          placeholder="Set goal for total distance run per week"
-          value={distanceGoal}
-        ></TextInput>
-      </View>
+        <View style={styles.input}>
+          <Text style={styles.label}>Distance Goal (km)</Text>
+          <TextInput
+            style={styles.fields}
+            onChangeText={(text) => setDistanceGoal(text)}
+            placeholder="Set goal for total distance run per week"
+            value={distanceGoal}
+          ></TextInput>
+        </View>
 
-      <View style={styles.input}>
-        <Text style={styles.label}>Weekly Workout Goal (sessions)</Text>
-        <TextInput
-          style={styles.fields}
-          onChangeText={(text) => setWokroutGoal(text)}
-          placeholder="Set goal for minimum workouts per week"
-          value={workoutGoal}
-        ></TextInput>
-      </View>
+        <View style={styles.input}>
+          <Text style={styles.label}>Weekly Workout Goal (sessions)</Text>
+          <TextInput
+            style={styles.fields}
+            onChangeText={(text) => setWokroutGoal(text)}
+            placeholder="Set goal for minimum workouts per week"
+            value={workoutGoal}
+          ></TextInput>
+        </View>
 
-      <TouchableOpacity
-        title="Save"
-        style={styles.saveButton}
-        onPress={handleSubmit}
-      >
-        <Text style={{ color: "#FFFFF0" }}>Save</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          title="Save"
+          style={styles.saveButton}
+          onPress={handleSubmit}
+        >
+          <Text style={{ color: "#FFFFF0" }}>Save</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -233,14 +233,7 @@ function EditProfile(props) {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    uploadChanges: (
-      user
-    ) =>
-      dispatch(
-        updateUser(
-          user
-        )
-      ),
+    uploadChanges: (user) => dispatch(updateUser(user)),
   };
 };
 
@@ -250,7 +243,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 10,
-    alignItems: 'center'
+    alignItems: "center",
   },
 
   label: {
