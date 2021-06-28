@@ -4,7 +4,7 @@ import { Text, SafeAreaView, StyleSheet, FlatList, View } from "react-native";
 import { Searchbar } from "react-native-paper";
 import { set } from "react-native-reanimated";
 
-const WorkoutSearch = ({ navigation, workouts }) => {
+const WorkoutSearch = ({ navigation, workouts, jio }) => {
   const complete = workouts;
   const [filtered, setFiltered] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,7 +31,8 @@ const WorkoutSearch = ({ navigation, workouts }) => {
           style={styles.searchItem}
           onPress={() =>
             navigation.navigate("Workout Details", {
-              workout: item.data
+              workout: item.data,
+              jio: jio ? jio : null
             })
           }
         >

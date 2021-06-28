@@ -12,6 +12,7 @@ import {
 import { Divider, RadioButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
+import firebase from "firebase";
 
 const JioStart = (props) => {
   const [img, setImg] = useState(null);
@@ -21,6 +22,7 @@ const JioStart = (props) => {
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState("");
   const [type, setType] = useState("Static");
+  const [details, setDetails] = useState(null)
   const [galleryPermission, setGalleryPermission] = useState(null);
 
   useEffect(() => {
@@ -70,7 +72,19 @@ const JioStart = (props) => {
   };
 
   const submitJio = () => {
-
+    firebase.firestore().collection('jios').add({
+      user: firebase.auth().currentUser.uid,
+      creation: firebase.firestore.FieldValue.serverTimestamp(),
+      img,
+      name,
+      location,
+      time,
+      duration,
+      description,
+      type,
+      likes: [],
+      details
+    }).then(props.navigation.navigate('Main'))
   };
 
   return (
@@ -110,7 +124,7 @@ const JioStart = (props) => {
             <Divider />
           </View>
           <View style={styles.formItem}>
-            <Text style={styles.labels}>{Date & Time}</Text>
+            <Text style={styles.labels}>{'Date & Time'}</Text>
             <TextInput
               onChangeText={(text) => setTime(text)}
               placeholder="DDMMYY"
@@ -135,7 +149,7 @@ const JioStart = (props) => {
             />
             <Divider />
           </View>
-
+          <Text style={styles.labels}>Workout Type</Text>
           <RadioButton.Group
             onValueChange={(value) => setType(value)}
             value={type}
@@ -152,9 +166,9 @@ const JioStart = (props) => {
           <Divider />
           {type === "Run" && (
             <View style={styles.formItem}>
-              <Text style={styles.labels}>Workout Type</Text>
+              <Text style={styles.labels}>Additional Run Details</Text>
               <TextInput
-                onChangeText={(text) => setDescription(text)}
+                onChangeText={(text) => setDetails(text)}
                 placeholder="Description"
                 multiline={true}
               />
@@ -171,6 +185,7 @@ const JioStart = (props) => {
               type === "Run"
                 ? submitJio()
                 : props.navigation.navigate("Details", {
+                  info: {
                     img,
                     name,
                     description,
@@ -178,9 +193,10 @@ const JioStart = (props) => {
                     time,
                     duration,
                     type,
-                  })
+                  }})
             }
           >
+            {type ==='Run' && <Ionicons name="add" color='blue' size={18}/>}
             <Text
               style={{
                 alignSelf: "center",
@@ -188,11 +204,12 @@ const JioStart = (props) => {
                 fontSize: 16,
                 fontWeight: "bold",
                 color: "blue",
+                marginLeft: 5
               }}
             >
-              Workout Details{" "}
+              {type === 'Run' ? 'Add Run Jio' : 'Workout Details'}
             </Text>
-            <Ionicons name="arrow-forward" size={17} color="blue" />
+            {type === 'Static' && <Ionicons name="arrow-forward" size={17} color="blue" />}
           </TouchableOpacity>
         </View>
       </View>

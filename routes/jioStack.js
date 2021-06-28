@@ -8,6 +8,7 @@ import JioTabs from "./jioTabs";
 import profile from "../screens/profile";
 import JioStart from "../screens/jioStart";
 import JioDetails from "../screens/jioDetails";
+import workoutDetails from "../screens/workoutDetails";
 import AddExercises from "../screens/addExercises";
 import EditExercise from "../screens/editWorkout";
 
@@ -32,6 +33,7 @@ const JioStack = ({navigation}) => {
       <Stack.Screen name="Profile" component={profile} />
       <Stack.Screen name="Start Jio" component={JioStart} />
       <Stack.Screen name="Details" component ={JioDetails} />
+      <Stack.Screen name="Workout Details" component={workoutDetails} />
       <Stack.Screen name="Add Exercises" component={AddExercises} />
       <Stack.Screen name="Edit Set" component={EditExercise} />
     </Stack.Navigator>

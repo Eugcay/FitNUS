@@ -88,9 +88,9 @@ const StartWorkout = (props) => {
 
   const finishWorkout = () => {
     if (workoutComplete()) {
+      checkPb();
       setStatus("Paused");
       setIsStopwatchStart(false);
-      checkPb();
       console.log(timeNow);
       const workout = {
         name,
@@ -115,18 +115,18 @@ const StartWorkout = (props) => {
       const max = exe.sets
         .map((set) => set.weight)
         .reduce((x, y) => Math.max(x, y), 0);
-      const doneBefore = props.currentUser.pb.find(
-        (ex) => ex.exercise === exName
-      );
+      const doneBefore = props.currentUser?.pb
+        ? props.currentUser.pb.find((ex) => ex.exercise === exName)
+        : null;
       const currPb = doneBefore ? doneBefore.best : 0;
       if (max > currPb) {
         if (doneBefore) {
           const data = [...props.currentUser.pb];
           const index = data.findIndex((ex) => ex.exercise === exName);
           data.splice(index, 1, { exercise: exName, best: max });
-          updateUser({ ...props.currentUser, pb: data });
+          props.updatePB({ ...props.currentUser, pb: data });
         } else {
-          updateUser({
+          props.updatePB({
             ...props.currentUser,
             pb: props.currentUser.pb.concat({ exercise: exName, best: max }),
           });
@@ -137,7 +137,6 @@ const StartWorkout = (props) => {
 
   const renderItem = ({ item }) => {
     return (
-
       <TouchableOpacity onPress={() => editExercise(item)}>
         <ListItem.Swipeable
           style={{
@@ -296,7 +295,9 @@ const StartWorkout = (props) => {
           <View>
             <View>
               {exercises.length === 0 && (
-                <Text style={{ fontSize: 24, alignSelf: "center", marginTop: 200}}>
+                <Text
+                  style={{ fontSize: 24, alignSelf: "center", marginTop: 200 }}
+                >
                   Lets get Started!
                 </Text>
               )}
@@ -392,7 +393,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: "100%",
     borderRadius: 5,
-    marginBottom: 30
+    marginBottom: 30,
   },
 
   bottombar: {
@@ -437,7 +438,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     alignItems: "center",
   },
-  
+
   circle: {
     alignItems: "center",
     justifyContent: "center",

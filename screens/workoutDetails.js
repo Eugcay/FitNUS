@@ -16,6 +16,7 @@ import { Divider } from "react-native-elements";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { removeWorkout } from "../store/actions/user";
+import ExListItem from "../components/detailsComponents/ExListItem";
 
 function WorkoutDetails(props) {
   const duration = props.route.params.workout.duration;
@@ -27,6 +28,7 @@ function WorkoutDetails(props) {
     ? props.route.params.workout.achievements
     : 0;
   const id = props.route.params?.id ? props.route.params?.id : "";
+  const jio = props.route.params?.jio;
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -34,32 +36,6 @@ function WorkoutDetails(props) {
         date && <Button title="Delete" color="red" onPress={deleteWorkout} />,
     });
   }, []);
-
-  const renderItem = ({ item }) => {
-    return (
-      <ListItem style={{ marginVertical: 5 }}>
-        <ListItem.Content>
-          <ListItem.Title>{item.data.name}</ListItem.Title>
-          {item.sets.map((set) => (
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginVertical: 5,
-              }}
-            >
-              <View style={styles.circle}>
-                <Text>{set.key}</Text>
-              </View>
-              <Text>
-                {set.weight} kg x {set.reps} reps
-              </Text>
-            </View>
-          ))}
-        </ListItem.Content>
-      </ListItem>
-    );
-  };
 
   const deleteWorkout = () => {
     Alert.alert("Confirm Delete?", "", [
@@ -76,6 +52,16 @@ function WorkoutDetails(props) {
         },
       },
     ]);
+  };
+
+  const formatExercises = () => {
+    return workout?.exercises.map((exercise) => ({
+      ...exercise,
+      sets: exercise.sets.map((set) => ({
+        ...set,
+        completed: false,
+      })),
+    }));
   };
 
   return (
@@ -106,7 +92,9 @@ function WorkoutDetails(props) {
           <View style={styles.statbox}>
             <MaterialCommunityIcons name="timer" size={17} color="red" />
             <Text>{date ? "" : "Expected"} Duration</Text>
-            <Text style={{ fontWeight: "bold" }}>{Math.round(duration / 60) + ':' + Math.round(duration % 60)}</Text>
+            <Text style={{ fontWeight: "bold" }}>
+              {Math.round(duration / 60) + ":" + Math.round(duration % 60)}
+            </Text>
           </View>
           <Divider orientation="vertical" />
           <View style={styles.statbox}>
@@ -141,7 +129,7 @@ function WorkoutDetails(props) {
             <FlatList
               data={workout?.exercises}
               keyExtractor={(item) => item.key}
-              renderItem={renderItem}
+              renderItem={ExListItem}
               scrollEnabled={false}
             />
           </View>
@@ -150,25 +138,23 @@ function WorkoutDetails(props) {
       {workout.exercises && (
         <TouchableOpacity
           onPress={() =>
-            props.navigation.navigate("Start Workout", {
-              screen: "Start Workout",
-              params: {
-                template: {
-                  ...workout,
-                  exercises: workout?.exercises.map((exercise) => ({
-                    ...exercise,
-                    sets: exercise.sets.map((set) => ({
-                      ...set,
-                      completed: false,
-                    })),
-                  })),
-                },
-              },
-            })
+            jio
+              ? props.navigation.navigate("Details", {
+                  exercises: workout?.exercises,
+                })
+              : props.navigation.navigate("Start Workout", {
+                  screen: "Start Workout",
+                  params: {
+                    template: {
+                      ...workout,
+                      exercises: formatExercises(),
+                    },
+                  },
+                })
           }
           style={styles.start}
         >
-          <Text>Begin Workout</Text>
+          <Text>{jio ? 'Add to Jio' : 'Begin Workout'}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -251,3 +237,4 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
+

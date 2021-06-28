@@ -1,26 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, FlatList, ScrollView } from "react-native";
+import Post from "../components/jioComponents/Post";
 import firebase from "firebase";
+import { connect } from "react-redux";
 
 const JioFeed = (props) => {
   const [posts, setPosts] = useState([]);
+
   useEffect(() => {
     firebase
       .firestore()
-      .collection("jio")
+      .collection("jios")
       .onSnapshot((snapshot) => {
         let jios = [];
-        snapshot.docs.forEach((doc) => jios.push(doc.data()));
+        snapshot.docs.forEach((doc) => jios.push({id: doc.id, data: doc.data()}));
         setPosts(jios);
+        console.log(jios)
       });
   }, []);
+
+  
   return (
-    <View>
-      <Text>Jio Feed</Text>
-    </View>
+    <ScrollView>
+
+      {posts.map(item => <Post item={item} currUser={props.currUser}/>)}
+    </ScrollView>
   );
 };
 
-export default JioFeed;
+const mapStateToProps = (store) => ({
+  currUser: store.user.currentUser
+})
+
+export default connect(mapStateToProps, null)(JioFeed);
+
 
 const styles = StyleSheet.create({});
