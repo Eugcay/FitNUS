@@ -11,6 +11,7 @@ import * as Location from "expo-location";
 import haversine from "haversine";
 import { mapDark, mapStandard } from "../mapConfig";
 import { Stopwatch } from "react-native-stopwatch-timer";
+import moment from "moment";
 
 export default function RunMap(props) {
   const [mTop, setMargin] = useState(0);
@@ -178,6 +179,38 @@ export default function RunMap(props) {
     },
   ];
 
+  const testCords = [
+    {
+      latitude: 1.3050038005230384,
+      longitude: 103.77226573268865,
+    },
+    {
+      latitude: 1.3007140063983416,
+      longitude: 103.77576209191275,
+    },
+    {
+      latitude: 1.298764029536889,
+      longitude: 103.77723916069229,
+    },
+    {
+      latitude: 1.298684969725457,
+      longitude: 103.77834249029279,
+    },
+    {
+      latitude: 1.3049399787896439,
+      longitude: 103.77313671368337,
+    },
+  ];
+
+  const [refer, setRefer] = useState(null);
+
+  const fitAllMarkers = () => {
+    refer.fitToCoordinates(locList, {
+      edgePadding: { top: 40, right: 40, bottom: 40, left: 40 },
+      animated: true,
+    });
+  };
+
   const [workoutStatus, setStatus] = useState("Not Started");
   const [timeNow, setTimeNow] = useState(null);
 
@@ -204,29 +237,10 @@ export default function RunMap(props) {
 
   //Track location stuff => Calcdistance, Watch poition, Polyline
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [distance, setNewDistance] = useState(0.0001);
+  const [distance, setNewDistance] = useState(0.000001);
   const [locList, setLocList] = useState([]);
   const [remove, setRemove] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-
-  const polylinearray = [
-    {
-      latitude: 1.3050038005230384,
-      longitude: 103.77226573268865,
-    },
-    {
-      latitude: 1.3049399787896439,
-      longitude: 103.77313671368337,
-    },
-    {
-      latitude: 1.300432226076777,
-      longitude: 103.77610168353331,
-    },
-    {
-      latitude: 1.3695049662681242,
-      longitude: 103.95023556819342,
-    },
-  ];
 
   const calcDistance = (prevLatLng, newLatLng) => {
     return haversine(prevLatLng, newLatLng) || 0;
@@ -247,7 +261,7 @@ export default function RunMap(props) {
           return;
         }
       } else {
-        console.log("Permission is OK")
+        console.log("Permission is OK");
       }
 
       /////////////////////////////////////////////////////////////
@@ -259,27 +273,35 @@ export default function RunMap(props) {
           longitude: loc.coords.longitude,
         };
         setCurrentLocation(newLocation);
-        setLocList(oldList => [...oldList, newLocation]);
-        console.log("Current Location Retrieved: " + "{ lat: " + newLocation.latitude + " lon: " + newLocation.longitude + " }");
-        console.log("Location List Initial Update: " + locList)
+        setLocList((oldList) => [...oldList, newLocation]);
+        console.log(
+          "Initial Current Location Retrieved: " +
+            "{ lat: " +
+            newLocation.latitude +
+            " lon: " +
+            newLocation.longitude +
+            " }"
+        );
       } else {
         console.log("Initial Current Location is not null");
+        console.log(distance);
       }
-
       ////////////////////////////////////////////////////////////
     })();
   }, [currentLocation]); //only rerender if loclist changes
 
   const start = () => {
     setStatus("Continue");
-    console.log("Start Pressed");
-    /////////////////////////////////////////////////////////////
+    console.log(
+      "-----------------------------------Start Pressed------------------------------------------"
+    );
+    ////////////////////////////////////////////////////////////
     (async () => {
       let locations = await Location.watchPositionAsync(
         {
           accuracy: 4,
           enableHighAccuracy: true,
-          timeInterval: 1000,
+          timeInterval: 6000,
           distanceInterval: 1,
         },
         (loc) => {
@@ -287,22 +309,43 @@ export default function RunMap(props) {
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,
           };
-          
-          setNewDistance(distance + calcDistance(currentLocation, latlon));
+          const newDistance = calcDistance(currentLocation, latlon);
+          setNewDistance(distance + newDistance);
           setCurrentLocation(latlon);
-          setLocList(oldList => [...oldList, latlon]);
+          setLocList((oldList) => [...oldList, latlon]);
 
-          console.log("Location Changed: " + "{ lat: " + latlon.latitude + " lon: " + latlon.longitude + " }");
-          console.log("Distance now: " + distance)
-          console.log(locList)
+          console.log(
+            "==========Location Changed: " +
+              "{ lat: " +
+              latlon.latitude +
+              " lon: " +
+              latlon.longitude +
+              " }=========="
+          );
+          console.log("Distance Travelled in Recent Change: " + newDistance + " Km");
+          console.log("Total Distance Travelled: " + distance + " Km")
         }
       );
-      setRemove(locations);
+      if (remove == null) {
+        setRemove(locations);
+      } else {
+        console.log("Remove function is no longer undefined");
+      }
     })();
   };
 
   const stop = () => {
-    remove;
+    console.log(
+      "-------------------------------Finish Run Pressed-----------------------------------"
+    );
+    remove.remove();
+    console.log(
+      "---------------------------------Function Removed?-------------------------------------"
+    );
+  };
+
+  const finishRun = () => {
+    remove.remove();
   };
 
   const _onMapReady = () => setMargin(60);
@@ -319,6 +362,9 @@ export default function RunMap(props) {
   return (
     <View style={styles.container}>
       <MapView
+        ref={(ref) => {
+          setRefer(ref);
+        }}
         style={[styles.map, { marginTop: mTop }]}
         initialRegion={{
           latitude: 1.3702303096151767,
@@ -365,16 +411,16 @@ export default function RunMap(props) {
               <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
             </View>
             <View style={styles.bottombar}>
-            <TouchableOpacity //Start
-              style={styles.startButtonBox}
-              onPress={() => {
-                start();
-                setIsStopwatchStart(true);
-                setStatus("Continue");
-              }}
-            >
-              <Text style={styles.startButton}>Start</Text>
-            </TouchableOpacity>
+              <TouchableOpacity //Start
+                style={styles.startButtonBox}
+                onPress={() => {
+                  start();
+                  setIsStopwatchStart(true);
+                  setStatus("Continue");
+                }}
+              >
+                <Text style={styles.startButton}>Start</Text>
+              </TouchableOpacity>
             </View>
           </View>
         ) : workoutStatus == "Continue" ? ( //Pause and Finish
@@ -410,8 +456,10 @@ export default function RunMap(props) {
               <TouchableOpacity //Finish
                 style={styles.finishButtonBox}
                 onPress={() => {
-                  setStatus("Not Started");
+                  setStatus("Finished");
                   setIsStopwatchStart(false);
+                  stop();
+                  fitAllMarkers();
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -439,22 +487,23 @@ export default function RunMap(props) {
               <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
             </View>
             <View style={styles.bottombar}>
-            <TouchableOpacity //Continue
-              style={styles.continueButtonBox}
-              onPress={() => {
-                start();
-                setIsStopwatchStart(true);
-                setStatus("Continue");
-              }}
-            >
-              <Text style={styles.startButton}>Continue</Text>
-            </TouchableOpacity>
+              <TouchableOpacity //Continue
+                style={styles.continueButtonBox}
+                onPress={() => {
+                  start();
+                  setIsStopwatchStart(true);
+                  setStatus("Continue");
+                }}
+              >
+                <Text style={styles.startButton}>Continue</Text>
+              </TouchableOpacity>
               <TouchableOpacity //Finish
                 style={styles.finishButtonBox}
                 onPress={() => {
-                  setStatus("Not Started");
+                  setStatus("Finished");
                   setIsStopwatchStart(false);
                   stop();
+                  fitAllMarkers();
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -462,7 +511,28 @@ export default function RunMap(props) {
             </View>
           </View>
         ) : (
-          <View />
+          <View>
+            <View style={styles.finishRunBorder}>
+              <Text style={styles.finishRunDistance}>
+                Total Distance: {distance.toFixed(2)} Km
+              </Text>
+              <Text style={styles.finishRunTime}>
+                Total Time: {(timeNow / 1000 / 60).toFixed(2)} minutes
+              </Text>
+              <Text style={styles.finishRunPace}>
+                Average Pace:{" "}
+                {(distance.toFixed(2) / (timeNow / 1000 / 60)).toFixed(2)} Km/m
+              </Text>
+              </View> 
+              <TouchableOpacity //Finish
+                style={styles.finishRunButton}
+                onPress={() => {
+                  stop();
+                }}
+              >
+                <Text style={styles.finishRunButtonText}>Finish</Text>
+              </TouchableOpacity>          
+          </View>
         )}
       </View>
     </View>
@@ -470,6 +540,45 @@ export default function RunMap(props) {
 }
 
 const styles = StyleSheet.create({
+  finishRunBorder: {
+    flex: 1,
+    justifyContent: "space-between",
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    borderRadius: 20,
+    bottom: 120,
+    height: Dimensions.get("window").height * 0.5,
+    padding: 30,
+    width: Dimensions.get("window").width * 0.75
+  },
+  finishRunDistance: {
+    color: "black",
+    fontSize: 28,
+    flex: 0.3
+  },
+  finishRunTime: {
+    color: "black",
+    fontSize: 28,
+    flex: 0.3
+  },
+  finishRunPace: {
+    color: "black",
+    fontSize: 28,
+    flex: 0.3
+  },
+  finishRunButton: {
+    alignSelf: "center",
+    backgroundColor: "lightgreen",
+    padding: 10,
+    borderRadius: 16,
+    margin: 10,
+    width: 135,
+    bottom: -20,
+  },
+  finishRunButtonText: {
+    alignSelf: "center",
+    color: "white",
+    fontSize: 18,
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",

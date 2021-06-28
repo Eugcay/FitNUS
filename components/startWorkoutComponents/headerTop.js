@@ -49,7 +49,7 @@ const HeaderTop = ({ name, image, desc }) => {
       <View style={styles.top}>
         <TextInput
           style={{ height: 40, borderWidth: 0, fontSize: 22 }}
-          onChangeText={(text) => onChangeTitle(text)}
+          onChangeText={(text) => {onChangeTitle(text); headerTopUpdate(text, desc)}}
           value={title}
           maxLength={40}
           defaultValue={name !== "" ? name : "Custom Workout"}
@@ -68,7 +68,7 @@ const HeaderTop = ({ name, image, desc }) => {
                 marginVertical: 5,
                 textAlign: "justify",
               }}
-              onChangeText={(text) => onChangeDescription(text)}
+              onChangeText={(text) => {onChangeDescription(text); headerTopUpdate(name, text)}}
               value={description}
               defaultValue={
                 desc !== ""
