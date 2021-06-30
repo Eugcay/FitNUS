@@ -461,6 +461,7 @@ export default function RunMap(props) {
                 onPress={() => {
                   setStatus("Paused");
                   setIsStopwatchStart(false);
+                  stop();
                 }}
               >
                 <Text style={styles.pauseButton}>Pause</Text>
