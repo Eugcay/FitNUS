@@ -11,7 +11,6 @@ import * as Location from "expo-location";
 import haversine from "haversine";
 import { mapDark, mapStandard } from "../mapConfig";
 import { Stopwatch } from "react-native-stopwatch-timer";
-import firebase from "firebase";
 import moment from "moment";
 
 export default function RunMap(props) {
@@ -19,8 +18,7 @@ export default function RunMap(props) {
   const [text, setText] = useState(null);
   const [dark, setDark] = useState(false);
 
-  var presetLocations = [
-    //please put this in another file Eugene
+  var presetLocations = [ //please put this in another file Eugene
     {
       latlng: {
         latitude: 1.3050038005230384,
@@ -239,7 +237,7 @@ export default function RunMap(props) {
 
   //Track location stuff => Calcdistance, Watch poition, Polyline
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [distance, setNewDistance] = useState(0.000001);
+  const [distance, setNewDistance] = useState(0);
   const [locList, setLocList] = useState([]);
   const [remove, setRemove] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -286,7 +284,7 @@ export default function RunMap(props) {
         );
       } else {
         console.log("Initial Current Location is not null");
-        console.log("Total Distance Travelled: " + distance + " Km");
+        console.log("Total Distance Travelled: " + distance + " Km")
       }
       ////////////////////////////////////////////////////////////
     })();
@@ -301,10 +299,8 @@ export default function RunMap(props) {
     (async () => {
       let locations = await Location.watchPositionAsync(
         {
-          accuracy: 4,
-          enableHighAccuracy: true,
-          timeInterval: 60000,
-          distanceInterval: 1,
+          accuracy: Location.Accuracy.Highest,
+          distanceInterval: 1
         },
         (loc) => {
           const latlon = {
@@ -324,12 +320,11 @@ export default function RunMap(props) {
               latlon.longitude +
               " }=========="
           );
-          console.log(
-            "Distance Travelled in Recent Change: " + newDistance + " Km"
-          );
+          console.log("Distance Travelled in Recent Change: " + newDistance + " Km");
+          
         }
       );
-      if (remove === null) {
+      if (remove == null) {
         setRemove(locations);
       } else {
         console.log("Remove function is no longer undefined");
@@ -540,22 +535,24 @@ export default function RunMap(props) {
                 Average Pace:{" "}
                 {(distance.toFixed(2) / (timeNow / 1000 / 60)).toFixed(2)} Km/m
               </Text>
-            </View>
-            <TouchableOpacity //Finish
-              style={styles.finishRunButton}
-              onPress={() => {
-                stop();
-                finishRun();
-              }}
-            >
-              <Text style={styles.finishRunButtonText}>Finish</Text>
-            </TouchableOpacity>
+              </View> 
+              <TouchableOpacity //Finish
+                style={styles.finishRunButton}
+                onPress={() => {
+                  stop();
+                  finishRun();
+                }}
+              >
+                <Text style={styles.finishRunButtonText}>Finish</Text>
+              </TouchableOpacity>          
           </View>
         )}
       </View>
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   finishRunBorder: {
@@ -566,22 +563,22 @@ const styles = StyleSheet.create({
     bottom: 120,
     height: Dimensions.get("window").height * 0.5,
     padding: 30,
-    width: Dimensions.get("window").width * 0.75,
+    width: Dimensions.get("window").width * 0.75
   },
   finishRunDistance: {
     color: "black",
     fontSize: 28,
-    flex: 0.3,
+    flex: 0.3
   },
   finishRunTime: {
     color: "black",
     fontSize: 28,
-    flex: 0.3,
+    flex: 0.3
   },
   finishRunPace: {
     color: "black",
     fontSize: 28,
-    flex: 0.3,
+    flex: 0.3
   },
   finishRunButton: {
     alignSelf: "center",
