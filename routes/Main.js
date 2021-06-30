@@ -19,6 +19,8 @@ import {
   getUserFollowers,
 } from "../store/actions/user";
 
+import { getUserRuns } from "../store/actions/runs";
+
 const Tab = createMaterialBottomTabNavigator();
 
 export const Main = (props) => {
@@ -28,11 +30,12 @@ export const Main = (props) => {
     props.getUserHistory();
     props.getUserFollowing();
     props.getUserFollowers();
+    props.getUserRuns();
   }, []);
 
   const EmptyScreen = () => {
-    return (null)
-  }
+    return null;
+  };
 
   return (
     <>
@@ -96,7 +99,14 @@ const mapStateToProps = (store) => ({
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
-    { getUser, getUserHistory, getUserFollowing, getUserFollowers, clearData },
+    {
+      getUser,
+      getUserHistory,
+      getUserFollowing,
+      getUserFollowers,
+      getUserRuns,
+      clearData,
+    },
     dispatch
   );
 
