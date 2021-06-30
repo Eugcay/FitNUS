@@ -299,8 +299,7 @@ export default function RunMap(props) {
     (async () => {
       let locations = await Location.watchPositionAsync(
         {
-          accuracy: Location.Accuracy.High,
-          timeInterval: 1000,
+          accuracy: Location.Accuracy.Highest,
           distanceInterval: 1
         },
         (loc) => {
