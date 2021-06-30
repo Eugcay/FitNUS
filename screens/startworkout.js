@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
-import { addToHistory } from "../store/actions/user";
+import { addToHistory } from "../store/actions/history";
 import HeaderTop from "../components/startWorkoutComponents/headerTop";
 import { Stopwatch } from "react-native-stopwatch-timer";
 import { Divider } from "react-native-elements";

@@ -20,7 +20,7 @@ const JioDetails = (props) => {
   const [details, setDetails] = useState(null);
 
   useEffect(() => {
-    const fetchWorkouts = getWorkouts().onSnapshot((querySnapshot) => {
+    const fetchWorkouts = firebase.firestore().collection('Workouts').onSnapshot((querySnapshot) => {
       const workouts = [];
       querySnapshot.forEach((documentSnapshot) => {
         workouts.push({

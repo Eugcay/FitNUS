@@ -1,14 +1,13 @@
 import { userReducer } from "./user";
 import { workoutReducer } from "./workouts";
 import { statsReducer } from "./statistics";
-import { runReducer } from "./runs";
+import { runReducer } from "./history";
 import { combineReducers } from "redux";
 
 const rootReducer = combineReducers({
     user: userReducer,
     workout: workoutReducer,
-    stats: statsReducer,
-    runs: runReducer,
+    history: runReducer,
 })
 
 export default rootReducer

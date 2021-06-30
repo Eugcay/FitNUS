@@ -62,7 +62,7 @@ import { Divider } from "react-native-elements";
 
 const mapStateToProps = (store) => ({
   currentUser: store.user.currentUser,
-  history: store.user.history
+  history: store.history.workouts
 })
 
 const mapDispatchToProps = (dispatch) => ({

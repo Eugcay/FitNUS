@@ -22,8 +22,8 @@ import {
   favExercises,
   yearlyData,
   monthlyData,
-  concatWithoutDupe,
-} from "../helpers";
+} from "../helpers/tracker";
+import { concatWithoutDupe } from "../helpers";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import moment from "moment";
 import Spinner from "../components/Spinner";
@@ -50,11 +50,18 @@ const Tracker = (props) => {
     const tot = props.history
       ? getStats(props.history.map((doc) => doc.data))
       : null;
-    const workoutsPerMonth = props.history ? yearlyData(props.history.map((doc) => doc.data))  : null
+    const workoutsPerMonth = props.history
+      ? yearlyData(props.history.map((doc) => doc.data))
+      : null;
     const m = props.history ? reloadPeriod(month, props.history) : null;
-    const workoutsPerWeek = props.history ? monthlyData(props.history.map((doc) => doc.data), month) : null 
+    const workoutsPerWeek = props.history
+      ? monthlyData(
+          props.history.map((doc) => doc.data),
+          month
+        )
+      : null;
     const w = props.history ? reloadPeriod(week, props.history) : null;
-    
+
     const favourites = favExercises(props.history.map((doc) => doc.data));
 
     setUser(props.currentUser);
@@ -433,7 +440,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (store) => ({
-  history: store.user.history,
+  history: store.history.workouts,
   currentUser: store.user.currentUser,
 });
 

@@ -14,12 +14,11 @@ import ProfileStack from "./profileStack";
 import {
   clearData,
   getUser,
-  getUserHistory,
   getUserFollowing,
   getUserFollowers,
 } from "../store/actions/user";
 
-import { getUserRuns } from "../store/actions/runs";
+import { getUserRuns, getUserHistory } from "../store/actions/history";
 
 const Tab = createMaterialBottomTabNavigator();
 

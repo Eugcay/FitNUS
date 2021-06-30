@@ -14,9 +14,9 @@ import { ListItem } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Divider } from "react-native-elements";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { connect } from "react-redux";
 import { removeWorkout } from "../store/actions/user";
 import ExListItem from "../components/detailsComponents/ExListItem";
+import firebase from "firebase";
 
 function WorkoutDetails(props) {
   const duration = props.route.params.workout.duration;
@@ -37,6 +37,17 @@ function WorkoutDetails(props) {
     });
   }, []);
 
+  const del = (id) => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("history")
+      .doc(id)
+      .delete()
+      props.navigation.goBack();
+  }
+
   const deleteWorkout = () => {
     Alert.alert("Confirm Delete?", "", [
       {
@@ -47,8 +58,7 @@ function WorkoutDetails(props) {
       {
         text: "Delete",
         onPress: () => {
-          props.delete(id);
-          props.navigation.goBack();
+          del(id);
         },
       },
     ]);
@@ -161,11 +171,11 @@ function WorkoutDetails(props) {
   );
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  delete: (id) => dispatch(removeWorkout(id)),
-});
+// const mapDispatchToProps = (dispatch) => ({
+//   delete: (id) => dispatch(removeWorkout(id)),
+// });
 
-export default connect(null, mapDispatchToProps)(WorkoutDetails);
+export default WorkoutDetails;
 
 const styles = StyleSheet.create({
   container: {
