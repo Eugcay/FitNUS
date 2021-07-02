@@ -12,6 +12,7 @@ import { Divider } from "react-native-elements";
 
  function FitBud(props) {
   const [history, setHistory] = useState(null);
+  const [runs, setRuns] = useState(null)
   const [workouts, setWorkouts] = useState([]);
   const [user, setUser] = useState(null)
 
@@ -19,6 +20,7 @@ import { Divider } from "react-native-elements";
   useEffect(() => {
     setHistory(props.history)
     setUser(props.currentUser)
+    setRuns(props.runs)
   }, [props.currentUser, props.history]);
 
   // get workouts
@@ -54,7 +56,7 @@ import { Divider } from "react-native-elements";
       <Divider width={1} style={{marginVertical: 10}}/>
       <Text style={styles.headers}>Do it again!</Text>
       <SafeAreaView>
-        {history ? <HistoryBar navigation={props.navigation} hist={history} /> : <Spinner/>}
+        {history ? <HistoryBar navigation={props.navigation} hist={history} runs={runs} /> : <Spinner/>}
       </SafeAreaView>
     </ScrollView>
   );
@@ -62,14 +64,12 @@ import { Divider } from "react-native-elements";
 
 const mapStateToProps = (store) => ({
   currentUser: store.user.currentUser,
-  history: store.history.workouts
+  history: store.history.workouts,
+  runs: store.history.runs,
 })
 
-const mapDispatchToProps = (dispatch) => ({
-  getHistory: () => dispatch(getUserHistory())
-})
 
-export default connect(mapStateToProps, mapDispatchToProps)(FitBud)
+export default connect(mapStateToProps, null)(FitBud)
 
 
 

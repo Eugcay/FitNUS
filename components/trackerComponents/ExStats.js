@@ -4,7 +4,7 @@ import { Divider } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LineChart, Grid, YAxis, XAxis } from "react-native-svg-charts";
 import moment from "moment";
-import { statsByEx } from "../../helpers";
+import { statsByEx } from "../../helpers/tracker"; 
 
 const ExStats = ({ item, hist, pb, del }) => {
   const stat = statsByEx(

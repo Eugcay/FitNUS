@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  StyleSheet,
   Text,
-  SafeAreaView,
   Image,
   View,
   TouchableOpacity,
@@ -11,6 +9,7 @@ import firebase from "firebase";
 import moment from "moment";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Divider } from "react-native-paper";
+import { styles } from "./styles";
 
 const Post = ({ navigation, item, currUser }) => {
   const [user, setUser] = useState({});
@@ -61,12 +60,7 @@ const Post = ({ navigation, item, currUser }) => {
   return (
     <View style={styles.container}>
       <View
-        style={{
-          flexDirection: "row",
-          paddingHorizontal: 5,
-          paddingVertical: 8,
-          alignItems: "center",
-        }}
+        style={styles.profileBar}
       >
         <Image
           source={
@@ -84,6 +78,7 @@ const Post = ({ navigation, item, currUser }) => {
             )}
           </Text>
         </View>
+        <MaterialIcons name="mode-edit" size={18} colo="darkblue"/>
         {/* <TouchableOpacity
           onPress={navigation.navigate("Details", {
             view: true,
@@ -148,47 +143,3 @@ const Post = ({ navigation, item, currUser }) => {
 };
 
 export default Post;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    marginVertical: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginHorizontal: 10,
-    borderRadius: 10,
-  },
-
-  profilePic: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    marginRight: 8,
-  },
-
-  image: {
-    height: 200,
-    width: "100%",
-    marginBottom: 10,
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginVertical: 5,
-  },
-
-  inLine: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 4,
-  },
-
-  dataItem: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 4,
-    paddingVertical: 6,
-  },
-});

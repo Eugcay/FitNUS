@@ -47,7 +47,7 @@ const SelectWorkoutType = ({ navigation }) => {
         </Text>
       </TouchableOpacity>
       <View style={styles.label}>
-        <Text style={{fontSize: 17}}>Select Workout Type</Text>
+        <Text style={{fontSize: 17, color: 'darkblue'}}>Select Workout Type</Text>
       </View>
     </View>
   );
@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center",
     position: "absolute",
-    bottom: Dimensions.get("screen").height * 47.5/100,
-    backgroundColor: "lightblue",
+    bottom: Dimensions.get("screen").height * 47/100,
+    backgroundColor: "powderblue",
   },
 
   backButton: {

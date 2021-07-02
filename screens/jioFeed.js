@@ -35,4 +35,3 @@ const mapStateToProps = (store) => ({
 export default connect(mapStateToProps, null)(JioFeed);
 
 
-const styles = StyleSheet.create({});

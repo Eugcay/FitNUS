@@ -8,10 +8,11 @@ export function getUserRuns() {
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .collection("runs")
+      .orderBy("date", "desc")
       .onSnapshot((snapshot) => {
         const runs = [];
         snapshot.docs.forEach((doc) => {
-          runs.push({ id: doc.id, data: doc.data });
+          runs.push({ id: doc.id, data: doc.data() });
         });
         dispatch({ type: SET_USER_RUNS, runs });
       });

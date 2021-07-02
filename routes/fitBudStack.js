@@ -5,10 +5,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import FitBud from "../screens/fitBud";
 import WorkoutDetails from "../screens/workoutDetails";
-import StartWorkout from "../screens/startworkout";
 import Map from "../screens/map";
-import AddExercises from "../screens/addExercises";
-import { ExerciseDetails } from "../screens/exerciseDetails";
+import RunDetails from "../screens/runDetails";
 // import AddExercises from ""
 
 const Stack = createStackNavigator();
@@ -16,9 +14,10 @@ const Stack = createStackNavigator();
 const FitBudStack = ({ navigation }) => {
   return (
     <>
-      <Stack.Navigator initialRouteName="">
+      <Stack.Navigator>
         <Stack.Screen name="Fit Bud" component={FitBud} />
         <Stack.Screen name="Workout Details" component={WorkoutDetails}></Stack.Screen>
+        <Stack.Screen name="Run Details" component={RunDetails}></Stack.Screen>
         <Stack.Screen name="Map" component={Map}></Stack.Screen> 
       </Stack.Navigator>
     </>
