@@ -1,9 +1,9 @@
 {
   "expo": {
     "scheme": "fitnus",
-    "name": "FitNUS",
-    "slug": "FitNUS",
-    "version": "1.0.0",
+    "name": "fitNUS",
+    "slug": "fitNUS",
+    "version": "0.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
