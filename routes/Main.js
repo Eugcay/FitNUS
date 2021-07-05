@@ -26,10 +26,10 @@ export const Main = (props) => {
   useEffect(() => {
     props.clearData();
     props.getUser();
+    props.getUserRuns();
     props.getUserHistory();
     props.getUserFollowing();
     props.getUserFollowers();
-    props.getUserRuns();
   }, []);
 
   const EmptyScreen = () => {

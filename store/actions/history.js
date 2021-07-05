@@ -1,5 +1,5 @@
 import firebase from "firebase";
-import { SET_USER_RUNS, SET_USER_HISTORY} from "./types";
+import { SET_USER_RUNS, SET_USER_HISTORY, ADD_RUNS} from "./types";
 
 export function getUserRuns() {
   return (dispatch) => {
@@ -48,7 +48,7 @@ export function addToRuns(runs) {
       });
     
     dispatch({
-      type: ADD_RUN,
+      type: ADD_RUNS,
       data: {
         ...runs
       },
