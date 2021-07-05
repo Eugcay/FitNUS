@@ -21,7 +21,7 @@ const SelectWorkoutType = ({ navigation }) => {
             blurRadius={5}
           >
             <View style={styles.darken}>
-              <Text style={styles.title}>Run</Text>
+              <Text style={styles.title}>Distance-based</Text>
             </View>
           </ImageBackground>
         </TouchableOpacity>

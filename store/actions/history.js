@@ -36,6 +36,26 @@ export function getUserHistory() {
   };
 }
 
+export function addToRuns(runs) {
+  return async (dispatch) => {
+    await firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("runs")
+      .add({
+        ...runs
+      });
+    
+    dispatch({
+      type: ADD_RUN,
+      data: {
+        ...runs
+      },
+    });
+  };
+}
+
 export function addToHistory(workout) {
   const date = firebase.firestore.FieldValue.serverTimestamp();
   return async (dispatch) => {

@@ -23,7 +23,7 @@ const HistoryBar = ({ navigation, hist, runs }) => {
     if (!history || history.length === 0) {
       return (
         <TouchableOpacity
-          onPress={() => navigation.navigate("Start Workout")}
+          onPress={() => navigation.navigate("Start Workout", { screen: 'Select Workout Type' })}
           style={[styles.item, { backgroundColor: setRandomColor() }]}
         >
           <Text>Create new workout</Text>

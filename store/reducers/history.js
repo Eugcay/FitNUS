@@ -1,4 +1,4 @@
-import { SET_USER_RUNS, SET_USER_HISTORY, ADD_WORKOUT } from "../actions/types";
+import { SET_USER_RUNS, SET_USER_HISTORY, ADD_WORKOUT, ADD_RUNS } from "../actions/types";
 
 const initialState = {
   runs: [],
@@ -17,6 +17,11 @@ export const runReducer = (state = initialState, action) => {
         ...state,
         workouts: action.history,
       };
+    case ADD_RUNS: 
+    return {
+      ...state,
+      runs: state.runs.concat(action.data),
+    };
     case ADD_WORKOUT:
       return {
         ...state,

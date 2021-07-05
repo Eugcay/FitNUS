@@ -14,17 +14,17 @@ export const styles = StyleSheet.create({
   finishRunDistance: {
     color: "black",
     fontSize: 28,
-    flex: 0.3,
+    flex: 0.25,
   },
   finishRunTime: {
     color: "black",
     fontSize: 28,
-    flex: 0.3,
+    flex: 0.25,
   },
   finishRunPace: {
     color: "black",
     fontSize: 28,
-    flex: 0.3,
+    flex: 0.25,
   },
   finishRunButton: {
     alignSelf: "center",
@@ -57,8 +57,6 @@ export const styles = StyleSheet.create({
   },
   bottombar: {
     flex: 1,
-    position: "absolute",
-    bottom: Platform.OS === "ios" ? 15 : 10,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",

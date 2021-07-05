@@ -226,33 +226,33 @@ export const concatWithoutDupe = (arr, inputArr) => {
 //   );
 // };
 
-// export const getCat = (cat) => {
-//   switch (cat) {
-//     case 8:
-//       return "Arms";
-//     case 9:
-//       return "Legs";
-//     case 10:
-//       return "Abs";
-//     case 11:
-//       return "Chest";
-//     case 12:
-//       return "Back";
-//     case 13:
-//       return "Shoulders";
-//     case 14:
-//       return "Calves";
-//   }
-//   exCats.find((item) => item.id === cat);
-//   console.log(cat);
-// };
+export const getCat = (cat) => {
+  switch (cat) {
+    case 8:
+      return "Arms";
+    case 9:
+      return "Legs";
+    case 10:
+      return "Abs";
+    case 11:
+      return "Chest";
+    case 12:
+      return "Back";
+    case 13:
+      return "Shoulders";
+    case 14:
+      return "Calves";
+  }
+  exCats.find((item) => item.id === cat);
+  console.log(cat);
+};
 
-// const getWeek = (date) => {
-//   const curr1 = new Date(date.getTime());
-//   const curr2 = new Date(date.getTime());
-//   const first = date.getDate() - date.getDay();
-//   const last = first + 7;
-//   const start = new Date(curr1.setDate(first));
-//   const end = new Date(curr2.setDate(last));
-//   return { start, end };
-// };
+const getWeek = (date) => {
+  const curr1 = new Date(date.getTime());
+  const curr2 = new Date(date.getTime());
+  const first = date.getDate() - date.getDay();
+  const last = first + 7;
+  const start = new Date(curr1.setDate(first));
+  const end = new Date(curr2.setDate(last));
+  return { start, end };
+};

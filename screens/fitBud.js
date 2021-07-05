@@ -68,10 +68,7 @@ const mapStateToProps = (store) => ({
   runs: store.history.runs,
 })
 
-
 export default connect(mapStateToProps, null)(FitBud)
-
-
 
 const styles = StyleSheet.create({
   headers: {

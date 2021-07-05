@@ -43,9 +43,9 @@ function WorkoutDetails(props) {
       .doc(firebase.auth().currentUser.uid)
       .collection("history")
       .doc(id)
-      .delete()
-      props.navigation.goBack();
-  }
+      .delete();
+    props.navigation.goBack();
+  };
 
   const deleteWorkout = () => {
     Alert.alert("Confirm Delete?", "", [
@@ -76,6 +76,7 @@ function WorkoutDetails(props) {
   return (
     <View style={styles.container}>
       <ScrollView>
+        <View style={styles.scroll}>
         {workout.imageURL !== "" && (
           <Image source={{ uri: workout.imageURL }} style={styles.image} />
         )}
@@ -143,6 +144,7 @@ function WorkoutDetails(props) {
             />
           </View>
         )}
+        </View>
       </ScrollView>
       {workout.exercises && (
         <TouchableOpacity
@@ -163,7 +165,7 @@ function WorkoutDetails(props) {
           }
           style={styles.start}
         >
-          <Text>{jio ? 'Add to Jio' : 'Begin Workout'}</Text>
+          <Text>{jio ? "Add to Jio" : "Begin Workout"}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -171,5 +173,3 @@ function WorkoutDetails(props) {
 }
 
 export default WorkoutDetails;
-
-

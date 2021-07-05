@@ -69,4 +69,8 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 10,
   },
+
+  scroll: {
+    paddingBottom: 80,
+  },
 });

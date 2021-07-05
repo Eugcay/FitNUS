@@ -46,31 +46,26 @@ export const styles = StyleSheet.create({
     width: "45%",
     alignItems: "center",
     justifyContent: "center",
-    height: "100%",
+    height: 40,
     borderRadius: 5,
-    marginBottom: 30,
   },
 
   bottombar: {
     flex: 1,
-    position: "absolute",
-    bottom: Platform.OS === "ios" ? 15 : 0,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    alignSelf: "center",
-    height: "5%",
+    marginBottom: 30
   },
   statbar: {
     flexDirection: "row",
     marginHorizontal: 10,
-    marginVertical: 0,
     borderTopColor: "#C0C0C0",
     borderBottomColor: "#C0C0C0",
     borderTopWidth: 1,
     borderBottomWidth: 1,
     alignItems: "center",
-    justifyContent: "center",
+    height: 45
   },
   startstop: {
     width: "30%",
@@ -79,7 +74,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 5,
     backgroundColor: "#0B2A59",
     borderRadius: 5,
-    height: 25,
+    height: 35,
   },
   stopwatch: {
     width: "70%",

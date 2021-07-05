@@ -4,19 +4,24 @@ import {
   Text,
   View,
   TouchableOpacity,
+  TextInput,
+  KeyboardAvoidingView,
 } from "react-native";
 import * as Location from "expo-location";
 import haversine from "haversine";
 import { mapDark, mapStandard } from "../../mapConfig";
 import { Stopwatch } from "react-native-stopwatch-timer";
-import { presetLocations, testCords } from "../../config";
+import { presetLocations, testCords } from "./config";
 import { styles, options } from "./styles";
 import firebase from "firebase";
+import { connect } from "react-redux";
+import { addToRuns } from "../../store/actions/history";
 
-export default function RunMap(props) {
+
+const RunMap = (props) => {
   const [mTop, setMargin] = useState(0);
   const [dark, setDark] = useState(false);
-
+  const [title, setTitle] = useState("Workout title");
   const [refer, setRefer] = useState(null);
 
   const fitAllMarkers = () => {
@@ -56,6 +61,22 @@ export default function RunMap(props) {
   const [locList, setLocList] = useState([]);
   const [remove, setRemove] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [snapShot, setSnapshot] = useState(null);
+
+  //takeSnapshot
+  const takeSnapshot = () => {
+    // 'takeSnapshot' takes a config object with the
+    // following options
+    (async () => {
+      let snapshot = await refer.takeSnapshot({
+        format: "png", // image formats: 'png', 'jpg' (default: 'png')
+        quality: 0.8, // image quality: 0..1 (only relevant for jpg, default: 1)
+        result: "file", // result types: 'file', 'base64' (default: 'file')
+      });
+      setSnapshot(snapshot);
+      console.log(snapShot);
+    })();
+  };
 
   const calcDistance = (prevLatLng, newLatLng) => {
     return haversine(prevLatLng, newLatLng) || 0;
@@ -99,8 +120,8 @@ export default function RunMap(props) {
         );
       } else {
         console.log("Initial Current Location is not null");
-        console.log("Total Distance Travelled: " + distance + " Km")
-        console.log("Pace: " + (distance * 1000) / (timeNow / 1000))
+        console.log("Total Distance Travelled: " + distance + " Km");
+        console.log("Pace: " + (distance * 1000) / (timeNow / 1000));
       }
       ////////////////////////////////////////////////////////////
     })();
@@ -116,8 +137,8 @@ export default function RunMap(props) {
       let locations = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Highest,
-          timeInterval: 60000,
-          distanceInterval: 1
+          timeInterval: 6000,
+          distanceInterval: 1,
         },
         (loc) => {
           const latlon = {
@@ -137,8 +158,9 @@ export default function RunMap(props) {
               latlon.longitude +
               " }=========="
           );
-          console.log("Distance Travelled in Recent Change: " + newDistance + " Km");
-          
+          console.log(
+            "Distance Travelled in Recent Change: " + newDistance + " Km"
+          );
         }
       );
       if (remove == null) {
@@ -161,19 +183,30 @@ export default function RunMap(props) {
 
   const finishRun = async () => {
     remove.remove();
-    await firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("runs")
-      .add({
-        name: 'Quick Run',
-        description: `Run on ${new Date(Date.now())}`,
-        duration: timeNow / 1000,
-        distance,
-        locList,
-        date: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+    const run = {
+      name: title,
+      description: `${title} on ${new Date(Date.now())}`,
+      duration: timeNow / 1000,
+      distance,
+      locList,
+      date: firebase.firestore.FieldValue.serverTimestamp(),
+      snapshot: snapShot,
+    };
+    props.finish(run);
+    // await firebase
+    //   .firestore()
+    //   .collection("users")
+    //   .doc(firebase.auth().currentUser.uid)
+    //   .collection("runs")
+    //   .add({
+    //     name: title,
+    //     description: `${title} on ${new Date(Date.now())}`,
+    //     duration: timeNow / 1000,
+    //     distance,
+    //     locList,
+    //     date: firebase.firestore.FieldValue.serverTimestamp(),
+    //     snapshot: snapShot
+    //   });
 
     props.navigation.navigate("Main");
   };
@@ -291,6 +324,7 @@ export default function RunMap(props) {
                   setIsStopwatchStart(false);
                   stop();
                   fitAllMarkers();
+                  takeSnapshot();
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -335,6 +369,7 @@ export default function RunMap(props) {
                   setIsStopwatchStart(false);
                   stop();
                   fitAllMarkers();
+                  takeSnapshot();
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -342,31 +377,52 @@ export default function RunMap(props) {
             </View>
           </View>
         ) : (
-          <View>
-            <View style={styles.finishRunBorder}>
-              <Text style={styles.finishRunDistance}>
-                Total Distance: {distance.toFixed(2)} Km
-              </Text>
-              <Text style={styles.finishRunTime}>
-                Total Time: {(timeNow / 1000 / 60).toFixed(2)} minutes
-              </Text>
-              <Text style={styles.finishRunPace}>
-                Average Pace:{" "}
-                {(distance.toFixed(2) / (timeNow / 1000 / 60)).toFixed(2)} Km/m
-              </Text>
-              </View> 
-              <TouchableOpacity //Finish
-                style={styles.finishRunButton}
-                onPress={() => {
-                  stop();
-                  finishRun();
-                }}
-              >
-                <Text style={styles.finishRunButtonText}>Finish</Text>
-              </TouchableOpacity>          
-          </View>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.finishRunBorder}
+          >
+            <TextInput
+              style={{
+                height: 50,
+                borderColor: "gray",
+                borderWidth: 1,
+                marginVertical: 10,
+                paddingLeft: 15,
+                fontSize: 28,
+              }}
+              onChangeText={(text) => setTitle(text)}
+              value={title}
+              maxLength={20}
+            />
+
+            <Text style={styles.finishRunDistance}>
+              Total Distance: {distance.toFixed(2)} Km
+            </Text>
+            <Text style={styles.finishRunTime}>
+              Total Time: {(timeNow / 1000 / 60).toFixed(2)} minutes
+            </Text>
+            <Text style={styles.finishRunPace}>
+              Average Pace:{" "}
+              {(distance.toFixed(2) / (timeNow / 1000 / 60)).toFixed(2)} Km/m
+            </Text>
+            <TouchableOpacity //Finish
+              style={styles.finishRunButton}
+              onPress={() => {
+                stop();
+                finishRun();
+              }}
+            >
+              <Text style={styles.finishRunButtonText}>Finish</Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
         )}
       </View>
     </View>
   );
 }
+
+const mapDispatchToProps = (dispatch) => ({
+  finish: (workout) => dispatch(addToRuns(workout)),
+});
+
+export default connect(null, mapDispatchToProps)(RunMap);
