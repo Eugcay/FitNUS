@@ -14,7 +14,7 @@ export function getUserRuns() {
         snapshot.docs.forEach((doc) => {
           runs.push({ id: doc.id, data: doc.data() });
         });
-        dispatch({ type: SET_USER_RUNS, runs });
+        dispatch({ type: SET_USER_RUNS, runs: runs });
       });
   };
 }

@@ -11,7 +11,7 @@ export const SET_USERS = 'SET_USERS'
 export const SET_CURRENT_USER = 'SET_CURRENT_USER'
 
 export const SET_USER_RUNS = 'SET_USER_RUNS'
-export const ADD_RUNS = 'ADD_RUNS'
+export const ADD_RUN = 'ADD_RUN'
 
 export const SET_STATS = 'SET_STATS'
 export const SET_WEEKLY_STATS = 'SET_WEEKLY_STATS'
