@@ -9,7 +9,7 @@ import * as Location from "expo-location";
 import haversine from "haversine";
 import { mapDark, mapStandard } from "../../mapConfig";
 import { Stopwatch } from "react-native-stopwatch-timer";
-import { presetLocations, testCords } from "./config";
+import { presetLocations, testCords } from "../../config";
 import { styles, options } from "./styles";
 
 export default function RunMap(props) {
