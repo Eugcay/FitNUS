@@ -55,7 +55,7 @@ import { Divider } from "react-native-elements";
       <FitBudSuggests navigation={props.navigation} />
       <Divider width={1} style={{marginVertical: 10}}/>
       <Text style={styles.headers}>Do it again!</Text>
-      <SafeAreaView>
+      <SafeAreaView style={{marginBottom: 20}}>
         {history ? <HistoryBar navigation={props.navigation} hist={history} runs={runs} /> : <Spinner/>}
       </SafeAreaView>
     </ScrollView>

@@ -83,7 +83,7 @@ const StartWorkout = (props) => {
       (x, y) => x && (y.sets ? completedSets(y) === y.sets.length : false),
       true
     );
-    return completed;
+    return completed && exercises.length > 0;
   };
 
   const finishWorkout = () => {

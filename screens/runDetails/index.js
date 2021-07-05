@@ -1,12 +1,14 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React from "react";
+import { View, Text } from "react-native";
 
 const RunDetails = (props) => {
-    return (
-        <View>
-            <Text>Run Details</Text>
-        </View>
-    )
-}
+  const run = props.workout;
+  const id = props.id;
+  return (
+    <View>
+      <Text>Run Details</Text>
+    </View>
+  );
+};
 
-export default RunDetails
+export default RunDetails;

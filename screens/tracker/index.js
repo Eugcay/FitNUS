@@ -83,10 +83,29 @@ const Tracker = (props) => {
       workouts: props.currentUser.workoutGoal,
     });
 
-    setType(statsType);
-    setPeriod(period);
-    console.log(exercises);
-  }, [props.history, props.currentUser, week, month, period]);
+    const getPeriod = () => {
+      switch (statsType) {
+        case "weekly":
+          return w;
+        case "monthly":
+          return {
+            ...m,
+            workoutFreq: workoutsPerWeek,
+          };
+        case "total":
+          return {
+            ...tot,
+            workoutFreq: workoutsPerMonth,
+          };
+        default:
+          return m
+      }
+    };
+
+    setPeriod(getPeriod());
+
+    
+  }, [props.history, props.currentUser, week, month, statsType]);
 
   useEffect(() => {
     const ex = props.route.params?.exercises;
@@ -104,17 +123,21 @@ const Tracker = (props) => {
   const toggleStats = (direction) => {
     if (statsType === "weekly") {
       if (
-        new Date().getMonth() >= week.start.getMonth() - 1 &&
-        new Date().getMonth() <= week.start.getMonth() + 1
+        (new Date().getMonth() >= week.start.getMonth() - 1 ||
+          direction === "back") &&
+        (new Date().getMonth() <= week.start.getMonth() + 1 ||
+          direction === "next")
       ) {
         setWeek(changeWeek(week, direction));
-        setPeriod(weekly);
+        setType("weekly");
       }
     } else {
       setMonth(changeMonth(month, direction));
-      setPeriod(monthly);
+      setType("monthly");
     }
   };
+
+  
 
   const deleteEx = (ex) => {
     const dat = [...exercises];
@@ -214,7 +237,7 @@ const Tracker = (props) => {
             {statsType !== "weekly" && period && (
               <FrequencyBarChart
                 type={statsType}
-                data={period?.workoutFreq ? period?.workoutFreq : dats}
+                data={period?.workoutFreq}
                 goal={goals.workouts}
               />
             )}
@@ -340,8 +363,6 @@ const Tracker = (props) => {
     </ScrollView>
   );
 };
-
-
 
 const mapStateToProps = (store) => ({
   history: store.history.workouts,

@@ -1,12 +1,8 @@
 import moment from "moment";
 
 export const getCurrWeek = () => {
-  const curr = new Date();
-  const first = curr.getDate() - curr.getDay();
-  const last = first + 7;
-  const start = new Date(curr.setDate(first));
-  const end = new Date(curr.setDate(last));
-  return { start, end };
+  const currWeek = getWeek(new Date())
+  return currWeek;
 };
 
 export const getCurrMonth = () => {
@@ -81,6 +77,7 @@ export const yearlyData = (hist) => {
   );
   return DataPerMonth;
 };
+
 const findMax = (arr) => {
   return arr.reduce((x, y) => Math.max(x, y), 0);
 };

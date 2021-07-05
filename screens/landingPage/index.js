@@ -4,6 +4,7 @@ import Background from "../../components/Background";
 
 import { Ionicons } from "@expo/vector-icons";
 import { startAsync, makeRedirectUri, getDefaultReturnUrl } from "expo-auth-session";
+import { styles } from "./styles";
 
 function LandingPage({ navigation }) {
   const config = {

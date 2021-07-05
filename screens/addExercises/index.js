@@ -14,6 +14,7 @@ import { Searchbar } from "react-native-paper";
 import firebase from "firebase";
 import { getCat } from "../../helpers";
 import { Divider } from "react-native-elements";
+import { styles } from "./styles";
 
 export default function AddExercises(props) {
   const [exercises, setExercises] = useState([]);

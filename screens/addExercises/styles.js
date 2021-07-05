@@ -1,4 +1,6 @@
-const styles = StyleSheet.create({
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
     searchBar: {
       marginVertical: 10,
       color: "#C0C0C0",

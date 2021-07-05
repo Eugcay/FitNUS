@@ -11,6 +11,7 @@ import { mapDark, mapStandard } from "../../mapConfig";
 import { Stopwatch } from "react-native-stopwatch-timer";
 import { presetLocations, testCords } from "./config";
 import { styles, options } from "./styles";
+import firebase from "firebase";
 
 export default function RunMap(props) {
   const [mTop, setMargin] = useState(0);

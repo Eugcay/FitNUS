@@ -3,7 +3,8 @@ import MapView from "react-native-maps";
 import { View, Switch } from "react-native";
 import * as Location from "expo-location";
 import { mapDark, mapStandard } from "../../mapConfig";
-import { styles, presetLocations } from "./config";
+import { styles } from "./config";
+import { presetLocations } from "../../mapConfig";
 
 export default function Map(props) {
   const [mTop, setMargin] = useState(0);
