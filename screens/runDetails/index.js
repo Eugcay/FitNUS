@@ -101,7 +101,7 @@ const RunDetails = (props) => {
 
     <TouchableOpacity
     onPress={() =>
-      props.navigation.navigate("Run Map", {
+      props.navigation.navigate("Start Workout", {
         screen: "Run Map",
         params: {
           details: {
