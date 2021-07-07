@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
-import MapView from "react-native-maps";
+import MapView, {
+  ProviderPropType,
+  Animated as AnimatedMap,
+  AnimatedRegion,
+  Marker,
+} from "react-native-maps";
 import { View, Switch } from "react-native";
 import * as Location from "expo-location";
 import { mapDark, mapStandard } from "../../mapConfig";
 import { styles } from "./config";
 import { presetLocations } from "../../mapConfig";
 
-export default function Map(props) {
+export default function FrontMap(props) {
   const [mTop, setMargin] = useState(0);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -72,7 +77,7 @@ export default function Map(props) {
         customMapStyle={dark ? mapDark : mapStandard}
       >
         {presetLocations.map((marker) => (
-          <MapView.Marker
+          <Marker
             key={marker.index}
             coordinate={marker.latlng}
             title={marker.title}
