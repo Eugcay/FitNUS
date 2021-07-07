@@ -271,7 +271,7 @@ const StartWorkout = (props) => {
               >
                 <Text style={{ color: "#FFFFFF" }}>Pause</Text>
               </TouchableOpacity>
-              <Divider orientation="vertical" />
+              <Divider orientation="vertical"/>
               <Stopwatch
                 start={isStopwatchStart}
                 //To start

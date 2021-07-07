@@ -34,7 +34,7 @@ const addWorkoutStack = ({ navigation, route }) => {
         <Stack.Screen
           name="Select Workout Type"
           component={SelectWorkoutType}
-          options={{ headerShown: false}}
+          options={{ headerShown: false }}
         ></Stack.Screen>
         <Stack.Screen
           name="Add Exercises"

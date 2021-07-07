@@ -61,21 +61,21 @@ const RunMap = (props) => {
   const [locList, setLocList] = useState([]);
   const [remove, setRemove] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [snapShot, setSnapshot] = useState(null);
+  const [screenShot, setScreenshot] = useState(null);
 
   //takeSnapshot
-  const takeSnapshot = () => {
+  const takeScreenshot = () => {
     // 'takeSnapshot' takes a config object with the
     // following options
     (async () => {
-      let snapshot = await refer.takeSnapshot({
+      let screenshot = await refer.takeSnapshot({
         format: "png", // image formats: 'png', 'jpg' (default: 'png')
         quality: 0.8, // image quality: 0..1 (only relevant for jpg, default: 1)
         result: "file", // result types: 'file', 'base64' (default: 'file')
       });
-      setSnapshot(snapshot);
-      console.log(snapShot);
-    })();
+      setScreenshot(screenshot);
+      
+    })()
   };
 
   const calcDistance = (prevLatLng, newLatLng) => {
@@ -84,6 +84,10 @@ const RunMap = (props) => {
 
   //Carry on
   useEffect(() => {
+    if (screenShot !== null) {
+      finishRun();/////////////////////////FINISH RUN HERE!!!!!!!!!!! so snapshot will ne taken first
+    }
+
     (async () => {
       console.log("Effect Rendered");
 
@@ -125,7 +129,8 @@ const RunMap = (props) => {
       }
       ////////////////////////////////////////////////////////////
     })();
-  }, [currentLocation]); //only rerender if loclist changes
+
+  }, [currentLocation, screenShot]); //only rerender if loclist changes
 
   const start = () => {
     setStatus("Continue");
@@ -190,24 +195,9 @@ const RunMap = (props) => {
       distance,
       locList,
       date: firebase.firestore.FieldValue.serverTimestamp(),
-      snapshot: snapShot,
+      imageURL: screenShot,
     };
     props.finish(run);
-    // await firebase
-    //   .firestore()
-    //   .collection("users")
-    //   .doc(firebase.auth().currentUser.uid)
-    //   .collection("runs")
-    //   .add({
-    //     name: title,
-    //     description: `${title} on ${new Date(Date.now())}`,
-    //     duration: timeNow / 1000,
-    //     distance,
-    //     locList,
-    //     date: firebase.firestore.FieldValue.serverTimestamp(),
-    //     snapshot: snapShot
-    //   });
-
     props.navigation.navigate("Main");
   };
 
@@ -324,7 +314,6 @@ const RunMap = (props) => {
                   setIsStopwatchStart(false);
                   stop();
                   fitAllMarkers();
-                  takeSnapshot();
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -369,7 +358,6 @@ const RunMap = (props) => {
                   setIsStopwatchStart(false);
                   stop();
                   fitAllMarkers();
-                  takeSnapshot();
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -405,11 +393,10 @@ const RunMap = (props) => {
               Average Pace:{" "}
               {(distance.toFixed(2) / (timeNow / 1000 / 60)).toFixed(2)} Km/m
             </Text>
-            <TouchableOpacity //Finish
+            <TouchableOpacity //Finishfinish
               style={styles.finishRunButton}
               onPress={() => {
-                stop();
-                finishRun();
+                takeScreenshot();
               }}
             >
               <Text style={styles.finishRunButtonText}>Finish</Text>

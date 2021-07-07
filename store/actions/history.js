@@ -1,5 +1,5 @@
 import firebase from "firebase";
-import { SET_USER_RUNS, SET_USER_HISTORY, ADD_RUNS} from "./types";
+import { SET_USER_RUNS, SET_USER_HISTORY, ADD_RUN } from "./types";
 
 export function getUserRuns() {
   return (dispatch) => {
@@ -14,7 +14,7 @@ export function getUserRuns() {
         snapshot.docs.forEach((doc) => {
           runs.push({ id: doc.id, data: doc.data() });
         });
-        dispatch({ type: SET_USER_RUNS, runs });
+        dispatch({ type: SET_USER_RUNS, runs: runs });
       });
   };
 }
@@ -48,7 +48,7 @@ export function addToRuns(runs) {
       });
     
     dispatch({
-      type: ADD_RUNS,
+      type: ADD_RUN,
       data: {
         ...runs
       },
