@@ -19,10 +19,10 @@ const HistoryBar = ({ navigation, hist, runs }) => {
     require("../../assets/bg3.jpeg"),
   ];
 
-  const WorkoutHistBar = ({ history }) => {
+  const WorkoutHistBar = ({ history }) => {//Passed in below as runs/hist
     if (!history || history.length === 0) {
       return (
-        <TouchableOpacity
+        <TouchableOpacity //if no workout created
           onPress={() => navigation.navigate("Start Workout", { screen: 'Select Workout Type' })}
           style={[styles.item, { backgroundColor: setRandomColor() }]}
         >
@@ -35,7 +35,7 @@ const HistoryBar = ({ navigation, hist, runs }) => {
           <FlatList
             horizontal={true}
             data={history}
-            renderItem={renderItem}
+            renderItem={renderItem} //Defined below
             keyExtractor={(item) => item.id}
           />
           <Divider />

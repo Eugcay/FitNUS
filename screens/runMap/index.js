@@ -64,7 +64,7 @@ const RunMap = (props) => {
   const [screenShot, setScreenshot] = useState(null);
 
   //takeSnapshot
-  const takeSnapshot = () => {
+  const takeScreenshot = () => {
     // 'takeSnapshot' takes a config object with the
     // following options
     (async () => {
@@ -74,7 +74,8 @@ const RunMap = (props) => {
         result: "file", // result types: 'file', 'base64' (default: 'file')
       });
       setScreenshot(screenshot);
-    })();
+      
+    })()
   };
 
   const calcDistance = (prevLatLng, newLatLng) => {
@@ -83,6 +84,10 @@ const RunMap = (props) => {
 
   //Carry on
   useEffect(() => {
+    if (screenShot !== null) {
+      finishRun();/////////////////////////FINISH RUN HERE!!!!!!!!!!! so snapshot will ne taken first
+    }
+
     (async () => {
       console.log("Effect Rendered");
 
@@ -124,7 +129,8 @@ const RunMap = (props) => {
       }
       ////////////////////////////////////////////////////////////
     })();
-  }, [currentLocation]); //only rerender if loclist changes
+
+  }, [currentLocation, screenShot]); //only rerender if loclist changes
 
   const start = () => {
     setStatus("Continue");
@@ -192,7 +198,6 @@ const RunMap = (props) => {
       imageURL: screenShot,
     };
     props.finish(run);
-
     props.navigation.navigate("Main");
   };
 
@@ -309,7 +314,6 @@ const RunMap = (props) => {
                   setIsStopwatchStart(false);
                   stop();
                   fitAllMarkers();
-                  takeSnapshot();
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -354,7 +358,6 @@ const RunMap = (props) => {
                   setIsStopwatchStart(false);
                   stop();
                   fitAllMarkers();
-                  takeSnapshot();
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -390,11 +393,10 @@ const RunMap = (props) => {
               Average Pace:{" "}
               {(distance.toFixed(2) / (timeNow / 1000 / 60)).toFixed(2)} Km/m
             </Text>
-            <TouchableOpacity //Finish
+            <TouchableOpacity //Finishfinish
               style={styles.finishRunButton}
               onPress={() => {
-                stop();
-                finishRun();
+                takeScreenshot();
               }}
             >
               <Text style={styles.finishRunButtonText}>Finish</Text>
