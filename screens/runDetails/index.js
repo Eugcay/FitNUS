@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import firebase from "firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import MapView, { Polyline } from "react-native-maps";
 import { Divider } from "react-native-elements";
+import { timestampToDate } from "../../helpers";
 
 const RunDetails = (props) => {
   const run = props.route.params.workout;
@@ -20,13 +28,14 @@ const RunDetails = (props) => {
 
   const fit = () => {
     refer.fitToCoordinates(locList, {
-      edgePadding: { top: 40, right: 40, bottom: 40, left: 40 },
+      edgePadding: { top: 0, right: 0, bottom: 0, left: 0 },
       animated: false,
     });
   };
 
   return (
-    <View style={styles.container}>
+    <View  style={styles.container}>
+    <ScrollView>
       <MapView
         ref={(ref) => {
           setRefer(ref);
@@ -45,63 +54,67 @@ const RunDetails = (props) => {
           strokeColour="rgba(0,0,0,0.1)"
         />
       </MapView>
-      <Divider orientation="vertical" />
+      <Divider orientation="horizontal" width={1} />
       <View style={styles.top}>
-          <Text style={styles.title}>
-            {name ? name : "Custom Run"}
-          </Text>
-          {date && <Text>{timestampToDate(date.seconds)}</Text>}
-        </View>
-        <View>
-          <Text
-            style={[
-              { paddingTop: 5, marginHorizontal: 10, fontWeight: "bold" },
-            ]}
-          >
-            Description
-          </Text>
-          <Text style={styles.body}>
-            {description ? description : ""}
-          </Text>
-        </View>
-      <View style={styles.statbar1}>
+        <Text style={{ fontSize: 22, paddingTop: 5, marginHorizontal: 10 }}>
+          {name ? name : "Custom Run"}
+        </Text>
+        {date && (
+          <Text style={styles.body}>{timestampToDate(date.seconds)}</Text>
+        )}
+      </View>
+      <Divider orientation="horizontal" width={1} />
+      <View>
+        <Text style={styles.title}>Description</Text>
+        <Text style={styles.body}>{description ? description : ""}</Text>
+      </View>
+      <Divider orientation="horizontal" width={1} />
+      <View style={styles.statbar}>
         <View style={styles.statbox}>
-          <Text>Distance: </Text>
-          <Text>{distance}</Text>
+          <Text style={{fontWeight: "bold"}}>Distance: </Text>
+          <Text>{distance.toFixed(2)} Km</Text>
         </View>
         <Divider orientation="vertical" />
         <View style={styles.statbox}>
-          <Text>Time: </Text>
-          <Text>{duration}</Text>
+          <Text style={{fontWeight: "bold"}}>Time: </Text>
+          <Text>
+            {Math.floor(duration / 60)} mins{" "}
+            {((duration / 60 - Math.floor(duration / 60)) * 60).toFixed(0)} secs
+          </Text>
         </View>
       </View>
-      <View style={styles.statbar2}>
+      <Divider orientation="horizontal" width={1} />
+      <View style={styles.statbar}>
         <View style={styles.statbox}>
-          <Text>Sets</Text>
-          <Text></Text>
+          <Text style={{fontWeight: "bold"}}>Average Pace:</Text>
+          <Text>{((duration / 60) / distance).toFixed(2)} min/Km</Text>
         </View>
         <Divider orientation="vertical" />
         <View style={styles.statbox}>
-          <Text>Achievements</Text>
-          <Text></Text>
+          <Text style={{fontWeight: "bold"}}>Ran: </Text>
+          <Text>1 time</Text>
         </View>
       </View>
-      <TouchableOpacity
-        onPress={() =>
-          props.navigation.navigate("Run Map", {
-            screen: "Run Map",
-            params: {
-              details: {
-                ...run,
-              },
-            },
-          })
-        }
-        style={styles.start}
-      >
-        <Text>Begin Workout</Text>
-      </TouchableOpacity>
-    </View>
+      
+    </ScrollView>
+    <Divider orientation="horizontal" width={1} />
+
+    <TouchableOpacity
+    onPress={() =>
+      props.navigation.navigate("Run Map", {
+        screen: "Run Map",
+        params: {
+          details: {
+            ...run,
+          },
+        },
+      })
+    }
+    style={styles.start}
+  >
+    <Text>Begin Workout</Text>
+  </TouchableOpacity>
+  </View>
   );
 };
 
@@ -111,28 +124,19 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height * 0.5,
+    height: Dimensions.get("window").height * 0.45,
   },
-  statbar1: {
-    flexDirection: "row",
-    marginHorizontal: 10,
-    borderTopColor: "#C0C0C0",
-    borderTopWidth: 1,
-    alignContent: "center",
-    justifyContent: "center",
-  },
-  statbar2: {
+  statbar: {
     flexDirection: "row",
     marginHorizontal: 10,
     borderTopColor: "#C0C0C0",
     borderBottomColor: "#C0C0C0",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
     alignContent: "center",
     justifyContent: "center",
   },
   statbox: {
     flex: 0.5,
+    height: 50,
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 5,
@@ -145,6 +149,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
+    marginVertical: 6,
+  },
+  title: {
+    paddingTop: 5,
+    marginHorizontal: 10,
+    fontWeight: "bold",
+  },
+  body: {
+    marginTop: 5,
+    marginBottom: 8,
+    marginHorizontal: 10,
+    textAlign: "justify",
   },
 });
 

@@ -17,6 +17,7 @@ import ExListItem from "../../components/detailsComponents/ExListItem";
 import firebase from "firebase";
 import { styles } from "./styles";
 
+
 function WorkoutDetails(props) {
   const duration = props.route.params.workout.duration;
   const workout = props.route.params.workout;
