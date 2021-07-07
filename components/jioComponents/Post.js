@@ -15,6 +15,21 @@ const Post = ({ navigation, item, currUser }) => {
     item.data?.time.toDate() <= new Date()
   );
 
+  const start = () => {
+    navigation.navigate('Start Workout', {
+      screen: 'Start Workout',
+      params: {
+        template: {
+          name: item.data.name,
+          exercises: details,
+          description: item.data.description,
+          imageURL: item.data?.img,
+          jio: item.data.likes
+        }
+      }
+    })
+  }
+
   const onLike = () => {
     firebase
       .firestore()
@@ -76,7 +91,7 @@ const Post = ({ navigation, item, currUser }) => {
             }
             style={styles.profilePic}
           />
-          <View style={{ width: "85%" }}>
+          <View style={{ width: "75%" }}>
             <Text>{user.name}</Text>
             {item.data.creation && <Text>
               {moment(item.data.creation.toDate()).format(
@@ -85,6 +100,10 @@ const Post = ({ navigation, item, currUser }) => {
             </Text>}
           </View>
           {item.data.user === firebase.auth().currentUser.uid && (
+            <>
+            <TouchableOpacity style={{marginRight: 5}} onPress={() => start()}>
+              <MaterialCommunityIcons name='play' size={20} color='green'/>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate("Start Jio", {
@@ -100,6 +119,7 @@ const Post = ({ navigation, item, currUser }) => {
             >
               <MaterialIcons name="mode-edit" size={18} colo="darkblue" />
             </TouchableOpacity>
+            </>
           )}
         </View>
         {item.data.img && (

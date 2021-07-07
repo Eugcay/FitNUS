@@ -200,7 +200,7 @@ const StartWorkout = (props) => {
       setName(template?.name); //name
       setDescription(template?.description); //desc
       setImageURL(template?.imageURL); //ImageUrl
-      
+      console.log(jioStatus)
       setPulls(pulls + 1);
     } else if (props.route.params?.exercise && updating) {
       updateWorkout(props.route.params?.exercise);
