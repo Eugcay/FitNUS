@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   Dimensions,
   ScrollView,
+  Button,
+  Alert,
+  Animated
 } from "react-native";
 import firebase from "firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -15,7 +17,6 @@ import { timestampToDate } from "../../helpers";
 
 const RunDetails = (props) => {
   const run = props.route.params.workout;
-  const image = props.route.params.workout.ImageURL;
   const name = props.route.params.workout.name;
   const id = props.route.params?.id ? props.route.params?.id : "";
   const locList = props.route.params.workout.locList;
@@ -23,12 +24,50 @@ const RunDetails = (props) => {
   const distance = props.route.params.workout.distance;
   const duration = props.route.params.workout.duration;
   const description = props.route.params.workout.description;
+  const ran = props.route.params.workout.ran;
+  console.log(locList);
+  const startPoint = locList[1]
+  const endPoint = locList[locList.length - 1]
 
   const [refer, setRefer] = useState(null);
 
+  useLayoutEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () =>
+        date && <Button title="Delete" color="red" onPress={deleteRun} />,
+    });
+  }, []);
+
+  const del = (id) => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("runs")
+      .doc(id)
+      .delete();
+    props.navigation.goBack();
+  };
+
+  const deleteRun = () => {
+    Alert.alert("Confirm Delete?", "", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => {
+          del(id);
+        },
+      },
+    ]);
+  };
+
   const fit = () => {
     refer.fitToCoordinates(locList, {
-      edgePadding: { top: 0, right: 0, bottom: 0, left: 0 },
+      edgePadding: { top: 200, right: 200, bottom: 200, left: 200 },
       animated: false,
     });
   };
@@ -46,13 +85,28 @@ const RunDetails = (props) => {
         onMapReady={fit}
         scrollEnabled={true}
         showsTraffic={true}
+        maxZoomLevel={19.9}
+        showsMyLocationButton={true}
       >
+        <MapView.Marker
+            key={1}
+            coordinate={startPoint}
+            title={"Start"}
+            pinColor={"green"}
+        />
+        <MapView.Marker
+            key={2}
+            coordinate={endPoint}
+            title={"End"}
+            pinColor={"#0B2A59"}
+        />
         <Polyline
           coordinates={locList}
           strokeWidth={2}
           lineJoin="bevel"
           strokeColour="rgba(0,0,0,0.1)"
         />
+
       </MapView>
       <Divider orientation="horizontal" width={1} />
       <View style={styles.top}>
@@ -92,7 +146,7 @@ const RunDetails = (props) => {
         <Divider orientation="vertical" />
         <View style={styles.statbox}>
           <Text style={{fontWeight: "bold"}}>Ran: </Text>
-          <Text>1 time</Text>
+          {ran === 1 ? <Text>1 time</Text> : <Text>{ran} times</Text>}
         </View>
       </View>
       
@@ -106,6 +160,8 @@ const RunDetails = (props) => {
         params: {
           details: {
             ...run,
+            start: startPoint,
+            end: endPoint
           },
         },
       })
@@ -125,6 +181,7 @@ const styles = StyleSheet.create({
   map: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height * 0.45,
+    top: 2
   },
   statbar: {
     flexDirection: "row",

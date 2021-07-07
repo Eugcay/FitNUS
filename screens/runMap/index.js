@@ -16,17 +16,37 @@ import { styles, options } from "./styles";
 import firebase from "firebase";
 import { connect } from "react-redux";
 import { addToRuns } from "../../store/actions/history";
-
+import { set } from "react-native-reanimated";
 
 const RunMap = (props) => {
+  //RunDetails Stuff
+  const [oldLocList, setOldLocList] = useState(null);
+  const [ran, setRan] = useState(0);
+  const [pulls, setPulls] = useState(1);
+  const [showhideRoute, setshowhideRoute] = useState(true);
+  const oldRun = props.route.params?.details;
+  const startPoint = oldRun?.start;
+  const endPoint = oldRun?.end;
+
+  useEffect(() => {
+    if (oldRun && pulls === 1) {
+      setOldLocList(oldRun.locList);
+      setRan(oldRun.ran);
+      setPulls(pulls + 1);
+    }
+  }, [ran]);
+
   const [mTop, setMargin] = useState(0);
   const [dark, setDark] = useState(false);
   const [title, setTitle] = useState("Workout title");
   const [refer, setRefer] = useState(null);
+  //detailsloclist
+  //display polyline and markers
+  //ran
 
   const fitAllMarkers = () => {
     refer.fitToCoordinates(locList, {
-      edgePadding: { top: 40, right: 40, bottom: 40, left: 40 },
+      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
       animated: true,
     });
   };
@@ -62,6 +82,7 @@ const RunMap = (props) => {
   const [remove, setRemove] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [screenShot, setScreenshot] = useState(null);
+  const [userLoc, setUserLoc] = useState(true);
 
   //takeSnapshot
   const takeScreenshot = () => {
@@ -74,8 +95,7 @@ const RunMap = (props) => {
         result: "file", // result types: 'file', 'base64' (default: 'file')
       });
       setScreenshot(screenshot);
-      
-    })()
+    })();
   };
 
   const calcDistance = (prevLatLng, newLatLng) => {
@@ -85,7 +105,7 @@ const RunMap = (props) => {
   //Carry on
   useEffect(() => {
     if (screenShot !== null) {
-      finishRun();/////////////////////////FINISH RUN HERE!!!!!!!!!!! so snapshot will ne taken first
+      finishRun(); /////////////////////////FINISH RUN HERE!!!!!!!!!!! so snapshot will ne taken first
     }
 
     (async () => {
@@ -129,7 +149,6 @@ const RunMap = (props) => {
       }
       ////////////////////////////////////////////////////////////
     })();
-
   }, [currentLocation, screenShot]); //only rerender if loclist changes
 
   const start = () => {
@@ -196,21 +215,13 @@ const RunMap = (props) => {
       locList,
       date: firebase.firestore.FieldValue.serverTimestamp(),
       imageURL: screenShot,
+      ran: ran,
     };
     props.finish(run);
     props.navigation.navigate("Main");
   };
 
   const _onMapReady = () => setMargin(60);
-
-  const toggleMode = () => {
-    props.navigation.setParams({
-      headerTitleStyle: {
-        color: dark ? "black" : "white",
-      },
-    });
-    setDark(!dark);
-  };
 
   return (
     <View style={styles.container}>
@@ -226,12 +237,43 @@ const RunMap = (props) => {
           longitudeDelta: 0.01,
         }}
         provider="google"
-        showsUserLocation={true}
+        showsUserLocation={userLoc}
         showsMyLocationButton={true}
         showsCompass={true}
         onMapReady={_onMapReady}
         customMapStyle={dark ? mapDark : mapStandard}
+        maxZoomLevel={19.9}
+        onLongPress={() => setshowhideRoute(!showhideRoute)}
       >
+        {showhideRoute && oldRun? (
+          <MapView.Marker
+            key={1}
+            coordinate={startPoint}
+            title={"Start"}
+            pinColor={"green"}
+          />
+        ) : (
+          <View />
+        )}
+        {showhideRoute && oldRun? (
+          <MapView.Marker
+            key={2}
+            coordinate={endPoint}
+            title={"End"}
+            pinColor={"#0B2A59"}
+          />
+        ) : (
+          <View />
+        )}
+        {showhideRoute && oldRun? (
+          <Polyline
+            coordinates={oldLocList}
+            strokeWidth={1}
+            strokeColor={"red"}
+          />
+        ) : (
+          <View />
+        )}
         {presetLocations.map((marker) => (
           <MapView.Marker
             key={marker.index}
@@ -314,6 +356,7 @@ const RunMap = (props) => {
                   setIsStopwatchStart(false);
                   stop();
                   fitAllMarkers();
+                  setUserLoc(false);
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -358,6 +401,7 @@ const RunMap = (props) => {
                   setIsStopwatchStart(false);
                   stop();
                   fitAllMarkers();
+                  setUserLoc(false);
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -396,6 +440,7 @@ const RunMap = (props) => {
             <TouchableOpacity //Finishfinish
               style={styles.finishRunButton}
               onPress={() => {
+                setRan(ran + 1);
                 takeScreenshot();
               }}
             >
@@ -406,7 +451,7 @@ const RunMap = (props) => {
       </View>
     </View>
   );
-}
+};
 
 const mapDispatchToProps = (dispatch) => ({
   finish: (workout) => dispatch(addToRuns(workout)),

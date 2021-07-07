@@ -69,7 +69,7 @@ const FitBudSuggests = ({ navigation }) => {
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
           style={[styles.image, { width: "48%" }]}
-          onPress={() => navigation.navigate("Map")}
+          onPress={() => navigation.navigate("Front Map")}
         >
           <MapView
             style={styles.map}

@@ -7,7 +7,7 @@ import FitBud from "../screens/fitBud";
 import WorkoutDetails from "../screens/workoutDetails";
 import Map from "../screens/map";
 import RunDetails from "../screens/runDetails";
-
+import FrontMap from "../screens/frontMap";
 
 const Stack = createStackNavigator();
 
@@ -19,6 +19,7 @@ const FitBudStack = ({ navigation }) => {
         <Stack.Screen name="Workout Details" component={WorkoutDetails}></Stack.Screen>
         <Stack.Screen name="Run Details" component={RunDetails}></Stack.Screen>
         <Stack.Screen name="Map" component={Map}></Stack.Screen> 
+        <Stack.Screen name="Front Map" component={FrontMap}></Stack.Screen>
       </Stack.Navigator>
     </>
   );
