@@ -5,7 +5,7 @@ const initialState = {
   workouts: [],
 };
 
-export const runReducer = (state = initialState, action) => {
+export const historyReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_USER_RUNS:
       return {

@@ -29,7 +29,7 @@ const JioDetails = (props) => {
           key: documentSnapshot.id,
         });
       });
-      setInfo(props.route.params?.info);
+      setInfo(props.route.params?.jioState)
       setWorkouts(workouts);
     });
 
@@ -37,7 +37,7 @@ const JioDetails = (props) => {
       setDetails(props.route.params?.exercises);
     }
     return fetchWorkouts;
-  }, [props.route.params?.info, props.route.params?.exercises]);
+  }, [props.route.params?.jioState, props.route.params?.exercises]);
 
   const submitJio = async () => {
     firebase

@@ -28,6 +28,7 @@ const StartWorkout = (props) => {
   const [updating, setUpdating] = useState(false);
   const [pulls, setPulls] = useState(1);
   const [workoutStatus, setStatus] = useState("Not Started");
+  const [jioStatus, setJio] = useState(null)
   const achievements = [];
 
   //Stopwatch stuff
@@ -192,11 +193,14 @@ const StartWorkout = (props) => {
 
   useEffect(() => {
     if (props.route.params?.template && pulls === 1) {
+      
       const template = props.route.params?.template;
+      template?.jio && setJio(template?.jio)
       setExercises(template.exercises);
-      setName(template.name); //name
-      setDescription(template.description); //desc
-      setImageURL(template.imageURL); //ImageUrl
+      setName(template?.name); //name
+      setDescription(template?.description); //desc
+      setImageURL(template?.imageURL); //ImageUrl
+      
       setPulls(pulls + 1);
     } else if (props.route.params?.exercise && updating) {
       updateWorkout(props.route.params?.exercise);

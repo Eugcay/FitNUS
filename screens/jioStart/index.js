@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Divider, RadioButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
@@ -18,6 +19,7 @@ import { Picker } from "@react-native-picker/picker";
 import { styles } from "./styles";
 import moment from "moment";
 import { presetLocations } from "../../mapConfig";
+import { connect } from "react-redux";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -34,7 +36,7 @@ const reducer = (state, action) => {
 };
 
 const initialState = {
-  name: "",
+  name: "Exercise Jio",
   description: "",
   location: "",
   time: new Date(),
@@ -54,6 +56,13 @@ const JioStart = (props) => {
     const jioData = props.route.params?.jioData;
     if (jioData) {
       dispatch({ type: "SET", value: jioData.data });
+      props.navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity onPress={() => removeJio(jioData.id)}>
+            <Text style={{ color: "red", marginRight: 5 }}>Delete</Text>
+          </TouchableOpacity>
+        ),
+      });
     }
   }, [props.route.params?.jioData]);
 
@@ -73,6 +82,10 @@ const JioStart = (props) => {
     setJioState(currDate, "time");
     setDate(false);
     setTime(false);
+  };
+
+  const removeJio = (id) => {
+    firebase.firestore().collection("jios").doc(id).delete().then(props.navigation.navigate('Main'));
   };
 
   const setJioState = (value, input) => {
@@ -103,7 +116,13 @@ const JioStart = (props) => {
   };
 
   const submitJio = async () => {
-    const jioData = props.route.params?.jioData
+    const jioData = props.route.params?.jioData;
+    const uid = firebase.auth().currentUser.uid
+    const user = {
+      uid,
+      name: props.currUser.name,
+      photoURL: props.currUser?.photoURL
+    }
     const created = await firebase.firestore.FieldValue.serverTimestamp();
     const ref = await firebase.firestore().collection("jios");
     if (jioData) {
@@ -111,9 +130,9 @@ const JioStart = (props) => {
         .doc(jioData.id)
         .set({
           ...jioState,
-          user: firebase.auth().currentUser.uid,
+          user: uid,
           creation: created,
-          likes: [],
+          likes: [user,],
         })
         .then(props.navigation.navigate("Main"));
     } else {
@@ -129,191 +148,206 @@ const JioStart = (props) => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        {jioState.img ? (
-          <TouchableOpacity style={styles.addImage}>
-            <Image
-              source={{ uri: jioState.img }}
-              style={{ width: "100%", height: "100%" }}
-            />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.addImage} onPress={() => setPhoto()}>
-            <Ionicons name="camera-outline" size={18} color="blue" />
-            <Text style={{ fontSize: 15 }}> Add Image (optional)</Text>
-          </TouchableOpacity>
-        )}
+    <KeyboardAvoidingView
+      behavior="height"
+      style={{
+        flex: 1,
+        width: "100%",
+      }}
+    >
+      <ScrollView>
+        <View style={styles.container}>
+          {jioState.img ? (
+            <TouchableOpacity
+              style={styles.addImage}
+              onPress={() => setPhoto()}
+            >
+              <Image
+                source={{ uri: jioState.img }}
+                style={{ width: "100%", height: "100%" }}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.addImage}
+              onPress={() => setPhoto()}
+            >
+              <Ionicons name="camera-outline" size={18} color="blue" />
+              <Text style={{ fontSize: 15 }}> Add Image (optional)</Text>
+            </TouchableOpacity>
+          )}
 
-        <View style={{ flex: 1, width: "90%", marginVertical: 10 }}>
-          <View style={styles.formItem}>
-            <Text style={styles.labels}>Workout Name</Text>
-            <TextInput
-              value={jioState.name}
-              onChangeText={(text) => setJioState(text, "name")}
-              placeholder="Title"
-              textContentType="name"
-            />
-            <Divider />
-          </View>
-          <View style={styles.formItem}>
-            <Text style={styles.labels}>Location</Text>
-            {Platform.OS === "ios" && (
-              <View style={{ flexDirection: "row" }}>
-                <TextInput
-                  value={jioState?.location.title || "Choose Location"}
-                  onChangeText={(text) => setJioState(text, "location")}
-                  placeholder="Choose Location"
-                  textContentType="location"
-                  editable={false}
-                  style={{ width: "90%" }}
-                ></TextInput>
-
-                <TouchableOpacity
-                  onPress={() => setLocation(!showLocations)}
-                  style={{ width: "10%" }}
-                >
-                  <MaterialCommunityIcons name="menu-down" size={23} />
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {(Platform.OS === "android" || showLocations) && (
-              <Picker
-                selectedValue={jioState?.location}
-                enabled={true}
-                dropdownIconColor="blue"
-                onValueChange={(itemValue, itemIndex) => {
-                  setJioState(itemValue, "location");
-                }}
-                style={Platform.OS === "android" && { height: 50 }}
-              >
-                {presetLocations.map((loc) => (
-                  <Picker.Item label={loc.title} value={loc} />
-                ))}
-              </Picker>
-            )}
-            <Divider />
-          </View>
-          <View style={styles.dateTimePicker}>
-            <View style={[styles.formItem, { width: "50%" }]}>
-              <Text style={styles.labels}>Date</Text>
-
-              {Platform.OS === "android" && (
-                <TouchableOpacity
-                  onPress={() => setDate(!showDate)}
-                  style={{ width: "80%" }}
-                >
-                  <Text>{moment(jioState?.time).format("MMM D, YYYY")}</Text>
-                </TouchableOpacity>
-              )}
-
-              {(Platform.OS !== "android" || showDate) && (
-                <DateTimePicker
-                  value={jioState?.time || new Date()}
-                  mode="date"
-                  display="default"
-                  is24Hour={true}
-                  onChange={changeDateTime}
-                />
-              )}
-            </View>
-            <View style={[styles.formItem, { width: "50%" }]}>
-              <Text style={styles.labels}>Time</Text>
-              {Platform.OS === "android" && (
-                <TouchableOpacity
-                  onPress={() => setTime(!showTime)}
-                  style={{ width: "80%" }}
-                >
-                  <Text>{moment(jioState?.time).format("h:mm a")}</Text>
-                </TouchableOpacity>
-              )}
-              {(Platform.OS !== "android" || showTime) && (
-                <RNDateTimePicker
-                  value={jioState?.time || new Date()}
-                  mode="time"
-                  display="default"
-                  is24Hour={true}
-                  onChange={changeDateTime}
-                />
-              )}
-            </View>
-          </View>
-          <Divider />
-
-          <View style={styles.formItem}>
-            <Text style={styles.labels}>Estimated Time</Text>
-            <TextInput
-              value={jioState.duration}
-              onChangeText={(text) => setJioState(text, "duration")}
-              placeholder="Duration"
-            />
-            <Divider />
-          </View>
-          <View style={styles.formItem}>
-            <Text style={styles.labels}>Description</Text>
-            <TextInput
-              value={jioState.description}
-              onChangeText={(text) => setJioState(text, "description")}
-              placeholder="Description"
-              multiline={true}
-            />
-            <Divider />
-          </View>
-          <Text style={styles.labels}>Workout Type</Text>
-          <RadioButton.Group
-            onValueChange={(value) => setJioState(value, "type")}
-            value={jioState.type}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={{ width: "10%" }}>Static</Text>
-              <RadioButton value="Static" />
-            </View>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={{ width: "10%" }}>Run</Text>
-              <RadioButton value="Run" uncheckedColor="black" />
-            </View>
-          </RadioButton.Group>
-          <Divider />
-          {jioState.type === "Run" && (
+          <View style={{ flex: 1, width: "90%", marginVertical: 10 }}>
             <View style={styles.formItem}>
-              <Text style={styles.labels}>Additional Run Details</Text>
+              <Text style={styles.labels}>Workout Name</Text>
               <TextInput
-                onChangeText={(text) => setJioState(text, "details")}
+                value={jioState.name}
+                onChangeText={(text) => setJioState(text, "name")}
+                placeholder="Title"
+                textContentType="name"
+              />
+              <Divider />
+            </View>
+            <View style={styles.formItem}>
+              <Text style={styles.labels}>Location</Text>
+              {Platform.OS === "ios" && (
+                <View style={{ flexDirection: "row" }}>
+                  <TextInput
+                    value={jioState?.location.title || "Choose Location"}
+                    onChangeText={(text) => setJioState(text, "location")}
+                    placeholder="Choose Location"
+                    textContentType="location"
+                    editable={false}
+                    style={{ width: "90%" }}
+                  ></TextInput>
+
+                  <TouchableOpacity
+                    onPress={() => setLocation(!showLocations)}
+                    style={{ width: "10%" }}
+                  >
+                    <MaterialCommunityIcons name="menu-down" size={23} />
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {(Platform.OS === "android" || showLocations) && (
+                <Picker
+                  selectedValue={jioState?.location}
+                  enabled={true}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setJioState(itemValue, "location");
+                  }}
+                  style={Platform.OS === "android" && { height: 50 }}
+                >
+                  {presetLocations.map((loc) => (
+                    <Picker.Item label={loc.title} value={loc} />
+                  ))}
+                </Picker>
+              )}
+              <Divider />
+            </View>
+            <View style={styles.dateTimePicker}>
+              <View style={[styles.formItem, { width: "50%" }]}>
+                <Text style={styles.labels}>Date</Text>
+
+                {Platform.OS === "android" && (
+                  <TouchableOpacity
+                    onPress={() => setDate(!showDate)}
+                    style={{ width: "80%" }}
+                  >
+                    <Text>{moment(jioState?.time).format("MMM D, YYYY")}</Text>
+                  </TouchableOpacity>
+                )}
+
+                {(Platform.OS !== "android" || showDate) && (
+                  <DateTimePicker
+                    value={jioState?.time || new Date()}
+                    mode="date"
+                    display="default"
+                    is24Hour={true}
+                    onChange={changeDateTime}
+                  />
+                )}
+              </View>
+              <View style={[styles.formItem, { width: "50%" }]}>
+                <Text style={styles.labels}>Time</Text>
+                {Platform.OS === "android" && (
+                  <TouchableOpacity
+                    onPress={() => setTime(!showTime)}
+                    style={{ width: "80%" }}
+                  >
+                    <Text>{moment(jioState?.time).format("h:mm a")}</Text>
+                  </TouchableOpacity>
+                )}
+                {(Platform.OS !== "android" || showTime) && (
+                  <RNDateTimePicker
+                    value={jioState?.time || new Date()}
+                    mode="time"
+                    display="default"
+                    is24Hour={true}
+                    onChange={changeDateTime}
+                  />
+                )}
+              </View>
+            </View>
+            <Divider />
+
+            <View style={styles.formItem}>
+              <Text style={styles.labels}>Estimated Time</Text>
+              <TextInput
+                value={jioState.duration}
+                onChangeText={(text) => setJioState(text, "duration")}
+                placeholder="Duration"
+              />
+              <Divider />
+            </View>
+            <View style={styles.formItem}>
+              <Text style={styles.labels}>Description</Text>
+              <TextInput
+                value={jioState.description}
+                onChangeText={(text) => setJioState(text, "description")}
                 placeholder="Description"
                 multiline={true}
               />
               <Divider />
             </View>
-          )}
-          <TouchableOpacity
-            style={styles.bottomButtonContainer}
-            onPress={() =>
-              jioState.type === "Run"
-                ? submitJio()
-                : props.navigation.navigate("Details", {
-                    info: {
-                      jioState,
-                    },
-                  })
-            }
-          >
-            {jioState.type === "Run" ? (
-              <>
-                <Ionicons name="add" color="blue" size={18} />
-                <Text style={styles.bottomButton}>Run</Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.bottomButton}>Workout Details</Text>
-                <Ionicons name="arrow-forward" size={17} color="blue" />
-              </>
+            <Text style={styles.labels}>Workout Type</Text>
+            <RadioButton.Group
+              onValueChange={(value) => setJioState(value, "type")}
+              value={jioState.type}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ width: "20%" }}>Static</Text>
+                <RadioButton value="Static" />
+              </View>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ width: "20%" }}>Run</Text>
+                <RadioButton value="Run" uncheckedColor="black" />
+              </View>
+            </RadioButton.Group>
+            <Divider />
+            {jioState.type === "Run" && (
+              <View style={styles.formItem}>
+                <Text style={styles.labels}>Additional Run Details</Text>
+                <TextInput
+                  onChangeText={(text) => setJioState(text, "details")}
+                  placeholder="Description"
+                  multiline={true}
+                />
+                <Divider />
+              </View>
             )}
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.bottomButtonContainer}
+              onPress={() =>
+                jioState.type === "Run"
+                  ? submitJio()
+                  : props.navigation.navigate("Details", {
+                      jioState,
+                    })
+              }
+            >
+              {jioState.type === "Run" ? (
+                <>
+                  <Ionicons name="add" color="blue" size={18} />
+                  <Text style={styles.bottomButton}>Run</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.bottomButton}>Workout Details</Text>
+                  <Ionicons name="arrow-forward" size={17} color="blue" />
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
-export default JioStart;
+const mapStateToProps = (store) => ({
+  currUser: store.user.currentUser
+})
+
+export default connect(mapStateToProps, null)(JioStart);

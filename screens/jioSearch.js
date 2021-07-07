@@ -10,16 +10,18 @@ import {
 import { Searchbar } from "react-native-paper";
 import firebase from "firebase";
 
-const JioSearch = ({ navigation }) => {
+const JioSearch = (props) => {
   const [results, setResults] = useState([]);
   const [query, setQuery] = useState("");
+  console.log(props.route.params?.addToJio ? 'yes' : 'no')
 
   const fetchResults = (text) => {
-    setQuery(text)
+    setQuery(text);
     if (text === "") {
       setResults([]);
     } else {
-      firebase.firestore()
+      firebase
+        .firestore()
         .collection("users")
         .where("name", ">=", text)
         .get()
@@ -35,7 +37,18 @@ const JioSearch = ({ navigation }) => {
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity onPress={() => navigation.navigate('Profile', {user: item})} style={styles.searchItem}>
+      <TouchableOpacity
+        onPress={() =>
+          props.route.params?.addToJio
+            ? props.navigation.navigate({
+                name: "Likes",
+                params: { user: item },
+                merge: "true",
+              })
+            : props.navigation.navigate("Profile", { user: item })
+        }
+        style={styles.searchItem}
+      >
         <Image
           source={
             item.data?.photoURL
@@ -44,7 +57,7 @@ const JioSearch = ({ navigation }) => {
           }
           style={styles.image}
         />
-        <Text style={{fontSize: 17}}>{item.data.name}</Text>
+        <Text style={{ fontSize: 17 }}>{item.data.name}</Text>
       </TouchableOpacity>
     );
   };
@@ -84,7 +97,7 @@ const styles = StyleSheet.create({
   searchItem: {
     flexDirection: "row",
     padding: 5,
-    alignItems: 'center'
+    alignItems: "center",
   },
 
   image: {
@@ -92,6 +105,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     marginRight: 12,
-    backgroundColor: '#D3D3D3'
+    backgroundColor: "#D3D3D3",
   },
 });

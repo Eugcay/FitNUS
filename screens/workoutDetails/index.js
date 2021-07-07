@@ -84,7 +84,7 @@ function WorkoutDetails(props) {
           <Text style={styles.title}>
             {workout.name ? workout.name : "Custom Workout"}
           </Text>
-          {date && <Text>{timestampToDate(date.seconds)}</Text>}
+          {date && <Text>{timestampToDate(date.toDate())}</Text>}
         </View>
         <View>
           <Text

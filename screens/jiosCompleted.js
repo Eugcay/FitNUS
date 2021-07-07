@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ScrollView, Text } from "react-native";
-import firebase from "firebase";
 import Post from "../components/jioComponents/Post";
 import { connect } from "react-redux";
 
-const MyJios = (props) => {
-  const [myPosts, setPosts] = useState([]);
+const JiosCompleted = (props) => {
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    setPosts(props.upcoming)
-  }, [props.upcoming]);
+    setPosts(props.completed);
+  }, [props.completed]);
+
   return (
     <ScrollView horizontal={false}>
-      {myPosts.map((item) => (
+      {posts.map((item) => (
         <Post
           navigation={props.navigation}
           item={item}
@@ -24,8 +24,7 @@ const MyJios = (props) => {
 };
 
 const mapStateToProps = (store) => ({
-  currUser: store.user.currentUser,
-  upcoming: store.jios.upcoming
+  completed: store.jios.completed,
 });
 
-export default connect(mapStateToProps, null)(MyJios);
+export default connect(mapStateToProps, null)(JiosCompleted);

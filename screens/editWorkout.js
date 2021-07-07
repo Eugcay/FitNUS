@@ -138,6 +138,7 @@ const EditExercise = (props) => {
                 onChangeText={(text) => setWeight(index, text)}
                 value={item.weight !== 0 ? item.weight.toString() : ""}
                 style={{ fontSize: 20, width: "40%", textAlign: "center" }}
+                keyboardType='numeric'
               />
               <TouchableOpacity onPress={() => editSet(index, 'INCREMENT_WEIGHT')}>
                 <MaterialCommunityIcons name="plus" size={20} />
@@ -156,6 +157,7 @@ const EditExercise = (props) => {
                 value={item.reps !== 0 ? item.reps.toString() : ""}
                 onChangeText={(text) => setReps(index, text)}
                 style={{ fontSize: 20, width: "40%", textAlign: "center" }}
+                keyboardType='numeric'
               />
               <TouchableOpacity onPress={() => editSet(index, 'INCREMENT_REPS')}>
                 <MaterialCommunityIcons name="plus" size={20} />

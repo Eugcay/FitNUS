@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Text, Image, View, TouchableOpacity } from "react-native";
+import { Text, Image, View, TouchableOpacity, FlatList } from "react-native";
 import firebase from "firebase";
 import moment from "moment";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Divider } from "react-native-paper";
 import { styles } from "./styles";
+import ExListItem from "../detailsComponents/ExListItem";
 
 const Post = ({ navigation, item, currUser }) => {
   const [user, setUser] = useState({});
   const [liked, setLiked] = useState(false);
+  const [details, setDetails] = useState(false);
+  const [completed, setCompleted] = useState(
+    item.data?.time.toDate() <= new Date()
+  );
 
   const onLike = () => {
     firebase
@@ -20,6 +25,7 @@ const Post = ({ navigation, item, currUser }) => {
         likes: item.data.likes.concat({
           uid: firebase.auth().currentUser.uid,
           name: currUser.name,
+          photoURL: currUser.photoURL,
         }),
       });
   };
@@ -30,8 +36,7 @@ const Post = ({ navigation, item, currUser }) => {
       (usr) => usr.uid === firebase.auth().currentUser.uid
     );
     data.splice(index, 1);
-    firebase
-      .firestore()
+    firebase.firestore()   
       .collection("jios")
       .doc(item.id)
       .set({
@@ -60,7 +65,8 @@ const Post = ({ navigation, item, currUser }) => {
 
   return (
     item && (
-      <View style={styles.container}>
+      <View
+        style={styles.container}>
         <View style={styles.profileBar}>
           <Image
             source={
@@ -72,11 +78,11 @@ const Post = ({ navigation, item, currUser }) => {
           />
           <View style={{ width: "85%" }}>
             <Text>{user.name}</Text>
-            <Text>
-              {moment(new Date(item.data?.creation.seconds * 1000)).format(
+            {item.data.creation && <Text>
+              {moment(item.data.creation.toDate()).format(
                 "D MMM YY h:mm a"
               )}
-            </Text>
+            </Text>}
           </View>
           {item.data.user === firebase.auth().currentUser.uid && (
             <TouchableOpacity
@@ -86,7 +92,7 @@ const Post = ({ navigation, item, currUser }) => {
                     ...item,
                     data: {
                       ...item.data,
-                      time: new Date(item.data.time.seconds * 1000),
+                      time: item.data.time.toDate(),
                     },
                   },
                 })
@@ -95,14 +101,6 @@ const Post = ({ navigation, item, currUser }) => {
               <MaterialIcons name="mode-edit" size={18} colo="darkblue" />
             </TouchableOpacity>
           )}
-          {/* <TouchableOpacity
-          onPress={navigation.navigate("Details", {
-            view: true,
-            details: item.data.details,
-          })}
-        >
-          <Text style={{ justifyContent: "flex-end" }}>Details</Text>
-        </TouchableOpacity> */}
         </View>
         {item.data.img && (
           <Image style={styles.image} source={{ uri: item.data.img }} />
@@ -119,11 +117,11 @@ const Post = ({ navigation, item, currUser }) => {
 
             <View style={[styles.dataItem, { width: "48%" }]}>
               <MaterialIcons name="date-range" size={18} color="darkblue" />
-              <Text style={{ marginTop: 3 }}>
-                {moment(item.data.time.seconds * 1000).format(
+              {item.data.time && <Text style={{ marginTop: 3 }}>
+                {moment(item.data?.time.toDate()).format(
                   "D MMM YYYY, h:mm a"
                 )}
-              </Text>
+              </Text>}
             </View>
           </View>
           <View style={styles.inLine}>
@@ -145,19 +143,55 @@ const Post = ({ navigation, item, currUser }) => {
         <Text style={{ marginVertical: 10, padding: 5, textAlign: "justify" }}>
           {item.data.description}
         </Text>
-        <View style={{ paddingHorizontal: 5, paddingVertical: 3 }}>
-          <TouchableOpacity onPress={() => (liked ? onUnlike() : onLike())}>
+        <Divider/>
+        <View style={{ paddingHorizontal: 5, paddingVertical: 3, marginVertical: 10 }}>
+          <TouchableOpacity
+            onPress={() => (liked ? onUnlike() : onLike())}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
             <MaterialCommunityIcons
               name={liked ? "heart" : "heart-outline"}
               size={20}
               color="red"
             />
+            <Text style={{marginHorizontal: 3, color: liked ? 'red' : 'black'}}>{!liked ? "Join" : "Leave"}</Text>
           </TouchableOpacity>
-          <Text style={{ marginTop: 3 }}>
-            {item.data.likes.length}{" "}
-            {item.data.likes.length === 1 ? "like" : "likes"}
-          </Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Likes", {
+                likes: item.data.likes,
+                postID:
+                  item.data.user === firebase.auth().currentUser.uid && item.id,
+              })
+            }
+          >
+            <Text
+              style={{ marginTop: 3, textShadowRadius: 2, color: "darkblue" }}
+            >
+              {item.data.likes.length}{" "}
+              {item.data.likes.length === 1 ? "person going" : "people going"}
+            </Text>
+          </TouchableOpacity>
         </View>
+
+        <Divider/>
+        <TouchableOpacity
+          onPress={() => setDetails(!details)}
+          style={styles.inLine}
+        >
+          <Text style={{ justifyContent: "flex-end" }}>Details</Text>
+          <MaterialCommunityIcons name="menu-down" size={18}/>
+        </TouchableOpacity>
+
+        {details && item.data.type !== 'Run' && (
+          <FlatList
+          data={item.data.details}
+          keyExtractor={(item) => item.key}
+          renderItem={ExListItem}
+          scrollEnabled={false}
+        />
+        )}
+        
       </View>
     )
   );

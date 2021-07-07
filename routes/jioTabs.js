@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import JioFeed from "../screens/jioFeed";
 import JioSearch from "../screens/jioSearch";
 import MyJios from "../screens/myJios";
+import jiosCompleted from "../screens/jiosCompleted";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -17,9 +18,10 @@ const JioTabs = () => {
         style: { backgroundColor: "lightblue" },
       }}
     >
-      <Tab.Screen name='My Jios' component={MyJios}/>
       <Tab.Screen name="Feed" component={JioFeed} />
+      <Tab.Screen name='My Jios' component={MyJios}/>
       <Tab.Screen name="Explore" component={JioSearch} />
+      <Tab.Screen name='Finished' component={jiosCompleted}/>
     </Tab.Navigator>
   );
 };

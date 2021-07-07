@@ -69,8 +69,8 @@ const HistoryBar = ({ navigation, hist, runs }) => {
             {item.data?.name ? item.data?.name : "Custom Workout"}
           </Text>
           <Text style={styles.text}>
-            {item.data?.date?.seconds &&
-              timestampToDate(item.data?.date?.seconds)}
+            {item.data?.date &&
+              timestampToDate(item.data?.date.toDate())}
           </Text>
         </ImageBackground>
       </TouchableOpacity>
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   item: {
     flex: 1,
     width: 230,
-    height: 150,
+    height: 140,
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,

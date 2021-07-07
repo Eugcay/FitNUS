@@ -17,6 +17,10 @@ export const SET_STATS = 'SET_STATS'
 export const SET_WEEKLY_STATS = 'SET_WEEKLY_STATS'
 export const SET_MONTHLY_STATS = 'SET_MONTHLY_STATS'
 
+export const SET_FEED = 'SET_FEED'
+export const SET_UPCOMING = 'SET_UPCOMING'
+export const SET_COMPLETED = 'SET_COMPLETED'
+
 export const CLEAR_WORKOUT = 'CLEAR_WORKOUT'
 export const ADD_EXERCISE = 'ADD_EXERCISE'
 export const UPDATE_EXERCISE = 'UPDATE_EXERCISE'

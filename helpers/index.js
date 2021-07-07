@@ -10,8 +10,7 @@ export function setRandomColor() {
 }
 
 export function timestampToDate(timestamp) {
-  var date = new Date(timestamp * 1000);
-  var formattedTime = moment(date).format("MMMM Do YYYY, h:mm ");
+  var formattedTime = moment(timestamp).format("MMMM Do YYYY, h:mm ");
   return formattedTime;
 }
 

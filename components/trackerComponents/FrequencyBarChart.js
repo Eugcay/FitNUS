@@ -9,13 +9,11 @@ import * as scale from "d3-scale";
 export const FrequencyBarChart = (props) => {
   const type = props.type;
   const data = props.data
-  const goal = props.goal;
+  const goal = props?.goal || 2;
 
   const yaxis = type === "total" ? data : data.map((week) => week.count);
   let max = yaxis.reduce((x, y) => Math.max(x, y), 0);
-  if (max < 2) {
-    max = 2;
-  }
+  
   const yVals = [];
 
   for (let i = 0; i <= max; i = i + 1) {
