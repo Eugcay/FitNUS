@@ -246,6 +246,7 @@ class PanController extends React.Component {
             ...this.props.overshootSpringConfig,
             toValue: min,
             velocity,
+            useNativeDriver: true
           }).start();
           break;
         case 'clamp':
@@ -262,6 +263,7 @@ class PanController extends React.Component {
             ...this.props.overshootSpringConfig,
             toValue: max,
             velocity,
+            useNativeDriver: true
           }).start();
           break;
         case 'clamp':
@@ -290,6 +292,7 @@ class PanController extends React.Component {
             ...this.props.springOriginConfig,
             toValue: 0,
             velocity,
+            useNativeDriver: true
           }).start();
           break;
       }
@@ -313,6 +316,7 @@ class PanController extends React.Component {
     Animated.decay(anim, {
       ...this.props.momentumDecayConfig,
       velocity,
+      useNativeDriver: true
     }).start(() => {
       anim.removeListener(this._listener);
     });
@@ -329,6 +333,7 @@ class PanController extends React.Component {
               ...this.props.overshootSpringConfig,
               toValue: min,
               velocity,
+              useNativeDriver: true
             }).start();
             break;
           case 'clamp':
@@ -346,6 +351,7 @@ class PanController extends React.Component {
               ...this.props.overshootSpringConfig,
               toValue: max,
               velocity,
+              useNativeDriver: true
             }).start();
             break;
           case 'clamp':
@@ -368,6 +374,7 @@ class PanController extends React.Component {
         Animated.spring(anim, {
           toValue: endX,
           velocity: endV,
+          useNativeDriver: false
         }).start();
       }
     });
@@ -375,6 +382,7 @@ class PanController extends React.Component {
     Animated.decay(anim, {
       ...this.props.momentumDecayConfig,
       velocity,
+      useNativeDriver: false
     }).start(() => {
       anim.removeListener(this._listener);
     });
