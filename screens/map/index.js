@@ -64,7 +64,6 @@ export default function Map(props) {
           longitudeDelta: 0.01,
         }}
         provider="google"
-        mapType="hybrid"
         showsUserLocation={true}
         showsMyLocationButton={true}
         showsCompass={true}

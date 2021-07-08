@@ -1,5 +1,12 @@
 import React from "react";
-import { StyleSheet, View, Dimensions, Animated, Image, Text } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  Animated,
+  Image,
+  Text,
+} from "react-native";
 
 import MapView, {
   ProviderPropType,
@@ -9,7 +16,10 @@ import MapView, {
 } from "react-native-maps";
 import PanController from "./PanController";
 import PriceMarker from "./AnimatedPriceMarker";
-import { presetLocations } from "../../mapConfig";
+import { presetLocations } from "./config";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const screen = Dimensions.get("window");
 
@@ -312,6 +322,7 @@ class FrontMap extends React.Component {
         >
           <AnimatedMap
             provider="google" //{this.props.provider}
+            showsUserLocation={true}
             style={styles.map}
             initialRegion={{
               latitude: 1.3012,
@@ -342,7 +353,7 @@ class FrontMap extends React.Component {
           <View style={styles.itemContainer}>
             {markers.map((marker, i) => {
               const { translateY, translateX, scale, opacity } = animations[i];
-              const img = marker.imageURL
+              const img = marker.imageURL;
 
               return (
                 <Animated.View
@@ -356,8 +367,59 @@ class FrontMap extends React.Component {
                   ]}
                 >
                   <View>
-                  <Image style={{height: 100, width: 100}} source={{uri: img}}></Image>
-                  <Text>{marker.title}</Text>
+                    {/* Image */}
+                    <Image
+                      style={{
+                        height: "45%",
+                        width: "100%",
+                        borderRadius: 3,
+                        borderColor: "grey",
+                        borderBottomWidth: 2,
+                      }}
+                      source={{ uri: img }}
+                    ></Image>
+                    {/* Title */}
+                    <Text style={{ margin: 10, marginBottom: 5, fontSize: 16 }}>
+                      {marker.title}
+                    </Text>
+                    {/* OpeningHours */}
+                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row' }}>
+                      <MaterialIcons
+                        name="access-time"
+                        size={20}
+                        color="black"
+                      />
+                      <Text>:  9a.m. - 9p.m.</Text>
+                      {/* add opened/closed based on time */}
+                    </View>
+                    {/* Address */}
+                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row'}}>
+                      <Ionicons
+                        name="md-location-outline"
+                        size={20}
+                        color="black"
+                      />
+                      <Text>:  Insert Address Here</Text>
+                    </View>
+                    {/* Website */}
+                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row' }}>
+                      <MaterialCommunityIcons
+                        name="web"
+                        size={20}
+                        color="black"
+                      />
+                      <Text>:  Insert Website Here</Text>
+                    </View>
+                    {/* Description */}
+                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row' }}>
+                      <MaterialIcons
+                        name="info-outline"
+                        size={20}
+                        color="black"
+                      />
+                      <Text>:  </Text>
+                      <Text style={{paddingRight: 30}}>{marker.description}</Text>
+                    </View>
                   </View>
                 </Animated.View>
               );
