@@ -1,104 +1,545 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  Animated,
+  Image,
+  Text,
+} from "react-native";
+
 import MapView, {
   ProviderPropType,
   Animated as AnimatedMap,
   AnimatedRegion,
   Marker,
 } from "react-native-maps";
-import { View, Switch, StyleSheet, Dimensions } from "react-native";
-import * as Location from "expo-location";
-import { mapDark, mapStandard, presetLocations } from "../../mapConfig";
+import PanController from "./PanController";
+import PriceMarker from "./AnimatedPriceMarker";
+import { presetLocations } from "./config";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+const screen = Dimensions.get("window");
 
-export default function FrontMap(props) {
-  const [mTop, setMargin] = useState(0);
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [text, setText] = useState(null);
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    props.navigation.setOptions({
-      headerStyle: {
-        opacity: 1,
-        backgroundColor: dark ? "#191970" : "white",
-      },
-      headerTitleStyle: {
-        color: dark ? "white" : "black",
-      },
-    });
-  }, []);
+const ASPECT_RATIO = screen.width / screen.height;
+const LATITUDE = 1.3012;
+const LONGITUDE = 103.77442;
+const LATITUDE_DELTA = 0.02;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status == "granted") {
-        let { status2 } = await Location.requestBackgroundPermissionsAsync();
-        if (status2 !== "granted") {
-          setErrorMsg("Permission to access background location was denied");
-          return;
-        }
-      } else {
-        if (status !== "granted") {
-          setErrorMsg("Permission to access location was denied");
-          return;
-        }
-      }
+const ITEM_SPACING = 10;
+const ITEM_PREVIEW = 10;
+const ITEM_WIDTH = screen.width - 2 * ITEM_SPACING - 2 * ITEM_PREVIEW;
+const SNAP_WIDTH = ITEM_WIDTH + ITEM_SPACING;
+const ITEM_PREVIEW_HEIGHT = 150;
+const SCALE_END = screen.width / ITEM_WIDTH;
+const BREAKPOINT1 = 246;
+const BREAKPOINT2 = 350;
+const ONE = new Animated.Value(1);
 
-      let loc = await Location.getCurrentPositionAsync({});
-      setLocation(loc);
+function getMarkerState(panX, panY, scrollY, i) {
+  const xLeft = -SNAP_WIDTH * i + SNAP_WIDTH / 2;
+  const xRight = -SNAP_WIDTH * i - SNAP_WIDTH / 2;
+  const xPos = -SNAP_WIDTH * i;
 
-      if (errorMsg) {
-        setText(errorMsg);
-      } else if (location) {
-        setText(JSON.stringify(location));
-      }
-    })();
-  }, []);
+  const isIndex = panX.interpolate({
+    inputRange: [xRight - 1, xRight, xLeft, xLeft + 1],
+    outputRange: [0, 1, 1, 0],
+    extrapolate: "clamp",
+  });
 
-  const _onMapReady = () => setMargin(60);
+  const isNotIndex = panX.interpolate({
+    inputRange: [xRight - 1, xRight, xLeft, xLeft + 1],
+    outputRange: [1, 0, 0, 1],
+    extrapolate: "clamp",
+  });
 
-  return (
-    <View style={styles.container}>
-      <MapView
-        style={[styles.map, { marginTop: mTop }]}
-        initialRegion={{
-          latitude: 1.3012,
-          longitude: 103.77442,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-        provider="google"
-        mapType="hybrid"
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-        showsCompass={true}
-        onMapReady={_onMapReady}
-        customMapStyle={dark ? mapDark : mapStandard}
-      >
-        {presetLocations.map((marker) => (
-          <Marker
-            key={marker.index}
-            coordinate={marker.latlng}
-            title={marker.title}
-            description={marker.description}
-          />
-        ))}
-      </MapView>
-    </View>
+  const center = panX.interpolate({
+    inputRange: [xPos - 10, xPos, xPos + 10],
+    outputRange: [0, 1, 0],
+    extrapolate: "clamp",
+  });
+
+  const selected = panX.interpolate({
+    inputRange: [xRight, xPos, xLeft],
+    outputRange: [0, 1, 0],
+    extrapolate: "clamp",
+  });
+
+  const translateY = Animated.multiply(isIndex, panY);
+
+  const translateX = panX;
+
+  const anim = Animated.multiply(
+    isIndex,
+    scrollY.interpolate({
+      inputRange: [0, BREAKPOINT1],
+      outputRange: [0, 1],
+      extrapolate: "clamp",
+    })
   );
+
+  const scale = Animated.add(
+    ONE,
+    Animated.multiply(
+      isIndex,
+      scrollY.interpolate({
+        inputRange: [BREAKPOINT1, BREAKPOINT2],
+        outputRange: [0, SCALE_END - 1],
+        extrapolate: "clamp",
+      })
+    )
+  );
+
+  // [0 => 1]
+  let opacity = scrollY.interpolate({
+    inputRange: [BREAKPOINT1, BREAKPOINT2],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
+
+  // if i === index: [0 => 0]
+  // if i !== index: [0 => 1]
+  opacity = Animated.multiply(isNotIndex, opacity);
+
+  // if i === index: [1 => 1]
+  // if i !== index: [1 => 0]
+  opacity = opacity.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+
+  let markerOpacity = scrollY.interpolate({
+    inputRange: [0, BREAKPOINT1],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
+
+  markerOpacity = Animated.multiply(isNotIndex, markerOpacity).interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+
+  const markerScale = selected.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.2],
+  });
+
+  return {
+    translateY,
+    translateX,
+    scale,
+    opacity,
+    anim,
+    center,
+    selected,
+    markerOpacity,
+    markerScale,
+  };
 }
 
+class FrontMap extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const panX = new Animated.Value(0);
+    const panY = new Animated.Value(0);
+
+    const scrollY = panY.interpolate({
+      inputRange: [-1, 1],
+      outputRange: [1, -1],
+    });
+
+    const scrollX = panX.interpolate({
+      inputRange: [-1, 1],
+      outputRange: [1, -1],
+    });
+
+    const scale = scrollY.interpolate({
+      inputRange: [0, BREAKPOINT1],
+      outputRange: [1, 1.6],
+      extrapolate: "clamp",
+    });
+
+    const translateY = scrollY.interpolate({
+      inputRange: [0, BREAKPOINT1],
+      outputRange: [0, -100],
+      extrapolate: "clamp",
+    });
+
+    const markers = presetLocations;
+
+    const animations = markers.map((m, i) =>
+      getMarkerState(panX, panY, scrollY, i)
+    );
+
+    this.state = {
+      panX,
+      panY,
+      animations,
+      index: 0,
+      canMoveHorizontal: true,
+      scrollY,
+      scrollX,
+      scale,
+      translateY,
+      markers,
+      region: new AnimatedRegion({
+        latitude: LATITUDE,
+        longitude: LONGITUDE,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      }),
+    };
+  }
+
+  componentDidMount() {
+    const { region, panX, panY, scrollX, markers } = this.state;
+
+    panX.addListener(this.onPanXChange);
+    panY.addListener(this.onPanYChange);
+
+    region.stopAnimation();
+    region
+      .timing({
+        latitude: scrollX.interpolate({
+          inputRange: markers.map((m, i) => i * SNAP_WIDTH),
+          outputRange: markers.map((m) => m.latlng.latitude),
+        }),
+        longitude: scrollX.interpolate({
+          inputRange: markers.map((m, i) => i * SNAP_WIDTH),
+          outputRange: markers.map((m) => m.latlng.longitude),
+        }),
+        duration: 0,
+      })
+      .start();
+  }
+
+  onStartShouldSetPanResponder = (e) => {
+    // we only want to move the view if they are starting the gesture on top
+    // of the view, so this calculates that and returns true if so. If we return
+    // false, the gesture should get passed to the map view appropriately.
+    const { panY } = this.state;
+    const { pageY } = e.nativeEvent;
+    const topOfMainWindow = ITEM_PREVIEW_HEIGHT + panY.__getValue();
+    const topOfTap = screen.height - pageY;
+
+    return topOfTap < topOfMainWindow;
+  };
+
+  onMoveShouldSetPanResponder = (e) => {
+    const { panY } = this.state;
+    const { pageY } = e.nativeEvent;
+    const topOfMainWindow = ITEM_PREVIEW_HEIGHT + panY.__getValue();
+    const topOfTap = screen.height - pageY;
+
+    return topOfTap < topOfMainWindow;
+  };
+
+  onPanXChange = ({ value }) => {
+    const { index } = this.state;
+    const newIndex = Math.floor((-1 * value + SNAP_WIDTH / 2) / SNAP_WIDTH);
+    if (index !== newIndex) {
+      this.setState({ index: newIndex });
+    }
+  };
+
+  onPanYChange = ({ value }) => {
+    const { canMoveHorizontal, region, scrollY, scrollX, markers, index } =
+      this.state;
+    const shouldBeMovable = Math.abs(value) < 2;
+    if (shouldBeMovable !== canMoveHorizontal) {
+      this.setState({ canMoveHorizontal: shouldBeMovable });
+      if (!shouldBeMovable) {
+        const { latlng } = markers[index];
+        region.stopAnimation();
+        region
+          .timing({
+            latitude: scrollY.interpolate({
+              inputRange: [0, BREAKPOINT1],
+              outputRange: [
+                latlng.latitude,
+                latlng.latitude - LATITUDE_DELTA * 0.5 * 0.375,
+              ],
+              extrapolate: "clamp",
+            }),
+            latitudeDelta: scrollY.interpolate({
+              inputRange: [0, BREAKPOINT1],
+              outputRange: [LATITUDE_DELTA, LATITUDE_DELTA * 0.5],
+              extrapolate: "clamp",
+            }),
+            longitudeDelta: scrollY.interpolate({
+              inputRange: [0, BREAKPOINT1],
+              outputRange: [LONGITUDE_DELTA, LONGITUDE_DELTA * 0.5],
+              extrapolate: "clamp",
+            }),
+            duration: 0,
+          })
+          .start();
+      } else {
+        region.stopAnimation();
+        region
+          .timing({
+            latitude: scrollX.interpolate({
+              inputRange: markers.map((m, i) => i * SNAP_WIDTH),
+              outputRange: markers.map((m) => m.latlng.latitude),
+            }),
+            longitude: scrollX.interpolate({
+              inputRange: markers.map((m, i) => i * SNAP_WIDTH),
+              outputRange: markers.map((m) => m.latlng.longitude),
+            }),
+            duration: 0,
+          })
+          .start();
+      }
+    }
+  };
+
+  onRegionChange(/* region */) {
+    // this.state.region.setValue(region);
+  }
+
+  render() {
+    const { panX, panY, animations, canMoveHorizontal, markers, region } =
+      this.state;
+
+    return (
+      <View style={styles.container}>
+        <PanController
+          style={styles.container}
+          vertical
+          horizontal={canMoveHorizontal}
+          xMode="snap"
+          snapSpacingX={SNAP_WIDTH}
+          yBounds={[-1 * screen.height, 0]}
+          xBounds={[-screen.width * (markers.length - 1), 0]}
+          panY={panY}
+          panX={panX}
+          onStartShouldSetPanResponder={this.onStartShouldSetPanResponder}
+          onMoveShouldSetPanResponder={this.onMoveShouldSetPanResponder}
+        >
+          <AnimatedMap
+            provider="google" //{this.props.provider}
+            showsUserLocation={true}
+            style={styles.map}
+            initialRegion={{
+              latitude: 1.3012,
+              longitude: 103.77442,
+              latitudeDelta: 0.03,
+              longitudeDelta: 0.03,
+            }}
+            region={region}
+            onRegionChange={this.onRegionChange}
+          >
+            {markers.map((marker, i) => {
+              const { selected, markerOpacity, markerScale } = animations[i];
+
+              return (
+                <Marker key={marker.index} coordinate={marker.latlng}>
+                  <PriceMarker
+                    style={{
+                      opacity: markerOpacity,
+                      transform: [{ scale: markerScale }],
+                    }}
+                    title={marker.title}
+                    selected={selected}
+                  />
+                </Marker>
+              );
+            })}
+          </AnimatedMap>
+          <View style={styles.itemContainer}>
+            {markers.map((marker, i) => {
+              const { translateY, translateX, scale, opacity } = animations[i];
+              const img = marker.imageURL;
+
+              return (
+                <Animated.View
+                  key={marker.index}
+                  style={[
+                    styles.item,
+                    {
+                      opacity,
+                      transform: [{ translateY }, { translateX }, { scale }],
+                    },
+                  ]}
+                >
+                  <View>
+                    {/* Image */}
+                    <Image
+                      style={{
+                        height: "45%",
+                        width: "100%",
+                        borderRadius: 3,
+                        borderColor: "grey",
+                        borderBottomWidth: 2,
+                      }}
+                      source={{ uri: img }}
+                    ></Image>
+                    {/* Title */}
+                    <Text style={{ margin: 10, marginBottom: 5, fontSize: 16 }}>
+                      {marker.title}
+                    </Text>
+                    {/* OpeningHours */}
+                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row' }}>
+                      <MaterialIcons
+                        name="access-time"
+                        size={20}
+                        color="black"
+                      />
+                      <Text>:  9a.m. - 9p.m.</Text>
+                      {/* add opened/closed based on time */}
+                    </View>
+                    {/* Address */}
+                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row'}}>
+                      <Ionicons
+                        name="md-location-outline"
+                        size={20}
+                        color="black"
+                      />
+                      <Text>:  Insert Address Here</Text>
+                    </View>
+                    {/* Website */}
+                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row' }}>
+                      <MaterialCommunityIcons
+                        name="web"
+                        size={20}
+                        color="black"
+                      />
+                      <Text>:  Insert Website Here</Text>
+                    </View>
+                    {/* Description */}
+                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row' }}>
+                      <MaterialIcons
+                        name="info-outline"
+                        size={20}
+                        color="black"
+                      />
+                      <Text>:  </Text>
+                      <Text style={{paddingRight: 30}}>{marker.description}</Text>
+                    </View>
+                  </View>
+                </Animated.View>
+              );
+            })}
+          </View>
+        </PanController>
+      </View>
+    );
+  }
+}
+
+FrontMap.propTypes = {
+  provider: ProviderPropType,
+};
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: "#fff",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    map: {
-      width: Dimensions.get("window").width,
-      height: Dimensions.get("window").height,
-    },
-  });
-  
+  container: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  itemContainer: {
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    paddingHorizontal: ITEM_SPACING / 2 + ITEM_PREVIEW,
+    position: "absolute",
+    // top: screen.height - ITEM_PREVIEW_HEIGHT - 64,
+    paddingTop: screen.height - ITEM_PREVIEW_HEIGHT - 64,
+    // paddingTop: !ANDROID ? 0 : screen.height - ITEM_PREVIEW_HEIGHT - 64,
+  },
+  map: {
+    backgroundColor: "transparent",
+    ...StyleSheet.absoluteFillObject,
+  },
+  item: {
+    //card
+    width: ITEM_WIDTH,
+    height: screen.height + 2 * ITEM_PREVIEW_HEIGHT,
+    backgroundColor: "white",
+    marginHorizontal: ITEM_SPACING / 2,
+    overflow: "hidden",
+    borderRadius: 3,
+    borderColor: "#000",
+  },
+});
+
+export default FrontMap;
+
+// export default function FrontMap(props) {
+//   const [mTop, setMargin] = useState(0);
+//   const [location, setLocation] = useState(null);
+//   const [errorMsg, setErrorMsg] = useState(null);
+//   const [text, setText] = useState(null);
+//   const [dark, setDark] = useState(false);
+//   useEffect(() => {
+//     props.navigation.setOptions({
+//       headerStyle: {
+//         opacity: 1,
+//         backgroundColor: dark ? "#191970" : "white",
+//       },
+//       headerTitleStyle: {
+//         color: dark ? "white" : "black",
+//       },
+//     });
+//   }, []);
+
+//   useEffect(() => {
+//     (async () => {
+//       let { status } = await Location.requestForegroundPermissionsAsync();
+//       if (status == "granted") {
+//         let { status2 } = await Location.requestBackgroundPermissionsAsync();
+//         if (status2 !== "granted") {
+//           setErrorMsg("Permission to access background location was denied");
+//           return;
+//         }
+//       } else {
+//         if (status !== "granted") {
+//           setErrorMsg("Permission to access location was denied");
+//           return;
+//         }
+//       }
+
+//       let loc = await Location.getCurrentPositionAsync({});
+//       setLocation(loc);
+
+//       if (errorMsg) {
+//         setText(errorMsg);
+//       } else if (location) {
+//         setText(JSON.stringify(location));
+//       }
+//     })();
+//   }, []);
+
+//   const _onMapReady = () => setMargin(60);
+
+//   return (
+//     <View style={styles.container}>
+//       <MapView
+//         style={[styles.map, { marginTop: mTop }]}
+//         initialRegion={{
+//           latitude: 1.3012,
+//           longitude: 103.77442,
+//           latitudeDelta: 0.01,
+//           longitudeDelta: 0.01,
+//         }}
+//         provider="google"
+//         mapType="hybrid"
+//         showsUserLocation={true}
+//         showsMyLocationButton={true}
+//         showsCompass={true}
+//         onMapReady={_onMapReady}
+//         customMapStyle={dark ? mapDark : mapStandard}
+//       >
+//         {presetLocations.map((marker) => (
+//           <Marker
+//             key={marker.index}
+//             coordinate={marker.latlng}
+//             title={marker.title}
+//             description={marker.description}
+//           />
+//         ))}
+//       </MapView>
+//     </View>
+//   );
+// }
