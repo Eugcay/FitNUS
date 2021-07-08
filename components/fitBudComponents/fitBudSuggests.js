@@ -82,7 +82,7 @@ const FitBudSuggests = ({ navigation }) => {
             provider="google"
             showsUserLocation={true}
             showsCompass={true}
-            onPress={() => navigation.navigate("Map")}
+            onPress={() => navigation.navigate("Front Map")}
           >
             {presetLocations.map((marker) => (
               <MapView.Marker
