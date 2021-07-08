@@ -42,6 +42,7 @@ const initialState = {
   time: new Date(),
   duration: "",
   type: "",
+  completed: false,
 };
 
 const JioStart = (props) => {
@@ -55,7 +56,7 @@ const JioStart = (props) => {
   useEffect(() => {
     const jioData = props.route.params?.jioData;
     if (jioData) {
-      dispatch({ type: "SET", value: jioData.data });
+      dispatch({ type: "SET", value: {...jioData.data, id: jioData.id} });
       props.navigation.setOptions({
         headerRight: () => (
           <TouchableOpacity onPress={() => removeJio(jioData.id)}>
@@ -123,16 +124,14 @@ const JioStart = (props) => {
       name: props.currUser.name,
       photoURL: props.currUser?.photoURL
     }
-    const created = await firebase.firestore.FieldValue.serverTimestamp();
+    const created = firebase.firestore.FieldValue.serverTimestamp();
     const ref = await firebase.firestore().collection("jios");
     if (jioData) {
       ref
-        .doc(jioData.id)
-        .set({
+        .doc(jioState.id)
+        .update({
           ...jioState,
-          user: uid,
-          creation: created,
-          likes: [user,],
+          creation: created
         })
         .then(props.navigation.navigate("Main"));
     } else {
@@ -141,7 +140,7 @@ const JioStart = (props) => {
           ...jioState,
           user: firebase.auth().currentUser.uid,
           creation: created,
-          likes: [],
+          likes: [user],
         })
         .then(props.navigation.navigate("Main"));
     }
@@ -324,6 +323,7 @@ const JioStart = (props) => {
                   ? submitJio()
                   : props.navigation.navigate("Details", {
                       jioState,
+                      user: props.currUser
                     })
               }
             >

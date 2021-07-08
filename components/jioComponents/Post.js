@@ -11,47 +11,56 @@ const Post = ({ navigation, item, currUser }) => {
   const [user, setUser] = useState({});
   const [liked, setLiked] = useState(false);
   const [details, setDetails] = useState(false);
-  const [completed, setCompleted] = useState(
-    item.data?.time.toDate() <= new Date()
-  );
+  const [completed, setCompleted] = useState(item.data.completed);
+  const currUserId = firebase.auth().currentUser.uid;
 
   const start = () => {
-    navigation.navigate('Start Workout', {
-      screen: 'Start Workout',
+    const template = {
+      name: item.data.name,
+      exercises: item.data.details,
+      description: item.data.description,
+      imageURL: item.data?.img,
+      jio: {
+        people: item.data.likes,
+        id: item.id,
+      },
+    };
+
+    navigation.navigate("Start Workout", {
+      screen: item.data.type === "Run" ? "Run Map" : "Start Workout",
       params: {
-        template: {
-          name: item.data.name,
-          exercises: details,
-          description: item.data.description,
-          imageURL: item.data?.img,
-          jio: item.data.likes
-        }
-      }
-    })
-  }
+        template,
+      },
+    });
+  };
 
   const onLike = () => {
-    firebase
-      .firestore()
-      .collection("jios")
-      .doc(item.id)
-      .set({
-        ...item.data,
-        likes: item.data.likes.concat({
-          uid: firebase.auth().currentUser.uid,
-          name: currUser.name,
-          photoURL: currUser.photoURL,
-        }),
-      });
+    if (item.data.likes.length >= 8) {
+      alert(
+        "Sorry! A maximum of 8 people can gather in light of Covid-19 regulations."
+      );
+    } else {
+      firebase
+        .firestore()
+        .collection("jios")
+        .doc(item.id)
+        .set({
+          ...item.data,
+          likes: item.data.likes.concat({
+            uid: currUserId,
+            name: currUser.name,
+            photoURL: currUser.photoURL,
+          }),
+        });
+    }
   };
 
   const onUnlike = () => {
     const data = [...item.data.likes];
-    const index = data.findIndex(
-      (usr) => usr.uid === firebase.auth().currentUser.uid
-    );
+    const index = data.findIndex((usr) => usr.uid === currUserId);
     data.splice(index, 1);
-    firebase.firestore()   
+    firebase
+      .firestore()
       .collection("jios")
       .doc(item.id)
       .set({
@@ -62,15 +71,12 @@ const Post = ({ navigation, item, currUser }) => {
 
   useEffect(() => {
     const uid = item.data.user;
-    if (
-      item.data.likes.findIndex(
-        (usr) => usr.uid === firebase.auth().currentUser.uid
-      ) > -1
-    ) {
+    if (item.data.likes.findIndex((usr) => usr.uid === currUserId) > -1) {
       setLiked(true);
     } else {
       setLiked(false);
     }
+
     firebase
       .firestore()
       .collection("users")
@@ -80,8 +86,7 @@ const Post = ({ navigation, item, currUser }) => {
 
   return (
     item && (
-      <View
-        style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.profileBar}>
           <Image
             source={
@@ -93,32 +98,35 @@ const Post = ({ navigation, item, currUser }) => {
           />
           <View style={{ width: "75%" }}>
             <Text>{user.name}</Text>
-            {item.data.creation && <Text>
-              {moment(item.data.creation.toDate()).format(
-                "D MMM YY h:mm a"
-              )}
-            </Text>}
+            {item.data.creation && (
+              <Text>
+                {moment(item.data.creation.toDate()).format("D MMM YY h:mm a")}
+              </Text>
+            )}
           </View>
-          {item.data.user === firebase.auth().currentUser.uid && (
+          {item.data.user === currUserId && !completed && (
             <>
-            <TouchableOpacity style={{marginRight: 5}} onPress={() => start()}>
-              <MaterialCommunityIcons name='play' size={20} color='green'/>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Start Jio", {
-                  jioData: {
-                    ...item,
-                    data: {
-                      ...item.data,
-                      time: item.data.time.toDate(),
+              <TouchableOpacity
+                style={{ marginRight: 5 }}
+                onPress={() => start()}
+              >
+                <MaterialCommunityIcons name="play" size={20} color="green" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Start Jio", {
+                    jioData: {
+                      ...item,
+                      data: {
+                        ...item.data,
+                        time: item.data.time.toDate(),
+                      },
                     },
-                  },
-                })
-              }
-            >
-              <MaterialIcons name="mode-edit" size={18} colo="darkblue" />
-            </TouchableOpacity>
+                  })
+                }
+              >
+                <MaterialIcons name="mode-edit" size={18} colo="darkblue" />
+              </TouchableOpacity>
             </>
           )}
         </View>
@@ -137,11 +145,13 @@ const Post = ({ navigation, item, currUser }) => {
 
             <View style={[styles.dataItem, { width: "48%" }]}>
               <MaterialIcons name="date-range" size={18} color="darkblue" />
-              {item.data.time && <Text style={{ marginTop: 3 }}>
-                {moment(item.data?.time.toDate()).format(
-                  "D MMM YYYY, h:mm a"
-                )}
-              </Text>}
+              {item.data.time && (
+                <Text style={{ marginTop: 3 }}>
+                  {moment(item.data?.time.toDate()).format(
+                    "D MMM YYYY, h:mm a"
+                  )}
+                </Text>
+              )}
             </View>
           </View>
           <View style={styles.inLine}>
@@ -163,25 +173,38 @@ const Post = ({ navigation, item, currUser }) => {
         <Text style={{ marginVertical: 10, padding: 5, textAlign: "justify" }}>
           {item.data.description}
         </Text>
-        <Divider/>
-        <View style={{ paddingHorizontal: 5, paddingVertical: 3, marginVertical: 10 }}>
-          <TouchableOpacity
-            onPress={() => (liked ? onUnlike() : onLike())}
-            style={{ flexDirection: "row", alignItems: "center" }}
-          >
-            <MaterialCommunityIcons
-              name={liked ? "heart" : "heart-outline"}
-              size={20}
-              color="red"
-            />
-            <Text style={{marginHorizontal: 3, color: liked ? 'red' : 'black'}}>{!liked ? "Join" : "Leave"}</Text>
-          </TouchableOpacity>
+        <Divider />
+        <View
+          style={{
+            paddingHorizontal: 5,
+            paddingVertical: 3,
+            marginVertical: 10,
+          }}
+        >
+          {!completed && item.data.user !== currUserId && (
+            <TouchableOpacity
+              onPress={() => (liked ? onUnlike() : onLike())}
+              style={{ flexDirection: "row", alignItems: "center" }}
+            >
+              <MaterialCommunityIcons
+                name={liked ? "heart" : "heart-outline"}
+                size={20}
+                color="red"
+              />
+              <Text
+                style={{ marginHorizontal: 3, color: liked ? "red" : "black" }}
+              >
+                {!liked ? "Join" : "Leave"}
+              </Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("Likes", {
                 likes: item.data.likes,
+                currUserId,
                 postID:
-                  item.data.user === firebase.auth().currentUser.uid && item.id,
+                  item.data.user === currUserId && item.id,
               })
             }
           >
@@ -189,29 +212,29 @@ const Post = ({ navigation, item, currUser }) => {
               style={{ marginTop: 3, textShadowRadius: 2, color: "darkblue" }}
             >
               {item.data.likes.length}{" "}
-              {item.data.likes.length === 1 ? "person going" : "people going"}
+              {item.data.likes.length === 1 ? "person " : "people "}
+              {completed ? "joined" : "going"}
             </Text>
           </TouchableOpacity>
         </View>
 
-        <Divider/>
+        <Divider />
         <TouchableOpacity
           onPress={() => setDetails(!details)}
           style={styles.inLine}
         >
           <Text style={{ justifyContent: "flex-end" }}>Details</Text>
-          <MaterialCommunityIcons name="menu-down" size={18}/>
+          <MaterialCommunityIcons name="menu-down" size={18} />
         </TouchableOpacity>
 
-        {details && item.data.type !== 'Run' && (
+        {details && item.data.type !== "Run" && (
           <FlatList
-          data={item.data.details}
-          keyExtractor={(item) => item.key}
-          renderItem={ExListItem}
-          scrollEnabled={false}
-        />
+            data={item.data.details}
+            keyExtractor={(item) => item.id}
+            renderItem={ExListItem}
+            scrollEnabled={false}
+          />
         )}
-        
       </View>
     )
   );

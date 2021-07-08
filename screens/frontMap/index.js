@@ -5,11 +5,10 @@ import MapView, {
   AnimatedRegion,
   Marker,
 } from "react-native-maps";
-import { View, Switch } from "react-native";
+import { View, Switch, StyleSheet, Dimensions } from "react-native";
 import * as Location from "expo-location";
-import { mapDark, mapStandard } from "../../mapConfig";
-import { styles } from "./config";
-import { presetLocations } from "../../mapConfig";
+import { mapDark, mapStandard, presetLocations } from "../../mapConfig";
+
 
 export default function FrontMap(props) {
   const [mTop, setMargin] = useState(0);
@@ -88,3 +87,18 @@ export default function FrontMap(props) {
     </View>
   );
 }
+
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: "#fff",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    map: {
+      width: Dimensions.get("window").width,
+      height: Dimensions.get("window").height,
+    },
+  });
+  

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, Text } from "react-native";
 import firebase from "firebase";
 import Post from "../components/jioComponents/Post";
+
 import { connect } from "react-redux";
+import { ListItem, Avatar } from "react-native-elements";
 
 const MyJios = (props) => {
   const [myPosts, setPosts] = useState([]);
@@ -10,6 +12,7 @@ const MyJios = (props) => {
   useEffect(() => {
     setPosts(props.upcoming)
   }, [props.upcoming]);
+
   return (
     <ScrollView horizontal={false}>
       {myPosts.map((item) => (

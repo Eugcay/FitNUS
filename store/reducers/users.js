@@ -2,7 +2,6 @@ import { SET_USERS, CLEAR } from "../actions/types";
 
 const initialState = {
   users: [],
-  feed: [],
 };
 
 export const usersReducer = (state = initialState, action) => {

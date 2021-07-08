@@ -7,6 +7,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 const JioLikes = (props) => {
   const [likes, setLikes] = useState(props.route.params?.likes || []);
   const postID = props.route.params?.postID;
+  const currUserID = props.route.params?.currUserId
+  console.log(currUserID)
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -58,9 +60,9 @@ const JioLikes = (props) => {
         <ListItem.Content>
           <ListItem.Title>{item.name}</ListItem.Title>
         </ListItem.Content>
-        {postID && (
+        {postID && currUserID !== item.uid && (
           <TouchableOpacity onPress={() => removeUser(item)}>
-            <MaterialCommunityIcons name="heart-remove" size={18} />
+            <MaterialCommunityIcons name="close" size={18} />
           </TouchableOpacity>
         )}
       </ListItem>
