@@ -6,6 +6,7 @@ import {
   Animated,
   Image,
   Text,
+  Linking,
 } from "react-native";
 
 import MapView, {
@@ -16,7 +17,11 @@ import MapView, {
 } from "react-native-maps";
 import PanController from "./PanController";
 import PriceMarker from "./AnimatedPriceMarker";
+<<<<<<< HEAD
 import { presetLocations } from "../../mapConfig";
+=======
+import { presetLocations } from "./frontMapConfig";
+>>>>>>> 0ee847b8ed756ca7ae57b158356274ef18dceec2
 import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -383,42 +388,76 @@ class FrontMap extends React.Component {
                       {marker.title}
                     </Text>
                     {/* OpeningHours */}
-                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row' }}>
+                    <View
+                      style={{
+                        marginLeft: 10,
+                        marginVertical: 5,
+                        flexDirection: "row",
+                      }}
+                    >
                       <MaterialIcons
                         name="access-time"
                         size={20}
                         color="black"
                       />
-                      <Text>:  9a.m. - 9p.m.</Text>
+                      <Text>: </Text>
+                      <Text style={{ paddingRight: 30 }}>{marker.open}</Text>
                       {/* add opened/closed based on time */}
                     </View>
                     {/* Address */}
-                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row'}}>
+                    <View
+                      style={{
+                        marginLeft: 10,
+                        marginVertical: 5,
+                        flexDirection: "row",
+                      }}
+                    >
                       <Ionicons
                         name="md-location-outline"
                         size={20}
                         color="black"
                       />
-                      <Text>:  Insert Address Here</Text>
+                      <Text>: </Text>
+                      <Text style={{ paddingRight: 30 }}>{marker.address}</Text>
                     </View>
                     {/* Website */}
-                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row' }}>
+                    <View
+                      style={{
+                        marginLeft: 10,
+                        marginVertical: 5,
+                        flexDirection: "row",
+                      }}
+                    >
                       <MaterialCommunityIcons
                         name="web"
                         size={20}
                         color="black"
                       />
-                      <Text>:  Insert Website Here</Text>
+                      <Text>: </Text>
+                      <Text
+                        style={{ color: "blue", paddingRight: 30 }}
+                        onPress={() => Linking.openURL(marker.website)}
+                      >
+                        Click here for more information
+                      </Text>
                     </View>
                     {/* Description */}
-                    <View style={{ marginLeft: 10, marginVertical: 5, flexDirection: 'row' }}>
+                    <View
+                      style={{
+                        marginLeft: 10,
+                        marginVertical: 5,
+                        flexDirection: "row",
+                      }}
+                    >
                       <MaterialIcons
                         name="info-outline"
                         size={20}
                         color="black"
                       />
-                      <Text>:  </Text>
-                      <Text style={{paddingRight: 30}}>{marker.description}</Text>
+                      <Text>: </Text>
+                      <Text style={{ paddingRight: 30 }}>
+                        {marker.description}
+                      </Text>
                     </View>
                   </View>
                 </Animated.View>
