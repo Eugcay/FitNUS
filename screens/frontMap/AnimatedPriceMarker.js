@@ -9,7 +9,7 @@ class AnimatedPriceMarker extends React.Component {
 
     const background = selected.interpolate({
       inputRange: [0, 1],
-      outputRange: ['transparent', '#0B2A59'],
+      outputRange: ['#A6A6A6', '#0B2A59'],
     });
 
     const border = selected.interpolate({
@@ -17,10 +17,6 @@ class AnimatedPriceMarker extends React.Component {
       outputRange: ['transparent', '#000000'],
     });
 
-    const titleColour = selected.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['transparent', '#000000'],
-    });
 
     return (
       <Animated.View style={[styles.container, style]}>
@@ -33,7 +29,7 @@ class AnimatedPriceMarker extends React.Component {
             },
           ]}
         >
-          <Text style={[styles.title, {color: titleColour}]}>{title}</Text>
+          <Text style={[styles.title]}>{title}</Text>
         </Animated.View>
         <Animated.View
           style={[styles.arrowBorder, { borderTopColor: border }]}
@@ -67,7 +63,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
   },
   title: {
-    
+    color: "#FFFFFF",
     fontSize: 10,
     margin: 5
   },
