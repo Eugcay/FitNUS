@@ -15,8 +15,7 @@ import { presetLocations, testCords } from "./config";
 import { styles, options } from "./styles";
 import firebase from "firebase";
 import { connect } from "react-redux";
-import { addToRuns } from "../../store/actions/history";
-import { set } from "react-native-reanimated";
+import { addToRuns } from "../../store/actions/history"; 
 
 const RunMap = (props) => {
   //RunDetails Stuff
@@ -24,6 +23,8 @@ const RunMap = (props) => {
   const [ran, setRan] = useState(0);
   const [pulls, setPulls] = useState(1);
   const [showhideRoute, setshowhideRoute] = useState(true);
+  const [description, setDescription] = useState(null);
+  const [jioStatus, setJio] = useState(null);
   const oldRun = props.route.params?.details;
   const startPoint = oldRun?.start;
   const endPoint = oldRun?.end;
@@ -64,6 +65,14 @@ const RunMap = (props) => {
   }).current;
 
   useEffect(() => {
+    const template = props.route.params?.template;
+    if (template) {
+      setTitle(template?.name);
+      setJio(template?.jio);
+      setDescription(template?.description);
+      console.log(template)
+    }
+
     props.navigation.setOptions({
       headerStyle: {
         opacity: 1,
@@ -73,7 +82,7 @@ const RunMap = (props) => {
         color: dark ? "white" : "black",
       },
     });
-  }, []);
+  }, [props.route.params?.template]);
 
   //Track location stuff => Calcdistance, Watch poition, Polyline
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -85,18 +94,26 @@ const RunMap = (props) => {
   const [userLoc, setUserLoc] = useState(true);
 
   //takeSnapshot
-  const takeScreenshot = () => {
+  const takeScreenshot = async () => {
     // 'takeSnapshot' takes a config object with the
     // following options
-    (async () => {
       let screenshot = await refer.takeSnapshot({
         format: "png", // image formats: 'png', 'jpg' (default: 'png')
         quality: 0.8, // image quality: 0..1 (only relevant for jpg, default: 1)
         result: "file", // result types: 'file', 'base64' (default: 'file')
       });
-      setScreenshot(screenshot);
-    })();
+      finishRun(screenshot)
+    
   };
+
+  // (async () => {
+  //   let screenshot = await refer.takeSnapshot({
+  //     format: "png", // image formats: 'png', 'jpg' (default: 'png')
+  //     quality: 0.8, // image quality: 0..1 (only relevant for jpg, default: 1)
+  //     result: "file", // result types: 'file', 'base64' (default: 'file')
+  //   });
+  //   setScreenshot(screenshot);
+  // })();
 
   const calcDistance = (prevLatLng, newLatLng) => {
     return haversine(prevLatLng, newLatLng) || 0;
@@ -104,9 +121,9 @@ const RunMap = (props) => {
 
   //Carry on
   useEffect(() => {
-    if (screenShot !== null) {
-      finishRun(); /////////////////////////FINISH RUN HERE!!!!!!!!!!! so snapshot will ne taken first
-    }
+    // if (screenShot !== null) {
+    //   finishRun(); /////////////////////////FINISH RUN HERE!!!!!!!!!!! so snapshot will ne taken first
+    // }
 
     (async () => {
       console.log("Effect Rendered");
@@ -205,21 +222,40 @@ const RunMap = (props) => {
     );
   };
 
-  const finishRun = async () => {
+  const finishRun = async (ss) => {
     remove.remove();
+    const uid = firebase.auth().currentUser.uid;
     const run = {
       name: title,
-      description: `${title} on ${new Date(Date.now())}`,
+      description,
       duration: timeNow / 1000,
       distance,
       locList,
       date: firebase.firestore.FieldValue.serverTimestamp(),
-      imageURL: screenShot,
-      ran: ran,
+      imageURL: ss,
+      ran,
+      jioStatus
     };
-    props.finish(run);
+    if (jioStatus) {
+      await finishJio(jioStatus.id, {...run, date: new Date()})
+    } else {
+      props.finish(run)
+    }
     props.navigation.navigate("Main");
   };
+
+  const finishJio = async (id, workout) => {
+    await firebase.firestore().collection('jios').doc(id).update({completed: true})
+    const db = firebase.firestore()
+    const batch = db.batch()
+    
+    jioStatus.people.forEach(user => {
+      const docRef = db.collection('users').doc(user.uid).collection('runs').doc()
+      batch.set(docRef, workout)
+    })
+
+    batch.commit()
+  }
 
   const _onMapReady = () => setMargin(60);
 
@@ -245,7 +281,7 @@ const RunMap = (props) => {
         maxZoomLevel={19.9}
         onLongPress={() => setshowhideRoute(!showhideRoute)}
       >
-        {showhideRoute && oldRun? (
+        {showhideRoute && oldRun ? (
           <MapView.Marker
             key={1}
             coordinate={startPoint}
@@ -255,7 +291,7 @@ const RunMap = (props) => {
         ) : (
           <View />
         )}
-        {showhideRoute && oldRun? (
+        {showhideRoute && oldRun ? (
           <MapView.Marker
             key={2}
             coordinate={endPoint}
@@ -265,7 +301,7 @@ const RunMap = (props) => {
         ) : (
           <View />
         )}
-        {showhideRoute && oldRun? (
+        {showhideRoute && oldRun ? (
           <Polyline
             coordinates={oldLocList}
             strokeWidth={1}

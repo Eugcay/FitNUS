@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import firebase from "firebase";
 import Post from "../components/jioComponents/Post";
 
@@ -10,10 +10,10 @@ const MyJios = (props) => {
   const [myPosts, setPosts] = useState([]);
 
   useEffect(() => {
-    setPosts(props.upcoming)
+    setPosts(props.upcoming);
   }, [props.upcoming]);
 
-  return (
+  return myPosts && myPosts.length > 0 ? (
     <ScrollView horizontal={false}>
       {myPosts.map((item) => (
         <Post
@@ -23,12 +23,16 @@ const MyJios = (props) => {
         />
       ))}
     </ScrollView>
+  ) : (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontSize: 18 }}>No Jios to view</Text>
+    </View>
   );
 };
 
 const mapStateToProps = (store) => ({
   currUser: store.user.currentUser,
-  upcoming: store.jios.upcoming
+  upcoming: store.jios.upcoming,
 });
 
 export default connect(mapStateToProps, null)(MyJios);

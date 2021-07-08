@@ -19,11 +19,16 @@ const HistoryBar = ({ navigation, hist, runs }) => {
     require("../../assets/bg3.jpeg"),
   ];
 
-  const WorkoutHistBar = ({ history }) => {//Passed in below as runs/hist
+  const WorkoutHistBar = ({ history }) => {
+    //Passed in below as runs/hist
     if (!history || history.length === 0) {
       return (
         <TouchableOpacity //if no workout created
-          onPress={() => navigation.navigate("Start Workout", { screen: 'Select Workout Type' })}
+          onPress={() =>
+            navigation.navigate("Start Workout", {
+              screen: "Select Workout Type",
+            })
+          }
           style={[styles.item, { backgroundColor: setRandomColor() }]}
         >
           <Text>Create new workout</Text>
@@ -69,8 +74,7 @@ const HistoryBar = ({ navigation, hist, runs }) => {
             {item.data?.name ? item.data?.name : "Custom Workout"}
           </Text>
           <Text style={styles.text}>
-            {item.data?.date &&
-              timestampToDate(item.data?.date.toDate())}
+            {item.data?.date && timestampToDate(item.data?.date.toDate())}
           </Text>
         </ImageBackground>
       </TouchableOpacity>

@@ -53,10 +53,17 @@ const JioStart = (props) => {
 
   const [jioState, dispatch] = useReducer(reducer, initialState);
 
+  const uid = firebase.auth().currentUser.uid;
+  const user = {
+    uid,
+    name: props.currUser.name,
+    photoURL: props.currUser?.photoURL,
+  };
+
   useEffect(() => {
     const jioData = props.route.params?.jioData;
     if (jioData) {
-      dispatch({ type: "SET", value: {...jioData.data, id: jioData.id} });
+      dispatch({ type: "SET", value: { ...jioData.data, id: jioData.id } });
       props.navigation.setOptions({
         headerRight: () => (
           <TouchableOpacity onPress={() => removeJio(jioData.id)}>
@@ -86,7 +93,12 @@ const JioStart = (props) => {
   };
 
   const removeJio = (id) => {
-    firebase.firestore().collection("jios").doc(id).delete().then(props.navigation.navigate('Main'));
+    firebase
+      .firestore()
+      .collection("jios")
+      .doc(id)
+      .delete()
+      .then(props.navigation.navigate("Main"));
   };
 
   const setJioState = (value, input) => {
@@ -118,12 +130,7 @@ const JioStart = (props) => {
 
   const submitJio = async () => {
     const jioData = props.route.params?.jioData;
-    const uid = firebase.auth().currentUser.uid
-    const user = {
-      uid,
-      name: props.currUser.name,
-      photoURL: props.currUser?.photoURL
-    }
+
     const created = firebase.firestore.FieldValue.serverTimestamp();
     const ref = await firebase.firestore().collection("jios");
     if (jioData) {
@@ -131,7 +138,7 @@ const JioStart = (props) => {
         .doc(jioState.id)
         .update({
           ...jioState,
-          creation: created
+          creation: created,
         })
         .then(props.navigation.navigate("Main"));
     } else {
@@ -323,7 +330,7 @@ const JioStart = (props) => {
                   ? submitJio()
                   : props.navigation.navigate("Details", {
                       jioState,
-                      user: props.currUser
+                      user: user,
                     })
               }
             >
@@ -347,7 +354,7 @@ const JioStart = (props) => {
 };
 
 const mapStateToProps = (store) => ({
-  currUser: store.user.currentUser
-})
+  currUser: store.user.currentUser,
+});
 
 export default connect(mapStateToProps, null)(JioStart);

@@ -17,7 +17,7 @@ import { Divider } from "react-native-elements";
 import { updateUser } from "../../store/actions/user";
 import { styles, options } from "./styles";
 import firebase from "firebase";
-import { finishJio } from "../../helpers/startWorkout";
+// import { finishJio } from "../../helpers/startWorkout";
 
 
 const StartWorkout = (props) => {
@@ -120,18 +120,18 @@ const StartWorkout = (props) => {
     }
   };
 
-  // const finishJio = async (id, workout) => {
-  //   await firebase.firestore().collection('jios').doc(id).update({completed: true})
-  //   const db = firebase.firestore()
-  //   const batch = db.batch()
+  const finishJio = async (id, workout) => {
+    await firebase.firestore().collection('jios').doc(id).update({completed: true})
+    const db = firebase.firestore()
+    const batch = db.batch()
     
-  //   jioStatus.people.forEach(user => {
-  //     const docRef = db.collection('users').doc(user.uid).collection('history').doc()
-  //     batch.set(docRef, workout)
-  //   })
+    jioStatus.people.forEach(user => {
+      const docRef = db.collection('users').doc(user.uid).collection('history').doc()
+      batch.set(docRef, workout)
+    })
 
-  //   batch.commit()
-  // }
+    batch.commit()
+  }
 
   const checkPb = () => {
     exercises.forEach((exe) => {
