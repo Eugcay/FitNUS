@@ -38,17 +38,33 @@ export const changeWeek = (week, direction) => {
   }
 };
 
+export const getRunStats = (arr) => {
+  const temp = arr.reduce(
+    (x, y) => ({
+      distance: x.distance + y.distance,
+      duration: x.duration + y.duration,
+      longest: Math.max(x.distance, y.distance)
+    }),
+    {
+      distance: 0,
+      duration: 0,
+      longest: 0
+    }
+  );
+  temp.runs = arr.length;
+
+  return temp;
+}
+
 export const getStats = (arr) => {
   const temp = arr.reduce(
     (x, y) => ({
       calories: x.calories + y.calories,
       duration: x.duration + y.duration,
-      distance: x.distance + y.distance,
     }),
     {
       calories: 0,
       duration: 0,
-      distance: 0,
     }
   );
   temp.sets = arr
@@ -193,6 +209,18 @@ export const favExercises = (hist) => {
 
 export const reloadPeriod = (period, hist) => {
   return getStats(
+    hist
+      .map((doc) => doc.data)
+      .filter(
+        (doc) =>
+          doc.date.seconds * 1000 < Date.parse(period.end) &&
+          doc.date.seconds * 1000 >= Date.parse(period.start)
+      )
+  );
+};
+
+export const reloadRunPeriod = (period, hist) => {
+  return getRunStats(
     hist
       .map((doc) => doc.data)
       .filter(
