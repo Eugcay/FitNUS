@@ -22,6 +22,8 @@ import {
   favExercises,
   yearlyData,
   monthlyData,
+  getRunStats,
+  reloadRunPeriod
 } from "../../helpers/tracker";
 import { concatWithoutDupe } from "../../helpers";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -46,8 +48,29 @@ const Tracker = (props) => {
   const [period, setPeriod] = useState(weekly);
   const [favs, setFavs] = useState([]);
   const [exercises, setExercises] = useState([]);
+  const [totalRun, setRunTotal] = useState(null);
+  const [weeklyRun, setRunWeekly] = useState(null);
+  const [monthlyRun, setRunMonthly] = useState(null);
+  const [periodRun, setRunPeriod] = useState(weeklyRun);
+
 
   useEffect(() => {
+    ///////////Runs
+    const totRun = props.runs
+      ? getRunStats(props.runs.map((doc) => doc.data))
+      : null;
+    const runsPerMonth = props.runs
+      ? yearlyData(props.runs.map((doc) => doc.data))
+      : null;
+    const mR = props.runs ? reloadRunPeriod(month, props.runs) : null;
+    const runsPerWeek = props.runs
+      ? monthlyData(
+          props.runs.map((doc) => doc.data),
+          month
+        )
+      : null;
+    const wR = props.runs ? reloadRunPeriod(week, props.runs) : null;
+    /////Workouts
     const tot = props.history
       ? getStats(props.history.map((doc) => doc.data))
       : null;
@@ -62,27 +85,42 @@ const Tracker = (props) => {
         )
       : null;
     const w = props.history ? reloadPeriod(week, props.history) : null;
-
+    
+    ///////Favs - Overall
     const favourites = favExercises(props.history.map((doc) => doc.data));
-
-    setUser(props.currentUser);
-    setTotal({
-      ...tot,
-      workoutFreq: workoutsPerMonth,
-    });
-    setWeekly(w);
-    setMonthly({
-      ...m,
-      workoutFreq: workoutsPerWeek,
-    });
     setFavs(favourites);
+    //////User data
+    setUser(props.currentUser);
+    ///////Tracked exercises with the graph and stats
     setExercises(props.currentUser?.tracked ? props.currentUser?.tracked : []);
+    ////////Goals
     setGoals({
       duration: props.currentUser.durationGoal,
       distance: props.currentUser.distanceGoal,
       workouts: props.currentUser.workoutGoal,
+      runs: props.currentUser.runGoal,
     });
-
+    /////////Workout sets
+    setTotal({
+      ...tot,
+      workoutFreq: workoutsPerMonth,
+    });
+    setMonthly({
+      ...m,
+      workoutFreq: workoutsPerWeek,
+    });
+    setWeekly(w);
+    ///////////Run sets
+    setRunTotal({
+      ...totRun,
+      workoutFreq: runsPerMonth,
+    });
+    setRunMonthly({
+      ...mR,
+      workoutFreq: runsPerWeek,
+    });
+    setRunWeekly(wR);
+    ///////////WorkoutPeriod
     const getPeriod = () => {
       switch (statsType) {
         case "weekly":
@@ -98,14 +136,31 @@ const Tracker = (props) => {
             workoutFreq: workoutsPerMonth,
           };
         default:
-          return m
+          return m;
       }
     };
-
     setPeriod(getPeriod());
-
-    
-  }, [props.history, props.currentUser, week, month, statsType]);
+    ///////////////RunPeriod
+    const getRunPeriod = () => {
+      switch (statsType) {
+        case "weekly":
+          return wR;
+        case "monthly":
+          return {
+            ...mR,
+            workoutFreq: runsPerWeek,
+          };
+        case "total":
+          return {
+            ...totRun,
+            workoutFreq: runsPerMonth,
+          };
+        default:
+          return mR;
+      }
+    };
+    setRunPeriod(getRunPeriod());
+  }, [props.history, props.currentUser, week, month, statsType, props.runs]);
 
   useEffect(() => {
     const ex = props.route.params?.exercises;
@@ -137,8 +192,6 @@ const Tracker = (props) => {
     }
   };
 
-  
-
   const deleteEx = (ex) => {
     const dat = [...exercises];
     dat.splice(exercises.indexOf(ex), 1);
@@ -160,7 +213,6 @@ const Tracker = (props) => {
       <View style={styles.greeting}>
         <Greeting user={user} />
       </View>
-      {/* <MenuButton /> */}
       <View style={styles.datapicker}>
         <View style={styles.container}>
           <TouchableOpacity
@@ -168,6 +220,7 @@ const Tracker = (props) => {
             onPress={() => {
               setType("weekly");
               setPeriod(weekly);
+              setRunPeriod(weeklyRun);
             }}
           >
             <Text style={styles.text}>Weekly</Text>
@@ -177,6 +230,7 @@ const Tracker = (props) => {
             onPress={() => {
               setType("monthly");
               setPeriod(monthly);
+              setRunPeriod(monthlyRun);
             }}
           >
             <Text style={styles.text}>Monthly</Text>
@@ -186,6 +240,7 @@ const Tracker = (props) => {
             onPress={() => {
               setType("total");
               setPeriod(total);
+              setRunPeriod(totalRun);
             }}
           >
             <Text style={styles.text}>Overall</Text>
@@ -278,8 +333,8 @@ const Tracker = (props) => {
             </View>
             <View style={{ padding: 10 }}>
               <View>
-                <Text>Distance Run</Text>
-                <Text>{period.distance} km</Text>
+                <Text>Distance Ran</Text>
+                <Text>{(periodRun.distance).toFixed(2)} km</Text>
               </View>
             </View>
           </View>
@@ -306,19 +361,19 @@ const Tracker = (props) => {
         <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
           <View style={styles.runStat}>
             <Text>Average Pace</Text>
-            <Text>0</Text>
+            <Text>{((periodRun.duration / 60) / periodRun.distance).toFixed(2)} min/Km</Text>
           </View>
           <View style={styles.runStat}>
             <Text>Runs</Text>
-            <Text>0</Text>
+            <Text>{periodRun.runs}</Text>
           </View>
           <View style={styles.runStat}>
             <Text>Distance Per Run</Text>
-            <Text>0</Text>
+            <Text>{(periodRun.distance / periodRun.runs).toFixed(2)} Km</Text>
           </View>
           <View style={styles.runStat}>
             <Text>Longest Run</Text>
-            <Text>0</Text>
+            <Text>{(periodRun.longest).toFixed(2)} Km</Text>
           </View>
         </View>
       </View>
@@ -367,6 +422,7 @@ const Tracker = (props) => {
 const mapStateToProps = (store) => ({
   history: store.history.workouts,
   currentUser: store.user.currentUser,
+  runs: store.history.runs,
 });
 
 const mapDispatchToProps = (dispatch) => ({
