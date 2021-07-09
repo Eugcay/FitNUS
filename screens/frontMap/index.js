@@ -17,11 +17,7 @@ import MapView, {
 } from "react-native-maps";
 import PanController from "./PanController";
 import PriceMarker from "./AnimatedPriceMarker";
-<<<<<<< HEAD
-import { presetLocations } from "../../mapConfig";
-=======
 import { presetLocations } from "./frontMapConfig";
->>>>>>> 0ee847b8ed756ca7ae57b158356274ef18dceec2
 import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";

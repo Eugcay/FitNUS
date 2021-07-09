@@ -1,4 +1,4 @@
-import { SET_COMPLETED, SET_FEED, SET_UPCOMING } from "../actions/types";
+import { CLEAR, SET_COMPLETED, SET_FEED, SET_UPCOMING } from "../actions/types";
 
 const initialState = {
   feed: [],
@@ -24,7 +24,8 @@ export const jioReducer = (state = initialState, action) => {
         ...state,
         completed: action.completed,
       };
-
+    case CLEAR:
+      return initialState
     default:
       return state;
   }

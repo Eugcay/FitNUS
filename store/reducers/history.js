@@ -1,4 +1,4 @@
-import { SET_USER_RUNS, SET_USER_HISTORY, ADD_WORKOUT, ADD_RUN } from "../actions/types";
+import { SET_USER_RUNS, SET_USER_HISTORY, ADD_WORKOUT, ADD_RUN, CLEAR } from "../actions/types";
 
 const initialState = {
   runs: [],
@@ -27,6 +27,8 @@ export const historyReducer = (state = initialState, action) => {
         ...state,
         history: state.workouts.concat(action.data),
       };
+    case CLEAR:
+      return initialState
     default:
       return state;
   }

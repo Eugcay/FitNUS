@@ -90,43 +90,6 @@ export function getUserFollowers() {
   };
 }
 
-export function addToHistory(workout) {
-  const date = firebase.firestore.FieldValue.serverTimestamp();
-  return async (dispatch) => {
-    await firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("history")
-      .add({
-        ...workout,
-        date,
-      });
-
-    dispatch({
-      type: ADD_WORKOUT,
-      data: {
-        ...workout,
-        date,
-      },
-    });
-  };
-}
-
-export const removeWorkout = (id) => {
-  return (dispatch) => {
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("history")
-      .doc(id)
-      .delete()
-      .then(dispatch({ type: REMOVE_FROM_HISTORY, workout: id }));
-    //
-  };
-};
-
 export const clearData = () => {
   return (dispatch) => {
     dispatch({ type: CLEAR });

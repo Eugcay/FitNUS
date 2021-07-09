@@ -51,8 +51,8 @@ const EditExercise = (props) => {
     let data = [...sets];
     data = data.concat({
       key: currKey + 1,
-      weight: 0,
-      reps: 0,
+      weight: sets[sets.length - 1].weight,
+      reps: sets[sets.length - 1].reps,
       completed: false,
     });
     setCurrKey(currKey + 1);

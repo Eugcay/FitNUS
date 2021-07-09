@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -19,7 +19,6 @@ import { styles, options } from "./styles";
 import firebase from "firebase";
 // import { finishJio } from "../../helpers/startWorkout";
 
-
 const StartWorkout = (props) => {
   const [name, setName] = useState("Custom Workout");
   const [description, setDescription] = useState(
@@ -31,8 +30,28 @@ const StartWorkout = (props) => {
   const [updating, setUpdating] = useState(false);
   const [pulls, setPulls] = useState(1);
   const [workoutStatus, setStatus] = useState("Not Started");
-  const [jioStatus, setJio] = useState(null)
+  const [jioStatus, setJio] = useState(null);
   const achievements = [];
+
+  useEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () => {
+        return (
+          <TouchableOpacity
+            style={{
+              marginRight: 5,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => saveTemplate()}
+          >
+            <Text style={{ fontSize: 13, color: "darkgreen" }}>Save </Text>
+            <Text style={{ fontSize: 13, color: "darkgreen" }}>Template </Text>
+          </TouchableOpacity>
+        );
+      },
+    });
+  }, [exercises, name, description]);
 
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
@@ -82,6 +101,28 @@ const StartWorkout = (props) => {
     setExercises(data);
   };
 
+  const saveTemplate = () => {
+    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('templates').add({
+      name,
+      description,
+      duration: timeNow / 1000,
+      distance: 0,
+      calories: 100,
+      imageURL,
+      exercises: formatExercises(), 
+    })
+  }
+
+  const formatExercises = () => {
+    return exercises.map((exercise) => ({
+      ...exercise,
+      sets: exercise.sets.map((set) => ({
+        ...set,
+        completed: false,
+      })),
+    }));
+  };
+
   const workoutComplete = () => {
     const completed = exercises.reduce(
       (x, y) => x && (y.sets ? completedSets(y) === y.sets.length : false),
@@ -90,7 +131,7 @@ const StartWorkout = (props) => {
     return completed && exercises.length > 0;
   };
 
-  const finishWorkout =  () => {
+  const finishWorkout = () => {
     if (workoutComplete()) {
       setStatus("Paused");
       setIsStopwatchStart(false);
@@ -106,32 +147,40 @@ const StartWorkout = (props) => {
         imageURL,
         exercises,
         achievements,
-        jioStatus
+        jioStatus,
       };
       if (jioStatus) {
-        finishJio(jioStatus.id, {...workout, date: new Date()})
+        finishJio(jioStatus.id, { ...workout, date: new Date() });
       } else {
         props.finish(workout);
-      }      
+      }
       clearWorkout();
-      props.navigation.navigate("Main", {screen: 'Fit Bud'});
+      props.navigation.navigate("Main", { screen: "Fit Bud" });
     } else {
       Alert.alert("Workout incomplete!");
     }
   };
 
   const finishJio = async (id, workout) => {
-    await firebase.firestore().collection('jios').doc(id).update({completed: true})
-    const db = firebase.firestore()
-    const batch = db.batch()
-    
-    jioStatus.people.forEach(user => {
-      const docRef = db.collection('users').doc(user.uid).collection('history').doc()
-      batch.set(docRef, workout)
-    })
+    await firebase
+      .firestore()
+      .collection("jios")
+      .doc(id)
+      .update({ completed: true });
+    const db = firebase.firestore();
+    const batch = db.batch();
 
-    batch.commit()
-  }
+    jioStatus.people.forEach((user) => {
+      const docRef = db
+        .collection("users")
+        .doc(user.uid)
+        .collection("history")
+        .doc();
+      batch.set(docRef, workout);
+    });
+
+    batch.commit();
+  };
 
   const checkPb = () => {
     exercises.forEach((exe) => {
@@ -215,13 +264,13 @@ const StartWorkout = (props) => {
   useEffect(() => {
     if (props.route.params?.template && pulls === 1) {
       const template = props.route.params?.template;
-      template?.jio && setJio(template?.jio)
-      console.log(template?.description)
+      template?.jio && setJio(template?.jio);
+      console.log(template?.description);
       setExercises(template?.exercises);
       setName(template?.name); //name
       setDescription(template?.description); //desc
-      setImageURL(template?.imageURL || ''); //ImageUrl
-      console.log(jioStatus)
+      setImageURL(template?.imageURL || ""); //ImageUrl
+      console.log(jioStatus);
       setPulls(pulls + 1);
     } else if (props.route.params?.exercise && updating) {
       updateWorkout(props.route.params?.exercise);
@@ -292,7 +341,7 @@ const StartWorkout = (props) => {
               >
                 <Text style={{ color: "#FFFFFF" }}>Pause</Text>
               </TouchableOpacity>
-              <Divider orientation="vertical"/>
+              <Divider orientation="vertical" />
               <Stopwatch
                 start={isStopwatchStart}
                 //To start

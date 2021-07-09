@@ -17,7 +17,6 @@ import ExListItem from "../../components/detailsComponents/ExListItem";
 import firebase from "firebase";
 import { styles } from "./styles";
 
-
 function WorkoutDetails(props) {
   const duration = props.route.params.workout.duration;
   const workout = props.route.params.workout;
@@ -29,6 +28,8 @@ function WorkoutDetails(props) {
     : 0;
   const id = props.route.params?.id ? props.route.params?.id : "";
   const jio = props.route.params?.jio;
+  const jioState = props.route.params?.workout?.jioStatus;
+  console.log(jioState)
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -78,73 +79,107 @@ function WorkoutDetails(props) {
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.scroll}>
-        {workout.imageURL !== "" && (
-          <Image source={{ uri: workout.imageURL }} style={styles.image} />
-        )}
-        <View style={styles.top}>
-          <Text style={styles.title}>
-            {workout.name ? workout.name : "Custom Workout"}
-          </Text>
-          {date && <Text>{timestampToDate(date.toDate())}</Text>}
-        </View>
-        <View>
-          <Text
-            style={[
-              { paddingTop: 5, marginHorizontal: 10, fontWeight: "bold" },
-            ]}
-          >
-            Description
-          </Text>
-          <Text style={styles.body}>
-            {workout?.description ? workout?.description : ""}
-          </Text>
-        </View>
-        <View style={styles.statbar}>
-          <View style={styles.statbox}>
-            <MaterialCommunityIcons name="timer" size={17} color="red" />
-            <Text>{date ? "" : "Expected"} Duration</Text>
-            <Text style={{ fontWeight: "bold" }}>
-              {Math.round(duration / 60) + ":" + Math.round(duration % 60)}
+          {workout.imageURL !== "" && (
+            <Image source={{ uri: workout.imageURL }} style={styles.image} />
+          )}
+          <View style={styles.top}>
+            <Text style={styles.title}>
+              {workout.name ? workout.name : "Custom Workout"}
+            </Text>
+            {date && <Text>{timestampToDate(date.toDate())}</Text>}
+          </View>
+          <View>
+            <Text
+              style={[
+                { paddingTop: 5, marginHorizontal: 10, fontWeight: "bold" },
+              ]}
+            >
+              Description
+            </Text>
+            <Text style={styles.body}>
+              {workout?.description ? workout?.description : ""}
             </Text>
           </View>
-          <Divider orientation="vertical" />
-          <View style={styles.statbox}>
-            <MaterialCommunityIcons
-              name="format-list-bulleted-square"
-              size={20}
-              color="blue"
-            />
-            <Text>Sets</Text>
-            <Text>
-              {workout.exercises
-                ? workout?.exercises
-                    .map((exercise) => exercise.sets.length)
-                    .reduce((x, y) => x + y, 0)
-                : "0"}
-            </Text>
-          </View>
-          <Divider orientation="vertical" />
-          <View style={styles.statbox}>
-            <MaterialCommunityIcons
-              name="emoticon-happy-outline"
-              size={20}
-              color="green"
-            />
-            <Text>Achievements</Text>
-            <Text>{achievements}</Text>
-          </View>
-        </View>
 
-        {workout.exercises && (
-          <View style={{ marginBottom: 60 }}>
-            <FlatList
-              data={workout?.exercises}
-              keyExtractor={(item) => item.key}
-              renderItem={ExListItem}
-              scrollEnabled={false}
-            />
+          <View style={styles.statbar}>
+            <View style={styles.statbox}>
+              <MaterialCommunityIcons name="timer" size={17} color="red" />
+              <Text>{date ? "" : "Expected"} Duration</Text>
+              <Text style={{ fontWeight: "bold" }}>
+                {Math.round(duration / 60) + ":" + Math.round(duration % 60)}
+              </Text>
+            </View>
+            <Divider orientation="vertical" />
+            <View style={styles.statbox}>
+              <MaterialCommunityIcons
+                name="format-list-bulleted-square"
+                size={20}
+                color="blue"
+              />
+              <Text>Sets</Text>
+              <Text>
+                {workout.exercises
+                  ? workout?.exercises
+                      .map((exercise) => exercise.sets.length)
+                      .reduce((x, y) => x + y, 0)
+                  : "0"}
+              </Text>
+            </View>
+            <Divider orientation="vertical" />
+            <View style={styles.statbox}>
+              <MaterialCommunityIcons
+                name="emoticon-happy-outline"
+                size={20}
+                color="green"
+              />
+              <Text>Achievements</Text>
+              <Text>{achievements}</Text>
+            </View>
           </View>
-        )}
+
+          {jioState && (
+            <View style={{marginHorizontal: 10, marginVertical: 10}}>
+            <Divider />
+            <Text style={{ paddingTop: 5, marginHorizontal: 10, fontWeight: "bold", marginBottom: 5 }}>Workout Buddies</Text>
+            <FlatList
+              data={jioState.people}
+              renderItem={({item}) => {
+                return (
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      flex: 1,
+                      alignItems: "center",
+                      marginHorizontal: 15
+                    }}
+                  >
+                    <Image
+                      source={
+                        item?.photoURL
+                          ? { uri: item?.photoURL }
+                          : require("../../assets/user.png")
+                      }
+                      style={{width: 36, height: 36, borderRadius: 18}}
+                    />
+                    <Text style={{ marginTop: 3 }}>{item.name}</Text>
+                  </View>
+                );
+              }}
+              horizontal={true}
+            />
+            <Divider />
+            </View>
+          )}
+          {workout.exercises && (
+            <View style={{ marginBottom: 60 }}>
+              <FlatList
+                data={workout?.exercises}
+                keyExtractor={(item) => item.key}
+                renderItem={ExListItem}
+                scrollEnabled={false}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
       {workout.exercises && (

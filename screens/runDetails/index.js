@@ -7,6 +7,8 @@ import {
   ScrollView,
   Button,
   Alert,
+  FlatList,
+  Image,
   Animated
 } from "react-native";
 import firebase from "firebase";
@@ -25,6 +27,7 @@ const RunDetails = (props) => {
   const duration = props.route.params.workout.duration;
   const description = props.route.params.workout.description;
   const ran = props.route.params.workout.ran;
+  const jioState = props.route.params?.workout?.jioStatus
   console.log(locList);
   const startPoint = locList[1]
   const endPoint = locList[locList.length - 1]
@@ -123,6 +126,39 @@ const RunDetails = (props) => {
         <Text style={styles.body}>{description ? description : ""}</Text>
       </View>
       <Divider orientation="horizontal" width={1} />
+      {jioState && (
+            <View style={{marginHorizontal: 10, marginVertical: 15}}>
+            <Divider width={1}/>
+            <Text style={{ paddingTop: 5, marginHorizontal: 10, fontWeight: "bold", marginBottom: 5 }}>Workout Buddies</Text>
+            <FlatList
+              data={jioState.people}
+              renderItem={({item}) => {
+                return (
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      flex: 1,
+                      alignItems: "center",
+                      marginHorizontal: 15
+                    }}
+                  >
+                    <Image
+                      source={
+                        item?.photoURL
+                          ? { uri: item?.photoURL }
+                          : require("../../assets/user.png")
+                      }
+                      style={{width: 36, height: 36, borderRadius: 18}}
+                    />
+                    <Text style={{ marginTop: 3 }}>{item.name}</Text>
+                  </View>
+                );
+              }}
+              horizontal={true}
+            />
+            <Divider width={1}/>
+            </View>
+          )}
       <View style={styles.statbar}>
         <View style={styles.statbox}>
           <Text style={{fontWeight: "bold"}}>Distance: </Text>

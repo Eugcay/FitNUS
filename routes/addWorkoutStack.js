@@ -19,17 +19,7 @@ const addWorkoutStack = ({ navigation, route }) => {
       <Stack.Navigator>
         <Stack.Screen
           name="Start Workout"
-          component={StartWorkout}
-          options={{
-            headerRight: () => (
-              <Text
-                style={{ color: "midnightblue", fontSize: 17, marginRight: 10 }}
-                onPress={() => navigation.navigate("Map")}
-              >
-                Map
-              </Text>
-            ),
-          }}
+          component={StartWorkout} 
         ></Stack.Screen>
         <Stack.Screen
           name="Select Workout Type"
