@@ -109,7 +109,8 @@ const StartWorkout = (props) => {
       distance: 0,
       calories: 100,
       imageURL,
-      exercises: formatExercises(), 
+      exercises: formatExercises(),
+      template: true 
     })
   }
 

@@ -37,7 +37,11 @@ const RunDetails = (props) => {
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerRight: () =>
-        date && <Button title="Delete" color="red" onPress={deleteRun} />,
+        date && (
+          <TouchableOpacity style={{marginHorizontal: 5}} onPress={deleteRun}>
+            <Text style={{ color: "red" }}>Delete</Text>
+          </TouchableOpacity>
+        ),
     });
   }, []);
 
@@ -117,7 +121,7 @@ const RunDetails = (props) => {
           {name ? name : "Custom Run"}
         </Text>
         {date && (
-          <Text style={styles.body}>{timestampToDate(date.seconds)}</Text>
+          <Text style={styles.body}>{timestampToDate(date.seconds * 1000)}</Text>
         )}
       </View>
       <Divider orientation="horizontal" width={1} />

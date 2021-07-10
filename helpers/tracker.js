@@ -43,15 +43,16 @@ export const getRunStats = (arr) => {
     (x, y) => ({
       distance: x.distance + y.distance,
       duration: x.duration + y.duration,
-      longest: Math.max(x.distance, y.distance)
+      
     }),
     {
       distance: 0,
       duration: 0,
-      longest: 0
+
     }
   );
   temp.runs = arr.length;
+  temp.longest = arr.map(item => item.distance).reduce((x, y) => Math.max(x, y), 0)
 
   return temp;
 }
@@ -147,6 +148,7 @@ export const monthlyData = (hist, month) => {
     weeksThisMonth.push(curr);
     curr = changeWeek(curr, "next");
   }
+  
   weeksThisMonth.push(curr);
   return weeksThisMonth.map((week) => ({
     week: week,
@@ -166,12 +168,12 @@ export const getSetsByCat = (hist) => {
 
   const colors = [
     "gold",
-    "crimson",
-    "purple",
+    "silver",
+    "violet",
     "lightblue",
     "limegreen",
-    "lightpink",
-    "darkorange",
+    "tomato",
+    "sandybrown",
   ];
 
   hist.forEach((workout) =>
@@ -248,9 +250,7 @@ export const getCat = (cat) => {
     case 14:
       return "Calves";
   }
-  exCats.find((item) => item.id === cat);
 
-  console.log(cat);
 };
 
 const getWeek = (date) => {

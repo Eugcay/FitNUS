@@ -102,7 +102,29 @@ const RunMap = (props) => {
         quality: 0.8, // image quality: 0..1 (only relevant for jpg, default: 1)
         result: "file", // result types: 'file', 'base64' (default: 'file')
       });
-      finishRun(screenshot)
+
+      const res = await fetch(screenshot)
+      const blob = await res.blob()
+      const path = `runs/${firebase.auth().currentUser.uid}/${Math.random().toString(36)}`
+
+      const task = firebase.storage().ref().child(path).put(blob);
+
+      const progress = (snapshot) => {
+        console.log(`transferred: ${snapshot.bytesTransferred}`);
+      };
+
+      const completed = () => {
+        task.snapshot.ref.getDownloadURL().then((snapshot) => {
+          finishRun(snapshot);
+          console.log(snapshot);
+        });
+      };
+
+      const error = (snapshot) => {
+        console.log(snapshot);
+      };
+
+      task.on("state_change", progress, error, completed);
     
   };
 

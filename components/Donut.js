@@ -13,8 +13,8 @@ const Donut = (props) => {
   const max = props.max;
   const units = props.units;
 
-  const RADIUS = 130;
-  const STROKEWIDTH = 20;
+  const RADIUS = 70;
+  const STROKEWIDTH = 10;
 //   const DURATION = "50"; //seconds to mins
 //   const WORKOUT = "Boxing"; //Change to workout object from database
 //   //const WORKOUTNAME = "Name";

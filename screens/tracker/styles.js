@@ -95,4 +95,10 @@ export const styles = StyleSheet.create({
       borderRadius: 5,
       marginVertical: 10,
     },
+
+    statTitleSmall: {
+      fontSize: 15,
+      fontWeight: "bold",
+      marginBottom: 5, 
+    }
   });

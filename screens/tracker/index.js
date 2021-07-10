@@ -7,7 +7,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { WeekCalendar, Calendar, Agenda } from "react-native-calendars";
+// import { WeekCalendar, Calendar, Agenda } from "react-native-calendars";
 import Greeting from "../../components/trackerComponents/greeting";
 import { Divider } from "react-native-elements";
 import { connect } from "react-redux";
@@ -23,7 +23,7 @@ import {
   yearlyData,
   monthlyData,
   getRunStats,
-  reloadRunPeriod
+  reloadRunPeriod,
 } from "../../helpers/tracker";
 import { concatWithoutDupe } from "../../helpers";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -35,6 +35,8 @@ import ExStats from "../../components/trackerComponents/ExStats";
 import { FrequencyBarChart } from "../../components/trackerComponents/FrequencyBarChart";
 import { Favourites } from "../../components/trackerComponents/Favourites";
 import { styles } from "./styles";
+import * as Progress from "react-native-progress";
+import Donut from "../../components/Donut";
 
 const Tracker = (props) => {
   const [user, setUser] = useState(null);
@@ -53,39 +55,39 @@ const Tracker = (props) => {
   const [monthlyRun, setRunMonthly] = useState(null);
   const [periodRun, setRunPeriod] = useState(weeklyRun);
 
-
   useEffect(() => {
     ///////////Runs
     const totRun = props.runs
       ? getRunStats(props.runs.map((doc) => doc.data))
       : null;
-    const runsPerMonth = props.runs
-      ? yearlyData(props.runs.map((doc) => doc.data))
-      : null;
-    const mR = props.runs ? reloadRunPeriod(month, props.runs) : null;
-    const runsPerWeek = props.runs
-      ? monthlyData(
-          props.runs.map((doc) => doc.data),
-          month
-        )
-      : null;
+    const runsPerMonth =
+      props.runs && yearlyData(props.runs.map((doc) => doc.data));
+
+    const mR = props.runs && reloadRunPeriod(month, props.runs);
+    const runsPerWeek =
+      props.runs &&
+      monthlyData(
+        props.runs.map((doc) => doc.data),
+        month
+      );
+
     const wR = props.runs ? reloadRunPeriod(week, props.runs) : null;
     /////Workouts
-    const tot = props.history
-      ? getStats(props.history.map((doc) => doc.data))
-      : null;
-    const workoutsPerMonth = props.history
-      ? yearlyData(props.history.map((doc) => doc.data))
-      : null;
-    const m = props.history ? reloadPeriod(month, props.history) : null;
-    const workoutsPerWeek = props.history
-      ? monthlyData(
-          props.history.map((doc) => doc.data),
-          month
-        )
-      : null;
+    const tot = props.history && getStats(props.history.map((doc) => doc.data));
+
+    const workoutsPerMonth =
+      props.history && yearlyData(props.history.map((doc) => doc.data));
+
+    const m = props.history && reloadPeriod(month, props.history);
+    const workoutsPerWeek =
+      props.history &&
+      monthlyData(
+        props.history.map((doc) => doc.data),
+        month
+      );
+
     const w = props.history ? reloadPeriod(week, props.history) : null;
-    
+
     ///////Favs - Overall
     const favourites = favExercises(props.history.map((doc) => doc.data));
     setFavs(favourites);
@@ -103,12 +105,18 @@ const Tracker = (props) => {
     /////////Workout sets
     setTotal({
       ...tot,
-      workoutFreq: workoutsPerMonth,
+      workoutFreq: workoutsPerMonth.map(
+        (run, index) => run + runsPerMonth[index]
+      ),
     });
     setMonthly({
       ...m,
-      workoutFreq: workoutsPerWeek,
+      workoutFreq: workoutsPerWeek.map((week, index) => ({
+        ...week,
+        count: week.count + runsPerWeek[index].count,
+      })),
     });
+    //.map((run, index) => run + runsPerWeek[index])
     setWeekly(w);
     ///////////Run sets
     setRunTotal({
@@ -128,19 +136,24 @@ const Tracker = (props) => {
         case "monthly":
           return {
             ...m,
-            workoutFreq: workoutsPerWeek,
+            workoutFreq: workoutsPerWeek.map((week, index) => ({
+              ...week,
+              count: week.count + runsPerWeek[index].count,
+            })),
           };
         case "total":
           return {
             ...tot,
-            workoutFreq: workoutsPerMonth,
+            workoutFreq: workoutsPerMonth.map(
+              (run, index) => run + runsPerMonth[index]
+            ),
           };
         default:
-          return m;
+          return w;
       }
     };
     setPeriod(getPeriod());
-    ///////////////RunPeriod
+    ///////////////RunPeriod specific stats
     const getRunPeriod = () => {
       switch (statsType) {
         case "weekly":
@@ -156,11 +169,11 @@ const Tracker = (props) => {
             workoutFreq: runsPerMonth,
           };
         default:
-          return mR;
+          return wR;
       }
     };
     setRunPeriod(getRunPeriod());
-  }, [props.history, props.currentUser, week, month, statsType, props.runs]);
+  }, [props.history, props.currentUser, props.runs, week, month, statsType]);
 
   useEffect(() => {
     const ex = props.route.params?.exercises;
@@ -192,6 +205,14 @@ const Tracker = (props) => {
     }
   };
 
+  const secondsToDuration = (seconds) => {
+    return (
+      (seconds >= 3600 ? Math.floor(seconds / 3600) + " h " : "") +
+      Math.floor((seconds % 3600) / 60) +
+      "m " +
+      (seconds < 3600 ? Math.floor(seconds % 60) + "s" : "")
+    );
+  };
   const deleteEx = (ex) => {
     const dat = [...exercises];
     dat.splice(exercises.indexOf(ex), 1);
@@ -281,12 +302,41 @@ const Tracker = (props) => {
       {period ? (
         <View style={styles.statContainer}>
           <Text style={styles.statsTitle}>General Stats</Text>
-          <View style={{ flexDirection: "row", marginBottom: 15 }}>
+          <View
+            style={{
+              // flexDirection: "row",
+              marginBottom: 15,
+              justifyContent: "center",
+            }}
+          >
             {statsType === "weekly" && (
-              <WeekCalendar
-                minDate={moment(week.start).format("YYYY-MM-DD")}
-                maxDate={moment(week.end).format("YYYY-MM-DD")}
-              />
+              <View style={{ marginHorizontal: 5, alignItems: "flex-start" }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 18, color: "darkblue", marginBottom: 5 }}
+                  >
+                    {period.workouts + periodRun.runs}
+                  </Text>
+                  <Text>
+                    {" out of " + goals.workouts || "2"} workouts completed!
+                  </Text>
+                </View>
+
+                <Progress.Bar
+                  animated
+                  progress={
+                    (period.workouts + periodRun.runs) / goals.workouts || 2
+                  }
+                  width={300}
+                  height={15}
+                />
+              </View>
             )}
             {!period && <Spinner />}
             {statsType !== "weekly" && period && (
@@ -301,40 +351,38 @@ const Tracker = (props) => {
             <Favourites favs={favs} pb={props.currentUser.pb} />
           )}
           <View style={{ backgroundColor: "white", borderRadius: 10, flex: 1 }}>
-            <View style={{ padding: 10 }}>
-              <Text>Workouts</Text>
-              <Text>{period.workouts}</Text>
-            </View>
-            <Divider />
+            
             <View style={{ padding: 10 }}>
               <View>
-                <Text>Total Duration</Text>
-                <Text>{(period.duration / 3600).toFixed(1)} hrs</Text>
-              </View>
-            </View>
-            <View style={{ padding: 10 }}>
-              <View>
-                <Text>Average Workout Duration</Text>
+                <Text style={styles.statTitleSmall}>Total Duration</Text>
                 <Text>
-                  {period.workouts === 0
-                    ? 0
-                    : Math.round(period.duration / (60 * period.workouts)) +
-                      ":" +
-                      Math.round((period.duration / period.workouts) % 60)}{" "}
-                  min
+                  {secondsToDuration(period.duration + periodRun.duration)}
                 </Text>
               </View>
             </View>
             <View style={{ padding: 10 }}>
               <View>
-                <Text>Sets completed</Text>
+                <Text style={styles.statTitleSmall}>Average Workout Duration</Text>
+                <Text>
+                  {period.workouts === 0
+                    ? 0
+                    : secondsToDuration(
+                        (period.duration + periodRun.duration) /
+                          (period.workouts + periodRun.runs)
+                      )}
+                </Text>
+              </View>
+            </View>
+            <View style={{ padding: 10 }}>
+              <View>
+                <Text style={styles.statTitleSmall}>Sets completed</Text>
                 <Text>{period.sets} </Text>
               </View>
             </View>
             <View style={{ padding: 10 }}>
               <View>
-                <Text>Distance Ran</Text>
-                <Text>{(periodRun.distance).toFixed(2)} km</Text>
+                <Text style={styles.statTitleSmall}>Distance Run</Text>
+                <Text>{periodRun.distance.toFixed(2)} km</Text>
               </View>
             </View>
           </View>
@@ -346,38 +394,55 @@ const Tracker = (props) => {
               marginVertical: 15,
             }}
           >
-            <Text style={{ padding: 10, fontSize: 16, fontWeight: "bold" }}>
+            <Text style={{ paddingHorizontal: 10, paddingTop: 10, fontSize: 16, fontWeight: "bold" }}>
               Muscles Used
             </Text>
-            <MuscleCategoryPie data={period.categories} max={period.sets} />
-            <PieLegend data={period.categories} />
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ width: "80%" }}>
+                <MuscleCategoryPie data={period.categories} max={period.sets} />
+              </View>
+              <PieLegend data={period.categories} />
+            </View>
           </View>
         </View>
       ) : (
         <Spinner />
       )}
-      <View style={styles.statContainer}>
-        <Text style={styles.statsTitle}>Run Stats</Text>
-        <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
-          <View style={styles.runStat}>
-            <Text>Average Pace</Text>
-            <Text>{((periodRun.duration / 60) / periodRun.distance).toFixed(2)} min/Km</Text>
-          </View>
-          <View style={styles.runStat}>
-            <Text>Runs</Text>
-            <Text>{periodRun.runs}</Text>
-          </View>
-          <View style={styles.runStat}>
-            <Text>Distance Per Run</Text>
-            <Text>{(periodRun.distance / periodRun.runs).toFixed(2)} Km</Text>
-          </View>
-          <View style={styles.runStat}>
-            <Text>Longest Run</Text>
-            <Text>{(periodRun.longest).toFixed(2)} Km</Text>
+      {periodRun ? (
+        <View style={styles.statContainer}>
+          <Text style={styles.statsTitle}>Run Stats</Text>
+          <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
+            <View style={styles.runStat}>
+              <Text style={styles.statTitleSmall}>Average Pace</Text>
+              <Text>
+                {periodRun.runs
+                  ? (periodRun.duration / 60 / periodRun.distance).toFixed(2)
+                  : 0}{" "}
+                min/Km
+              </Text>
+            </View>
+            <View style={styles.runStat}>
+              <Text style={styles.statTitleSmall}>Runs</Text>
+              <Text>{periodRun.runs}</Text>
+            </View>
+            <View style={styles.runStat}>
+              <Text style={styles.statTitleSmall}>Distance Per Run</Text>
+              <Text>
+                {periodRun.runs
+                  ? (periodRun.distance / periodRun.runs).toFixed(2)
+                  : 0}{" "}
+                Km
+              </Text>
+            </View>
+            <View style={styles.runStat}>
+              <Text style={styles.statTitleSmall}>Longest Run</Text>
+              <Text>{periodRun.longest.toFixed(2)} Km</Text>
+            </View>
           </View>
         </View>
-      </View>
-      <View></View>
+      ) : (
+        <Spinner />
+      )}
       <View style={styles.statbar}>
         <Text style={styles.statsTitle}>Exercise Stats</Text>
         <View style={styles.addEx}>

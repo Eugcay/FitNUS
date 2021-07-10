@@ -55,6 +55,7 @@
     "react-native-material-dropdown": "^0.11.1",
     "react-native-paper": "^4.9.1",
     "react-native-pie": "^1.1.2",
+    "react-native-progress": "^4.1.2",
     "react-native-read-more-text": "^1.1.2",
     "react-native-reanimated": "~2.1.0",
     "react-native-render-html": "^5.1.1",

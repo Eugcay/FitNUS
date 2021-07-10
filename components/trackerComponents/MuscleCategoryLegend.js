@@ -6,7 +6,7 @@ export default function PieLegend(props) {
   return <View style={styles.legend}>
       {data.map(cat => {
           return (
-              <View key={cat.key} style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 3}}>
+              <View key={cat.key} style={{ justifyContent: 'center', alignItems: 'center', paddingVertical: 5}}>
                   <View style={[styles.circle, {backgroundColor: cat.color}]}></View>
                   <Text style={{fontSize: 13}}>{cat.key}</Text>
               </View>
@@ -17,16 +17,16 @@ export default function PieLegend(props) {
 
 const styles = StyleSheet.create({
   legend: {
-    flexDirection: "row",
+    
     marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",
   },
 
   circle: {
-      width: 6,
-      height: 6,
-      borderRadius: 3,
+      width: 7,
+      height: 7,
+      borderRadius: 4,
       marginHorizontal: 2
   }
 });

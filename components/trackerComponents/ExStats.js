@@ -118,9 +118,8 @@ const ExStats = ({ item, hist, pb, del }) => {
               yMax={100}
             />
             <LineChart
-              style={{ flex: 1, minHeight: 150, maxHeight: 200, width: "96%" }}
+              style={{ flex: 1,  height: 180, width: "96%" }}
               data={chartData.map((item) => {
-                console.log(item.exs);
                 return item.exs;
               })}
               svg={{ stroke: "rgb(134, 65, 244)" }}

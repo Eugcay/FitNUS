@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Text, SafeAreaView, StyleSheet, FlatList, View } from "react-native";
 import { Searchbar } from "react-native-paper";
 import { set } from "react-native-reanimated";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const WorkoutSearch = ({ navigation, workouts, jio }) => {
   const complete = workouts;
@@ -38,6 +39,9 @@ const WorkoutSearch = ({ navigation, workouts, jio }) => {
         >
           {item.data.name}
         </Text>
+        {item.data?.template && (
+          <MaterialIcons name='person' size={17} color='midnightblue'/> 
+        )}
       </View>
     );
   };
@@ -66,6 +70,7 @@ const styles = StyleSheet.create({
   searchItem: {
     padding: 15,
     fontSize: 15,
+    width: '91%',
   },
 
   container: {
@@ -77,5 +82,7 @@ const styles = StyleSheet.create({
   result: {
     borderBottomWidth: 0.5,
     borderBottomColor: "#C0C0C0",
+    flexDirection: 'row',
+    alignItems: 'center'
   },
 });

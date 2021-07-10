@@ -11,7 +11,7 @@ export const getUserTemplates = () => {
       .onSnapshot((sanpshot) => {
         const templates = [];
         sanpshot.docs.forEach((doc) => {
-          templates.push({ ...doc.data(), id: doc.id });
+          templates.push({id: doc.id, data: doc.data()});
         });
         dispatch({type: SET_USER_TEMPLATES, templates})
       });

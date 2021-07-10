@@ -55,7 +55,7 @@ const HistoryBar = ({ navigation, hist, runs }) => {
       <TouchableOpacity
         onPress={() => {
           navigation.navigate(
-            item.data.exercises ? "Workout Details" : "Run Details",
+            item.data?.exercises ? "Workout Details" : "Run Details",
             {
               workout: item.data,
               id: item.id,

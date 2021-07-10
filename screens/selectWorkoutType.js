@@ -6,6 +6,7 @@ import {
   Text,
   StyleSheet,
   Dimensions,
+  Platform
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center",
     position: "absolute",
-    bottom: Dimensions.get("screen").height * 47/100,
+    bottom: Platform.OS === 'ios' ? Dimensions.get("screen").height * 47/100 : Dimensions.get("screen").height * 45/100 ,
     backgroundColor: "powderblue",
   },
 

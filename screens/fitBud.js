@@ -26,7 +26,7 @@ import { Divider } from "react-native-elements";
   // get workouts
   useEffect(() => {
     const fetchWorkouts = getWorkouts().onSnapshot((querySnapshot) => {
-      const workouts = [];
+      const workouts = props.template;
       querySnapshot.forEach((documentSnapshot) => {
         workouts.push({
           data: documentSnapshot.data(),
@@ -37,9 +37,7 @@ import { Divider } from "react-native-elements";
     });
 
     return fetchWorkouts;
-  }, []);
-
-  
+  }, [props.templates]);
 
   return (
     <ScrollView
@@ -66,6 +64,7 @@ const mapStateToProps = (store) => ({
   currentUser: store.user.currentUser,
   history: store.history.workouts,
   runs: store.history.runs,
+  template: store.templates.templates
 })
 
 export default connect(mapStateToProps, null)(FitBud)

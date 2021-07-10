@@ -29,12 +29,16 @@ function WorkoutDetails(props) {
   const id = props.route.params?.id ? props.route.params?.id : "";
   const jio = props.route.params?.jio;
   const jioState = props.route.params?.workout?.jioStatus;
-  console.log(jioState)
+  console.log(jioState);
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerRight: () =>
-        date && <Button title="Delete" color="red" onPress={deleteWorkout} />,
+        date && (
+          <TouchableOpacity style={{marginHorizontal: 5}} onPress={deleteWorkout}>
+            <Text style={{ color: "red" }}>Delete</Text>
+          </TouchableOpacity>
+        ),
     });
   }, []);
 
@@ -138,36 +142,45 @@ function WorkoutDetails(props) {
           </View>
 
           {jioState && (
-            <View style={{marginHorizontal: 10, marginVertical: 10}}>
-            <Divider />
-            <Text style={{ paddingTop: 5, marginHorizontal: 10, fontWeight: "bold", marginBottom: 5 }}>Workout Buddies</Text>
-            <FlatList
-              data={jioState.people}
-              renderItem={({item}) => {
-                return (
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      flex: 1,
-                      alignItems: "center",
-                      marginHorizontal: 15
-                    }}
-                  >
-                    <Image
-                      source={
-                        item?.photoURL
-                          ? { uri: item?.photoURL }
-                          : require("../../assets/user.png")
-                      }
-                      style={{width: 36, height: 36, borderRadius: 18}}
-                    />
-                    <Text style={{ marginTop: 3 }}>{item.name}</Text>
-                  </View>
-                );
-              }}
-              horizontal={true}
-            />
-            <Divider />
+            <View style={{ marginHorizontal: 10, marginVertical: 10 }}>
+              <Divider />
+              <Text
+                style={{
+                  paddingTop: 5,
+                  marginHorizontal: 10,
+                  fontWeight: "bold",
+                  marginBottom: 5,
+                }}
+              >
+                Workout Buddies
+              </Text>
+              <FlatList
+                data={jioState.people}
+                renderItem={({ item }) => {
+                  return (
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        flex: 1,
+                        alignItems: "center",
+                        marginHorizontal: 15,
+                      }}
+                    >
+                      <Image
+                        source={
+                          item?.photoURL
+                            ? { uri: item?.photoURL }
+                            : require("../../assets/user.png")
+                        }
+                        style={{ width: 36, height: 36, borderRadius: 18 }}
+                      />
+                      <Text style={{ marginTop: 3 }}>{item.name}</Text>
+                    </View>
+                  );
+                }}
+                horizontal={true}
+              />
+              <Divider />
             </View>
           )}
           {workout.exercises && (

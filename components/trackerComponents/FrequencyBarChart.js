@@ -68,6 +68,7 @@ export const FrequencyBarChart = (props) => {
           scale={scale.scaleBand}
           gridMin={0}
           contentInset={{ top: 10, bottom: 10 }}
+          animate={true}
         >
           <Grid
             direction={Grid.Direction.HORIZONTAL}
