@@ -6,9 +6,9 @@ export const NoData = () => {
     <View
       style={{
         flex: 1,
-        width: 200,
-        height: 200,
-        borderRadius: 100,
+        width: 240,
+        height: 240,
+        borderRadius: 120,
         borderWidth: 1,
         alignItems: "center",
         justifyContent: "center",
@@ -16,7 +16,7 @@ export const NoData = () => {
         alignSelf: "center",
       }}
     >
-      <Text>{"No Muscles Used :("}</Text>
+      <Text>{"No Muscles Used"}</Text>
     </View>
   );
 };

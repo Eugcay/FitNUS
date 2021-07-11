@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import firebase from "firebase";
 import Post from "../components/jioComponents/Post";
+import Preview from "../components/jioComponents/Preview";
 
 import { connect } from "react-redux";
 import { ListItem, Avatar } from "react-native-elements";
@@ -16,7 +17,7 @@ const MyJios = (props) => {
   return myPosts && myPosts.length > 0 ? (
     <ScrollView horizontal={false}>
       {myPosts.map((item) => (
-        <Post
+        <Preview
           navigation={props.navigation}
           item={item}
           currUser={props.currUser}

@@ -84,7 +84,36 @@ export const styles = StyleSheet.create({
       backgroundColor: "white",
       margin: 3,
     },
-  
+
+    genStat: {
+      width: "48%",
+      height: 100,
+      alignItems: "center",
+      justifyContent: 'center',
+      padding: 10,
+      backgroundColor: "white",
+      margin: 3,
+      marginVertical: 5
+    },
+
+    workoutFreq: {
+      fontSize: 18,
+      color: "blue",
+    },
+
+    workoutCircle: {
+      width: 110,
+      height: 110,
+      borderRadius: 55,
+      borderWidth: 8,
+      borderColor: "whitesmoke",
+      backgroundColor: "white",
+      position: "absolute",
+      alignSelf: "center",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
     exStats: {
       backgroundColor: "lightblue",
       height: 30,
@@ -99,6 +128,6 @@ export const styles = StyleSheet.create({
     statTitleSmall: {
       fontSize: 15,
       fontWeight: "bold",
-      marginBottom: 5, 
+      marginVertical: 5, 
     }
   });

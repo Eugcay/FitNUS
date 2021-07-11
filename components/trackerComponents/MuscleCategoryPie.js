@@ -13,6 +13,13 @@ export default class MuscleCategoryPie extends Component {
     console.log(props.data)
   }
 
+  select = (id) => {
+    this.setState({selectedSlice: id})
+    setTimeout(() => {
+      this.setState({selectedSlice: ""})
+    }, 500)
+  }
+
   
 
   render() {
@@ -46,7 +53,7 @@ export default class MuscleCategoryPie extends Component {
         value: cat.sets,
         svg: {
           fill: cat.color,
-          onPress: () => this.setState({ selectedSlice: cat.id }),
+          onPress: () => this.select(cat.id),
         },
         arc: {
           outerRadius: this.state.selectedSlice === cat.id ? "100%" : "95%",
