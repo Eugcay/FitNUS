@@ -70,7 +70,6 @@ const Tracker = (props) => {
         props.runs.map((doc) => doc.data),
         month
       );
-
     const wR = props.runs ? reloadRunPeriod(week, props.runs) : null;
     /////Workouts
     const tot = props.history && getStats(props.history.map((doc) => doc.data));

@@ -16,6 +16,7 @@ import {
   getUser,
   getUserFollowing,
   getUserFollowers,
+  getUserAccruedAchievements
 } from "../store/actions/user";
 
 import { getUserRuns, getUserHistory } from "../store/actions/history";
@@ -33,6 +34,7 @@ export const Main = (props) => {
     props.getUserTemplates()
     props.getUserFollowing();
     props.getUserFollowers();
+    props.getUserAccruedAchievements();
   }, []);
 
   return (
@@ -102,6 +104,7 @@ const mapDispatchProps = (dispatch) =>
       getUserHistory,
       getUserFollowing,
       getUserFollowers,
+      getUserAccruedAchievements,
       getUserRuns,
       getUserTemplates,
       clearData,

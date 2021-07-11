@@ -7,6 +7,7 @@ import {
   SET_USER_HISTORY,
   SET_USER_FOLLOWING,
   SET_USER_FOLLOWERS,
+  SET_USER_ACCRUED_ACHIEVEMENTS,
   ADD_WORKOUT,
   REMOVE_FROM_HISTORY,
   CLEAR,
@@ -105,6 +106,22 @@ export function getUserFollowers() {
         const followers = [];
         snapshot.docs.forEach((doc) => followers.push(doc.id));
         dispatch({ type: SET_USER_FOLLOWERS, followers });
+      });
+  };
+}
+
+export function getUserAccruedAchievements() {
+  return (dispatch) => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("singleachivements")
+      .orderBy("dateFollowed")
+      .onSnapshot((snapshot) => {
+        const accruedAchievements = [];
+        snapshot.docs.forEach((doc) => accruedAchievements.push(doc.id));
+        dispatch({ type: SET_USER_ACCRUED_ACHIEVEMENTS, accruedAchievements });
       });
   };
 }

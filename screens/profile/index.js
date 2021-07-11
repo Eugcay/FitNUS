@@ -10,6 +10,19 @@ import { SimpleLineIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { styles } from "./styles";
 
+//Achivement imports
+import {
+  getCurrWeek,
+  reloadPeriod,
+  getRunStats,
+  getStats,
+  reloadRunPeriod
+} from "../../helpers/profile";
+import {
+  returnAccruedTemp,
+  returnSingleTemp
+} from "./achievements"
+
 const Profile = (props) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,6 +32,35 @@ const Profile = (props) => {
   const [numFollowing, setNumFollowing] = useState(0);
   const [numFollowers, setNumFollowers] = useState(0);
   const [userId, setUserId] = useState("");
+  //Achivements state
+  const [thisWeek, setWeek] = useState(getCurrWeek());
+  const [runWeek, setRunWeek] = useState(null);
+  const [workoutWeek, setWorkoutWeek] = useState(null);
+  const [overallRun, setOverallRun] = useState(null);
+  const [overallWorkout, setOverallWorkout] = useState(null);
+
+  //Achievements stuff
+  useEffect(() => {
+    //getWeek first -> Done in intial state alr
+
+    //Fetch run, workout stats -> Overall and week.
+    //Overall
+    const overallRun = props.runs
+      ? getRunStats(props.runs.map((doc) => doc.data))
+      : null;
+    setOverallRun(overallRun); //return object{distance duration, longest, no.}
+
+    const overallWorkout = props.history && getStats(props.history.map((doc) => doc.data));
+    setOverallWorkout(overallWorkout); //returns object{duration, sets, no.}
+    //Week
+    const runWeek = props.runs ? reloadRunPeriod(thisWeek, props.runs) : null;
+    setRunWeek(runWeek);
+
+    const workoutWeek = props.history ? reloadPeriod(thisWeek, props.history) : null;
+    setWorkoutWeek(workoutWeek);
+    //
+    
+  }, [])
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -282,6 +324,8 @@ const mapStateToProps = (store) => ({
   currentUser: store.user.currentUser,
   following: store.user.following,
   followers: store.user.followers,
+  history: store.history.workouts,
+  runs: store.history.runs,
 });
 
 export default connect(mapStateToProps, null)(Profile);
