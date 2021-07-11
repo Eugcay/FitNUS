@@ -42,6 +42,10 @@ function WorkoutDetails(props) {
     });
   }, []);
 
+  const twoDigits = (num) => {
+   return (num <= 9 ? '0' : '') + num 
+  }
+
   const del = (id) => {
     firebase
       .firestore()
@@ -110,7 +114,7 @@ function WorkoutDetails(props) {
               <MaterialCommunityIcons name="timer" size={17} color="red" />
               <Text>{date ? "" : "Expected"} Duration</Text>
               <Text style={{ fontWeight: "bold" }}>
-                {Math.round(duration / 60) + ":" + Math.round(duration % 60)}
+                {Math.floor(duration / 60) + ":" + twoDigits(Math.floor(duration % 60))}
               </Text>
             </View>
             <Divider orientation="vertical" />

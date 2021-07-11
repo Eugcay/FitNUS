@@ -3,9 +3,9 @@ import {
   View,
   ScrollView,
   Image,
-  StyleSheet,
   Text,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 // import { WeekCalendar, Calendar, Agenda } from "react-native-calendars";
 import Greeting from "../../components/trackerComponents/greeting";
@@ -206,7 +206,7 @@ const Tracker = (props) => {
 
   const secondsToDuration = (seconds) => {
     return (
-      (seconds >= 3600 ? Math.floor(seconds / 3600) + " h " : "") +
+      (seconds >= 3600 ? Math.floor(seconds / 3600) + "h " : "") +
       Math.floor((seconds % 3600) / 60) +
       "m " +
       (seconds < 3600 ? Math.floor(seconds % 60) + "s" : "")
@@ -299,111 +299,141 @@ const Tracker = (props) => {
         </View>
       )}
       {period ? (
-        <View style={styles.statContainer}>
-          <Text style={styles.statsTitle}>General Stats</Text>
-          <View
-            style={{
-              // flexDirection: "row",
-              marginBottom: 15,
-              justifyContent: "center",
-            }}
-          >
-            {statsType === "weekly" && (
-              <View style={{ marginHorizontal: 5, alignItems: "flex-start" }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{ fontSize: 18, color: "darkblue", marginBottom: 5 }}
+        <>
+          <View style={styles.statContainer}>
+            <Text style={styles.statsTitle}>General Stats</Text>
+            <View
+              style={{
+                // flexDirection: "row",
+                marginBottom: 15,
+                justifyContent: "center",
+              }}
+            >
+              {statsType === "weekly" && (
+                <View style={{ marginHorizontal: 5, alignItems: "center" }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginBottom: 5
+                    }}
                   >
-                    {period.workouts + periodRun.runs}
-                  </Text>
+                    <Text
+                      style={styles.workoutFreq}
+                    >
+                      {period.workouts + periodRun.runs}
+                    </Text>
+                    <Text>
+                      {" out of " + goals.workouts || "2"} workouts completed!
+                    </Text>
+                  </View>
+
+                  <Progress.Bar
+                    animated
+                    progress={
+                      (period.workouts + periodRun.runs) / (goals.workouts || 2)
+                    }
+                    width={Dimensions.get("screen").width * 0.85}
+                    borderColor={
+                      period.workouts + periodRun.runs >
+                        (goals.workouts || 2) && "gold"
+                    }
+                    borderWidth={
+                      period.workouts + periodRun.runs > (goals.workouts || 2)
+                        ? 2
+                        : 1
+                    }
+                    height={15}
+                  />
+                </View>
+              )}
+              {!period && <Spinner />}
+              {statsType !== "weekly" && period && (
+                <FrequencyBarChart
+                  type={statsType}
+                  data={period?.workoutFreq}
+                  goal={goals.workouts}
+                />
+              )}
+            </View>
+            {statsType === "total" && (
+              <Favourites favs={favs} pb={props.currentUser.pb} />
+            )}
+
+            <View style={{ justifyContent: "center" }}>
+              <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
+                <View style={styles.genStat}>
+                <MaterialCommunityIcons name='clock-time-four-outline' size={17} color='red' />
+                  
+                  <Text style={styles.statTitleSmall}>Total Duration</Text>
                   <Text>
-                    {" out of " + goals.workouts || "2"} workouts completed!
+                    {secondsToDuration(period.duration + periodRun.duration)}
+                  </Text>
+                </View>
+                <View style={styles.genStat}>
+                <MaterialCommunityIcons name='timer-outline' size={16} color='blue' />
+                  <Text style={styles.statTitleSmall}>Avg Duration</Text>
+                  <Text>
+                    {period.workouts === 0
+                      ? 0
+                      : secondsToDuration(
+                          (period.duration + periodRun.duration) /
+                            (period.workouts + periodRun.runs)
+                        )}
                   </Text>
                 </View>
 
-                <Progress.Bar
-                  animated
-                  progress={
-                    (period.workouts + periodRun.runs) / goals.workouts || 2
-                  }
-                  width={300}
-                  height={15}
-                />
+                <View style={styles.genStat}>
+                  <MaterialCommunityIcons name="weight-lifter" size={17} color='goldenrod'/>
+                  <Text style={styles.statTitleSmall}>Sets</Text>
+                  <Text>{period.sets}</Text>
+                </View>
+                <View style={styles.genStat}>
+                  <MaterialCommunityIcons name="map-marker-distance" size={17} color='green' />
+                  <Text style={styles.statTitleSmall}>Distance</Text>
+                  <Text>{periodRun.distance.toFixed(2)} km</Text>
+                </View>
               </View>
-            )}
-            {!period && <Spinner />}
-            {statsType !== "weekly" && period && (
-              <FrequencyBarChart
-                type={statsType}
-                data={period?.workoutFreq}
-                goal={goals.workouts}
-              />
-            )}
-          </View>
-          {statsType === "total" && (
-            <Favourites favs={favs} pb={props.currentUser.pb} />
-          )}
-          <View style={{ backgroundColor: "white", borderRadius: 10, flex: 1 }}>
-            
-            <View style={{ padding: 10 }}>
-              <View>
-                <Text style={styles.statTitleSmall}>Total Duration</Text>
-                <Text>
-                  {secondsToDuration(period.duration + periodRun.duration)}
-                </Text>
-              </View>
+              {statsType !== "weekly" && (
+                <View
+                  style={styles.workoutCircle}
+                >
+                  <Text style={styles.workoutFreq}>{period.workouts + periodRun.runs}</Text>
+                  <Text>Workouts</Text>
+                </View>
+              )}
             </View>
-            <View style={{ padding: 10 }}>
-              <View>
-                <Text style={styles.statTitleSmall}>Average Workout Duration</Text>
-                <Text>
-                  {period.workouts === 0
-                    ? 0
-                    : secondsToDuration(
-                        (period.duration + periodRun.duration) /
-                          (period.workouts + periodRun.runs)
-                      )}
-                </Text>
-              </View>
-            </View>
-            <View style={{ padding: 10 }}>
-              <View>
-                <Text style={styles.statTitleSmall}>Sets completed</Text>
-                <Text>{period.sets} </Text>
-              </View>
-            </View>
-            <View style={{ padding: 10 }}>
-              <View>
-                <Text style={styles.statTitleSmall}>Distance Run</Text>
-                <Text>{periodRun.distance.toFixed(2)} km</Text>
-              </View>
-            </View>
-          </View>
 
-          <View
-            style={{
-              backgroundColor: "white",
-              marginHorizontal: 5,
-              marginVertical: 15,
-            }}
-          >
-            <Text style={{ paddingHorizontal: 10, paddingTop: 10, fontSize: 16, fontWeight: "bold" }}>
-              Muscles Used
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <View style={{ width: "80%" }}>
-                <MuscleCategoryPie data={period.categories} max={period.sets} />
+            <View
+              style={{
+                backgroundColor: "white",
+                marginHorizontal: 5,
+                marginVertical: 15,
+              }}
+            >
+              <Text
+                style={{
+                  padding: 10,
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                Muscles Used
+              </Text>
+              <View style={{ flexDirection: "row", paddingBottom: 10 }}>
+                <View style={{ width: "80%" }}>
+                  <MuscleCategoryPie
+                    data={period.categories}
+                    max={period.sets}
+                  />
+                </View>
+                <PieLegend data={period.categories} />
               </View>
-              <PieLegend data={period.categories} />
             </View>
           </View>
-        </View>
+        </>
       ) : (
         <Spinner />
       )}
