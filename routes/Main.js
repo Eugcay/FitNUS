@@ -16,7 +16,7 @@ import {
   getUser,
   getUserFollowing,
   getUserFollowers,
-  getUserAccruedAchievements
+  getUserAccruedAchievements,
 } from "../store/actions/user";
 
 import { fetchUpcoming, fetchCompleted } from "../store/actions/jios";
@@ -33,7 +33,7 @@ export const Main = (props) => {
     props.getUser();
     props.getUserRuns();
     props.getUserHistory();
-    props.getUserTemplates()
+    props.getUserTemplates();
     props.getUserFollowing();
     props.getUserFollowers();
     props.getUserAccruedAchievements();
