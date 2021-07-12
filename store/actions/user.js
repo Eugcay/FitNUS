@@ -8,10 +8,12 @@ import {
   SET_USER_FOLLOWING,
   SET_USER_FOLLOWERS,
   SET_USER_ACCRUED_ACHIEVEMENTS,
+  ADD_ACCRUED_ACHIEVEMENT,
+  UPDATE_ACCRUED_ACHIEVEMENT,
   ADD_WORKOUT,
   REMOVE_FROM_HISTORY,
   CLEAR,
-  SET_USER_RUNS
+  SET_USER_RUNS,
 } from "./types";
 
 export function getUser() {
@@ -116,13 +118,52 @@ export function getUserAccruedAchievements() {
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
-      .collection("singleachivements")
-      .orderBy("dateFollowed")
+      .collection("accruedAchievements")
       .onSnapshot((snapshot) => {
         const accruedAchievements = [];
-        snapshot.docs.forEach((doc) => accruedAchievements.push(doc.id));
+        snapshot.docs.forEach((doc) =>
+          accruedAchievements.push({ id: doc.id, data: doc.data() })
+        );
         dispatch({ type: SET_USER_ACCRUED_ACHIEVEMENTS, accruedAchievements });
       });
+  };
+}
+
+export function addToAccruedAchievements(accrued) {
+  return async (dispatch) => {
+    await firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("accruedAchievements")
+      .add({
+        ...accrued,
+      });
+
+    dispatch({
+      type: ADD_ACCRUED_ACHIEVEMENT,
+      data: {
+        ...accrued,
+      },
+    });
+  };
+}
+
+export function updateAccruedAchievements(accrued) {
+  return async (dispatch) => {
+    await firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("accruedAchievements")
+      .doc(accrued.id)
+      .set(accrued);
+    dispatch({
+      type: UPDATE_ACCRUED_ACHIEVEMENT,
+      data: {
+        ...accrued,
+      },
+    });
   };
 }
 

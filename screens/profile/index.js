@@ -19,6 +19,7 @@ import {
   reloadRunPeriod,
 } from "../../helpers/profile";
 import { returnAccruedTemp, returnSingleTemp } from "./achievements";
+import { addToAccruedAchievements, updateAccruedAchievements } from "../../store/actions/user"; 
 
 const Profile = (props) => {
   const [user, setUser] = useState(null);
@@ -35,7 +36,6 @@ const Profile = (props) => {
   const [workoutWeek, setWorkoutWeek] = useState(null);
   const [overallRun, setOverallRun] = useState(null);
   const [overallWorkout, setOverallWorkout] = useState(null);
-  const [accruedList, setAccruedList] = useState(null);
 
   //Achievements stuff
   useEffect(() => {
@@ -59,15 +59,60 @@ const Profile = (props) => {
       ? reloadPeriod(thisWeek, props.history)
       : null;
     setWorkoutWeek(workoutWeek);
+
     //Check if workout stats meet criteria -> week - accrued
     const accruedList = returnAccruedTemp(
       props.currentUser.distanceGoal,
       props.currentUser.durationGoal,
       runWeek,
-      workoutWeek,
-      props.achivements ? props.achivements : null
+      workoutWeek
     );
 
+    //Update accruedAchivements in database
+    if (props.accruedAchievements.length === 0) {
+      console.log(props.accruedAchievements)
+      accruedList.forEach((temp) => {
+        const tempAch = {
+          title: temp.title,
+          id: temp.id,
+          description: temp.description,
+          category: temp.cat,
+          periodList: [thisWeek]
+        }
+        props.addToAccrued(tempAch);
+      })
+    } else {
+      accruedList.forEach((temp) => {
+        props.accruedAchievements.forEach((saved) => {
+          if (temp.id === saved.data.id) {
+            if (saved.data.periodList.includes(thisWeek)) {
+              //continue;
+            } else {
+              //add thisWeek to saved periodList
+              //update saved
+              const updated = {
+                id: saved.id,
+                data: {
+                  ...saved.data,
+                  periodList: saved.data.periodList.push(thisWeek)
+                }
+              }
+              props.updateAccrued(updated)
+            }
+          }
+        })
+      })
+    }
+
+    //check if workout stats meet criteria -> overall - accrued
+    const singleList = returnSingleTemp(
+      overallRun,
+      overallWorkout
+    )
+
+    //Update singleAchivements in database
+    
+    
   }, [props.currentUser, props.runs, props.history]);
 
   useEffect(() => {
@@ -334,6 +379,13 @@ const mapStateToProps = (store) => ({
   followers: store.user.followers,
   history: store.history.workouts,
   runs: store.history.runs,
+  accruedAchievements: store.user.accruedAchievements
 });
 
-export default connect(mapStateToProps, null)(Profile);
+const mapDispatchToProps = (dispatch) => ({
+  addToAccrued: (accrued) => dispatch(addToAccruedAchievements(accrued)),
+  updateAccrued: (accrued) => dispatch(updateAccruedAchievements(accrued)),
+  //addToSingle: (single) => dispatch(addToSingleAchievements(single))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

@@ -4,8 +4,9 @@ import {
   UPDATE_USER,
   SET_USER_FOLLOWING,
   SET_USER_FOLLOWERS,
-  SET_USER_ACHIVEMENTS,
-  SET_USER_ACCRUED_ACHIEVEMENTS
+  SET_USER_ACCRUED_ACHIEVEMENTS,
+  ADD_ACCRUED_ACHIEVEMENT,
+  UPDATE_ACCRUED_ACHIEVEMENT
 } from "../actions/types";
 
 const initialState = {
@@ -13,7 +14,7 @@ const initialState = {
   rendered: false,
   following: [],
   followers: [],
-  achievements: []
+  achievements: [],
 };
 
 export const userReducer = (state = initialState, action) => {
@@ -45,8 +46,20 @@ export const userReducer = (state = initialState, action) => {
     case SET_USER_ACCRUED_ACHIEVEMENTS:
       return {
         ...state,
-        following: action.accruedAchivements,
+        accruedAchievements: action.accruedAchievements,
       };
+
+    case ADD_ACCRUED_ACHIEVEMENT:
+      return {
+        ...state,
+        accruedAchievements: action.accruedAchievements,
+      };
+
+    case UPDATE_ACCRUED_ACHIEVEMENT:
+      return {
+        ...state,
+        accruedAchievements: action.accruedAchievements
+      }
 
     case CLEAR:
       return initialState;
