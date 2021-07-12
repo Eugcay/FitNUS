@@ -6,6 +6,7 @@ import Preview from "../components/jioComponents/Preview";
 
 import { connect } from "react-redux";
 import { ListItem, Avatar } from "react-native-elements";
+import { FlatList } from "react-native";
 
 const MyJios = (props) => {
   const [myPosts, setPosts] = useState([]);
@@ -21,6 +22,7 @@ const MyJios = (props) => {
           navigation={props.navigation}
           item={item}
           currUser={props.currUser}
+          key={item => myPosts.indexOf(item)}
         />
       ))}
     </ScrollView>

@@ -128,8 +128,40 @@ const JioStart = (props) => {
     }
   };
 
-  const submitJio = async () => {
+  const updateAndSubmit = async () => {
+    if (jioState.img) {
+      const res = await fetch(jioState.img);
+      const blob = await res.blob();
+      const path = `runs/${
+        firebase.auth().currentUser.uid
+      }/${Math.random().toString(36)}`;
+
+      const task = firebase.storage().ref().child(path).put(blob);
+
+      const progress = (snapshot) => {
+        console.log(`transferred: ${snapshot.bytesTransferred}`);
+      };
+
+      const completed = () => {
+        task.snapshot.ref.getDownloadURL().then((snapshot) => {
+          submitJio(snapshot);
+          console.log(snapshot);
+        });
+      };
+
+      const error = (snapshot) => {
+        console.log(snapshot);
+      };
+
+      task.on("state_change", progress, error, completed);
+    } else {
+       submitJio(null)
+     }
+  };
+
+  const submitJio = async (snapshot) => {
     const jioData = props.route.params?.jioData;
+    setJioState(snapshot, "img");
 
     const created = firebase.firestore.FieldValue.serverTimestamp();
     const ref = await firebase.firestore().collection("jios");
@@ -327,7 +359,7 @@ const JioStart = (props) => {
               style={styles.bottomButtonContainer}
               onPress={() =>
                 jioState.type === "Run"
-                  ? submitJio()
+                  ? updateAndSubmit()
                   : props.navigation.navigate("Details", {
                       jioState,
                       user: user,

@@ -43,8 +43,39 @@ const JioDetails = (props) => {
     return fetchWorkouts;
   }, [props.route.params?.jioState, props.route.params?.exercises]);
 
-  const submitJio = async () => {
-    const created = firebase.firestore.FieldValue.serverTimestamp()
+  const updateAndSubmit = async () => {
+    if (info.img && info.img.indexOf('firebase') === -1) {
+      const res = await fetch(info.img);
+      const blob = await res.blob();
+      const path = `runs/${
+        firebase.auth().currentUser.uid
+      }/${Math.random().toString(36)}`;
+
+      const task = firebase.storage().ref().child(path).put(blob);
+
+      const progress = (snapshot) => {
+        console.log(`transferred: ${snapshot.bytesTransferred}`);
+      };
+
+      const completed = () => {
+        task.snapshot.ref.getDownloadURL().then((snapshot) => {
+          submitJio(snapshot);
+          console.log(snapshot);
+        });
+      };
+
+      const error = (snapshot) => {
+        console.log(snapshot);
+      };
+
+      task.on("state_change", progress, error, completed);
+    } else {
+      submitJio(null)
+    }
+  };
+
+  const submitJio = async (snapshot) => {
+    const created = firebase.firestore.FieldValue.serverTimestamp();
     if (props.route.params.jioState?.details) {
       firebase
         .firestore()
@@ -54,6 +85,7 @@ const JioDetails = (props) => {
           ...info,
           creation: created,
           details: details,
+          img: snapshot,
         })
         .then(props.navigation.navigate("Main"));
     } else {

@@ -8,7 +8,8 @@ import moment from "moment";
 
 const Preview = ({ navigation, item, currUser }) => {
   const [user, setUser] = useState({});
-  const [completed, setCompleted] = useState(false);
+  const [completed, setCompleted] = useState(item.data.completed);
+  const [expiring, setExpired] = useState(false)
   const currUserId = firebase.auth().currentUser.uid;
 
   useEffect(() => {
@@ -18,6 +19,8 @@ const Preview = ({ navigation, item, currUser }) => {
       .collection("users")
       .doc(uid)
       .onSnapshot((snapshot) => setUser({ ...snapshot.data() }));
+    
+       setExpired()
   }, [item]);
 
   const start = () => {
@@ -40,9 +43,18 @@ const Preview = ({ navigation, item, currUser }) => {
     });
   };
 
+  const removeJio = (id) => {
+    firebase
+      .firestore()
+      .collection("jios")
+      .doc(id)
+      .delete()
+      .then(props.navigation.navigate("Main"));
+  };
+
   return (
     <TouchableOpacity
-      atyle={styles.container}
+      style={[styles.container, {backgroundColor: item.data?.time && item.data?.time.toDate() < new Date() && !completed? '#FFA500' : 'white'}]}
       onPress={() =>
         navigation.navigate("Post", { navigation, item, currUser })
       }
@@ -56,7 +68,7 @@ const Preview = ({ navigation, item, currUser }) => {
           }
           style={styles.profilePic}
         />
-        <View style={{ width: "75%" }}>
+        <View style={{ width: "70%" }}>
           <Text>{user.name}</Text>
           {item.data.creation && (
             <Text>
@@ -84,9 +96,12 @@ const Preview = ({ navigation, item, currUser }) => {
                   },
                 })
               }
+               style={{marginRight: 5}}
             >
-              <MaterialIcons name="mode-edit" size={18} colo="darkblue" />
+              <MaterialIcons name="mode-edit" size={18} color="darkblue" />
+              
             </TouchableOpacity>
+            <TouchableOpacity  onPress={() => removeJio(item.id)}><MaterialCommunityIcons name='close' size={18} color='crimson' /></TouchableOpacity>
           </>
         )}
       </View>

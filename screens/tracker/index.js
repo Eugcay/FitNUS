@@ -390,7 +390,7 @@ const Tracker = (props) => {
                   <Text>{period.sets}</Text>
                 </View>
                 <View style={styles.genStat}>
-                  <MaterialCommunityIcons name="map-marker-distance" size={17} color='green' />
+                  <MaterialCommunityIcons name="map-marker-distance" size={17} color='gray' />
                   <Text style={styles.statTitleSmall}>Distance</Text>
                   <Text>{periodRun.distance.toFixed(2)} km</Text>
                 </View>

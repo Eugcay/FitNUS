@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import { Text, View } from 'react-native'
 import Post from '../components/jioComponents/Post'
 
-const PostPage = (props) => {
+const PostPage = ({navigation, route}) => {
     return (
         <View>
-            <Post navigation={props.navigation} item={props.item} user={props.currUser}/>
+            <Post navigation={navigation} item={route.params.item} currUser={route.params.currUser}/>
         </View>
     )
 }
