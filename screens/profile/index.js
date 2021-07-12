@@ -16,12 +16,9 @@ import {
   reloadPeriod,
   getRunStats,
   getStats,
-  reloadRunPeriod
+  reloadRunPeriod,
 } from "../../helpers/profile";
-import {
-  returnAccruedTemp,
-  returnSingleTemp
-} from "./achievements"
+import { returnAccruedTemp, returnSingleTemp } from "./achievements";
 
 const Profile = (props) => {
   const [user, setUser] = useState(null);
@@ -38,6 +35,7 @@ const Profile = (props) => {
   const [workoutWeek, setWorkoutWeek] = useState(null);
   const [overallRun, setOverallRun] = useState(null);
   const [overallWorkout, setOverallWorkout] = useState(null);
+  const [accruedList, setAccruedList] = useState(null);
 
   //Achievements stuff
   useEffect(() => {
@@ -50,17 +48,27 @@ const Profile = (props) => {
       : null;
     setOverallRun(overallRun); //return object{distance duration, longest, no.}
 
-    const overallWorkout = props.history && getStats(props.history.map((doc) => doc.data));
+    const overallWorkout =
+      props.history && getStats(props.history.map((doc) => doc.data));
     setOverallWorkout(overallWorkout); //returns object{duration, sets, no.}
     //Week
     const runWeek = props.runs ? reloadRunPeriod(thisWeek, props.runs) : null;
     setRunWeek(runWeek);
 
-    const workoutWeek = props.history ? reloadPeriod(thisWeek, props.history) : null;
+    const workoutWeek = props.history
+      ? reloadPeriod(thisWeek, props.history)
+      : null;
     setWorkoutWeek(workoutWeek);
-    //
-    
-  }, [])
+    //Check if workout stats meet criteria -> week - accrued
+    const accruedList = returnAccruedTemp(
+      props.currentUser.distanceGoal,
+      props.currentUser.durationGoal,
+      runWeek,
+      workoutWeek,
+      props.achivements ? props.achivements : null
+    );
+
+  }, [props.currentUser, props.runs, props.history]);
 
   useEffect(() => {
     const fetchUser = async () => {

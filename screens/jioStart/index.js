@@ -129,7 +129,7 @@ const JioStart = (props) => {
   };
 
   const updateAndSubmit = async () => {
-    if (jioState.img) {
+    if (jioState.img && jioState.img.indexOf('firebase') === -1) {
       const res = await fetch(jioState.img);
       const blob = await res.blob();
       const path = `runs/${
