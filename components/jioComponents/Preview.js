@@ -49,7 +49,7 @@ const Preview = ({ navigation, item, currUser }) => {
       .collection("jios")
       .doc(id)
       .delete()
-      .then(props.navigation.navigate("Main"));
+      .then(navigation.navigate("Main"));
   };
 
   return (

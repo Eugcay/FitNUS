@@ -7,9 +7,9 @@ import { bindActionCreators } from "redux";
 
 import { TrackerStack } from "./trackerStack";
 import FitBudStack from "./fitBudStack";
-import JioStack from "./jioStack";
 import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";
+import WorkoutHistory from '../screens/history'
 
 import {
   clearData,
@@ -18,6 +18,8 @@ import {
   getUserFollowers,
   getUserAccruedAchievements
 } from "../store/actions/user";
+
+import { fetchUpcoming, fetchCompleted } from "../store/actions/jios";
 
 import { getUserRuns, getUserHistory } from "../store/actions/history";
 
@@ -35,6 +37,8 @@ export const Main = (props) => {
     props.getUserFollowing();
     props.getUserFollowers();
     props.getUserAccruedAchievements();
+    props.fetchCompleted()
+    props.fetchUpcoming()
   }, []);
 
   return (
@@ -63,6 +67,13 @@ export const Main = (props) => {
             ),
             tabBarColor: "#0B2A59",
           }}
+        />
+        <Tab.Screen name='History' component={WorkoutHistory} options={{
+          tabBarIcon: (({color, size}) => (
+            <MaterialCommunityIcons name='calendar' color={color} size={25}/>
+          )),
+          tabBarColor: "#0B2A59" 
+        }}
         />
         <Tab.Screen
           name="Tracker"
@@ -107,6 +118,8 @@ const mapDispatchProps = (dispatch) =>
       getUserAccruedAchievements,
       getUserRuns,
       getUserTemplates,
+      fetchCompleted,
+      fetchUpcoming,
       clearData,
     },
     dispatch

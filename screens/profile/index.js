@@ -61,13 +61,12 @@ const Profile = (props) => {
     setWorkoutWeek(workoutWeek);
     //Check if workout stats meet criteria -> week - accrued
     const accruedList = returnAccruedTemp(
-      props.currentUser.distanceGoal,
-      props.currentUser.durationGoal,
+      props.currentUser?.distanceGoal,
+      props.currentUser?.durationGoal,
       runWeek,
       workoutWeek,
       props.achivements ? props.achivements : null
     );
-
   }, [props.currentUser, props.runs, props.history]);
 
   useEffect(() => {
@@ -75,22 +74,24 @@ const Profile = (props) => {
       if (props.route.params?.user) {
         const uid = props.route.params?.user.id;
         await fetchfollowData(uid);
+        setCurr(uid === firebase.auth().currentUser.uid);
         setUserId(uid);
         setUser(props.route.params?.user.data);
         setLoading(false);
         if (props.following.indexOf(uid) > -1) {
           setFollow(true);
-          console.log("ye");
         } else {
           setFollow(false);
         }
       } else {
         setUser(props.currentUser);
-        setLoading(false);
+
         setCurr(true);
         setNumFollowing(props.following.length);
         setNumFollowers(props.followers.length);
         setUserId(firebase.auth().currentUser.uid);
+
+        setLoading(false);
 
         props.navigation.setOptions({
           headerRight: () => (
@@ -112,7 +113,7 @@ const Profile = (props) => {
 
   const fetchfollowData = async (uid) => {
     const ref = await firebase.firestore().collection("users").doc(uid);
-    await ref.collection("following").onSnapshot((snapshot) => {
+    ref.collection("following").onSnapshot((snapshot) => {
       let following = [];
       snapshot.docs.forEach((doc) => {
         following.push(doc.id);
@@ -168,7 +169,7 @@ const Profile = (props) => {
       .delete();
   };
 
-  return !loading ? (
+  return user ? (
     <ScrollView>
       <View style={styles.container}>
         <Image

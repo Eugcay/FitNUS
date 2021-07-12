@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
       marginTop: 20,
       width: 70,
       height: 70,
-      borderRadius: 100,
+      borderRadius: 50,
       alignSelf: "center",
       backgroundColor: "#D3D3D3",
     },
@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
 
     genStat: {
       width: "48%",
-      height: 100,
+      height: 90,
       alignItems: "center",
       justifyContent: 'center',
       padding: 10,

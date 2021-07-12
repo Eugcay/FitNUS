@@ -13,6 +13,7 @@ import ExListItem from "../../components/detailsComponents/ExListItem";
 import { Divider } from "react-native-paper";
 import firebase from "firebase";
 import { styles } from "./styles";
+import { connect } from "react-redux";
 
 const JioDetails = (props) => {
   const [workouts, setWorkouts] = useState([]);
@@ -24,7 +25,7 @@ const JioDetails = (props) => {
       .firestore()
       .collection("Workouts")
       .onSnapshot((querySnapshot) => {
-        const workouts = [];
+        const workouts = props.templates;
         querySnapshot.forEach((documentSnapshot) => {
           workouts.push({
             data: documentSnapshot.data(),
@@ -41,13 +42,13 @@ const JioDetails = (props) => {
       setDetails(props.route.params?.jioState?.details);
     }
     return fetchWorkouts;
-  }, [props.route.params?.jioState, props.route.params?.exercises]);
+  }, [props.route.params?.jioState, props.route.params?.exercises, props.templates]);
 
   const updateAndSubmit = async () => {
     if (info.img && info.img.indexOf('firebase') === -1) {
       const res = await fetch(info.img);
       const blob = await res.blob();
-      const path = `runs/${
+      const path = `jios/${
         firebase.auth().currentUser.uid
       }/${Math.random().toString(36)}`;
 
@@ -70,13 +71,13 @@ const JioDetails = (props) => {
 
       task.on("state_change", progress, error, completed);
     } else {
-      submitJio(null)
+      submitJio(info.img)
     }
   };
 
   const submitJio = async (snapshot) => {
     const created = firebase.firestore.FieldValue.serverTimestamp();
-    if (props.route.params.jioState?.details) {
+    if (props.route.params.jioState?.info?.id) {
       firebase
         .firestore()
         .collection("jios")
@@ -127,7 +128,7 @@ const JioDetails = (props) => {
         />
       </ScrollView>
       {details && (
-        <TouchableOpacity style={styles.addButton} onPress={() => submitJio()}>
+        <TouchableOpacity style={styles.addButton} onPress={() => updateAndSubmit()}>
           <Ionicons name="add" color="blue" size={18} />
           <Text style={styles.addButtonText}>Add Jio</Text>
         </TouchableOpacity>
@@ -136,4 +137,8 @@ const JioDetails = (props) => {
   );
 };
 
-export default JioDetails;
+const mapStateToProps = (store) => ({
+  templates: store.templates.templates
+})
+
+export default connect(mapStateToProps, null)(JioDetails);

@@ -52,6 +52,7 @@ const JioStart = (props) => {
   const [showLocations, setLocation] = useState(false);
 
   const [jioState, dispatch] = useReducer(reducer, initialState);
+  const jioData = props.route.params?.jioData;
 
   const uid = firebase.auth().currentUser.uid;
   const user = {
@@ -61,7 +62,7 @@ const JioStart = (props) => {
   };
 
   useEffect(() => {
-    const jioData = props.route.params?.jioData;
+   
     if (jioData) {
       dispatch({ type: "SET", value: { ...jioData.data, id: jioData.id } });
       props.navigation.setOptions({
@@ -92,7 +93,11 @@ const JioStart = (props) => {
     setTime(false);
   };
 
-  const removeJio = (id) => {
+  const removeJio = async (id) => {
+    const storageRef = firebase.storage().refFromURL(jioState.img);
+
+    storageRef.delete().then(() => console.log('success')).catch(err => console.log(err))
+
     firebase
       .firestore()
       .collection("jios")
@@ -129,10 +134,12 @@ const JioStart = (props) => {
   };
 
   const updateAndSubmit = async () => {
+
     if (jioState.img && jioState.img.indexOf('firebase') === -1) {
+      console.log('ye')
       const res = await fetch(jioState.img);
       const blob = await res.blob();
-      const path = `runs/${
+      const path = `jios/${
         firebase.auth().currentUser.uid
       }/${Math.random().toString(36)}`;
 
@@ -155,13 +162,12 @@ const JioStart = (props) => {
 
       task.on("state_change", progress, error, completed);
     } else {
-       submitJio(null)
+      console.log('no')
+       submitJio(jioState?.img || null)
      }
   };
 
   const submitJio = async (snapshot) => {
-    const jioData = props.route.params?.jioData;
-    setJioState(snapshot, "img");
 
     const created = firebase.firestore.FieldValue.serverTimestamp();
     const ref = await firebase.firestore().collection("jios");
@@ -171,6 +177,7 @@ const JioStart = (props) => {
         .update({
           ...jioState,
           creation: created,
+          img: snapshot
         })
         .then(props.navigation.navigate("Main"));
     } else {
@@ -180,6 +187,7 @@ const JioStart = (props) => {
           user: firebase.auth().currentUser.uid,
           creation: created,
           likes: [user],
+          img: snapshot
         })
         .then(props.navigation.navigate("Main"));
     }
@@ -373,11 +381,13 @@ const JioStart = (props) => {
                 </>
               ) : (
                 <>
-                  <Text style={styles.bottomButton}>Workout Details</Text>
+                  <Text style={styles.bottomButton}>{jioData && 'Edit'} Workout Details</Text>
                   <Ionicons name="arrow-forward" size={17} color="blue" />
+
                 </>
               )}
             </TouchableOpacity>
+            {jioData && jioState.type !== "Run" && <TouchableOpacity onPress={() => updateAndSubmit()}><Text style={styles.bottomButton}>Save</Text></TouchableOpacity>}
           </View>
         </View>
       </ScrollView>
