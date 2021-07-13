@@ -16,9 +16,12 @@ import {
   getUser,
   getUserFollowing,
   getUserFollowers,
+} from "../store/actions/user";
+
+import {
   getUserAccruedAchievements,
   getUserSingleAchievements
-} from "../store/actions/user";
+} from "../store/actions/achievements";
 
 import { fetchUpcoming, fetchCompleted } from "../store/actions/jios";
 

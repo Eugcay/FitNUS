@@ -20,9 +20,9 @@ export const styles = StyleSheet.create({
 
   image: {
     marginBottom: 25,
-    marginTop: 10,
+    marginTop: 20,
     width: "25%",
-    height: "15%",
+    height: "10%",
     alignSelf: "center",
     borderRadius: 120,
     backgroundColor: "#D3D3D3",

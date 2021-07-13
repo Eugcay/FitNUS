@@ -28,7 +28,6 @@ const RunDetails = (props) => {
   const description = props.route.params.workout.description;
   const ran = props.route.params.workout.ran;
   const jioState = props.route.params?.workout?.jioStatus
-  console.log(locList);
   const startPoint = locList[1]
   const endPoint = locList[locList.length - 1]
 

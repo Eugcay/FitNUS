@@ -25,13 +25,13 @@ import {
   getRunStats,
   getStats,
   reloadRunPeriod,
+  withinPeriod
 } from "../../helpers/profile";
 import { returnAccruedTemp, returnSingleTemp } from "./achievements";
 import {
   addToAccruedAchievements,
-  updateAccruedAchievements,
   addToSingleAchievements,
-} from "../../store/actions/user";
+} from "../../store/actions/achievements";
 import achListItem from "../../components/achievementsComponents/achListItem";
 
 
@@ -46,11 +46,30 @@ const Profile = (props) => {
   const [userId, setUserId] = useState("");
   //Achivements state
   const [thisWeek, setWeek] = useState(getCurrWeek());
-  const [runWeek, setRunWeek] = useState(null);
-  const [workoutWeek, setWorkoutWeek] = useState(null);
-  const [overallRun, setOverallRun] = useState(null);
-  const [overallWorkout, setOverallWorkout] = useState(null);
   const [combinedList, setCombinedList] = useState(null);
+
+  //achievements functions
+  //Update accrued periodList
+  const updateAccruedAchievement = async (id, newList) => { //
+    await firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("accruedAchievements")
+      .doc(id)
+      .update({
+        periodList: newList,
+      });
+  }
+  //Update single achievements
+  const updateSingleAchievements = async (toAdd) => {
+    await firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("singleAchievements")
+      .add(toAdd);
+  }
 
   //Achievements stuff
   useEffect(() => {
@@ -61,19 +80,16 @@ const Profile = (props) => {
     const overallRun = props.runs
       ? getRunStats(props.runs.map((doc) => doc.data))
       : null;
-    setOverallRun(overallRun); //return object{distance duration, longest, no.}
-
+    //return object{distance duration, longest, no.}
     const overallWorkout =
       props.history && getStats(props.history.map((doc) => doc.data));
-    setOverallWorkout(overallWorkout); //returns object{duration, sets, no.}
+    //returns object{duration, sets, no.}
     //Week
     const runWeek = props.runs ? reloadRunPeriod(thisWeek, props.runs) : null;
-    setRunWeek(runWeek);
 
     const workoutWeek = props.history
       ? reloadPeriod(thisWeek, props.history)
       : null;
-    setWorkoutWeek(workoutWeek);
 
     //Check if workout stats meet criteria -> week - accrued
     const accruedList = returnAccruedTemp(
@@ -85,13 +101,14 @@ const Profile = (props) => {
 
     //Update accruedAchivements in database
     if (props.accruedAchievements?.length === 0) {
+      setWeek(getCurrWeek())
       accruedList.forEach((temp) => {
         const tempAch = {
-          title: temp.title,
           id: temp.id,
+          title: temp.title,
           description: temp.description,
-          category: temp.cat,
-          periodList: [thisWeek],
+          cat: temp.cat,
+          periodList: [getCurrWeek()],
         };
         props.addToAccrued(tempAch);
       });
@@ -99,16 +116,16 @@ const Profile = (props) => {
       accruedList.forEach((temp) => {
         props.accruedAchievements.forEach((saved) => {
           if (temp.id === saved.data.id) {
-            if (saved.data.periodList.includes(thisWeek)) {
+            //console.log(new Date(saved.data.periodList[0].end.seconds * 1000))
+            const pList = saved.data.periodList
+            if (withinPeriod(new Date(), pList[pList.length - 1])) {
               //continue;
             } else {
               //add thisWeek to saved periodList
               //update saved
-              // const updated = {
-              //     ...saved,
-              //     periodList: saved.data.periodList.push(thisWeek), //need to change this to justtake data no time.
-              // };
-              // props.updateAccrued(updated);
+              setWeek(getCurrWeek())
+              const newList = saved.data.periodList.concat([getCurrWeek()])
+              updateAccruedAchievement(saved.id, newList);
             }
           }
         });
@@ -117,35 +134,27 @@ const Profile = (props) => {
 
     //check if workout stats meet criteria -> overall - accrued
     const singleList = returnSingleTemp(overallRun, overallWorkout);
-
     //Update singleAchivements in database
     if (props.singleAchievements?.length === 0) {
       singleList.forEach((temp) => {
         const tempAch = {
-          title: temp.title,
           id: temp.id,
+          title: temp.title,
           description: temp.description,
-          category: temp.cat,
+          cat: temp.cat,
+          criteria: true,
         };
         props.addToSingle(tempAch);
       });
     } else {
-      singleList.forEach((temp) => {
-        props.singleAchievements.forEach((saved) => {
-          if (temp.id === saved.data.id) {
-            //continue
-          } else {
-            //this logic is flawed, will fix later...
-            // const tempAch = {
-            //   title: temp.title,
-            //   id: temp.id,
-            //   description: temp.description,
-            //   category: temp.cat,
-            // };
-            // props.addToSingle(tempAch);
-          }
-        });
-      });
+      let toAdd = singleList.filter((item) => {
+        return !(props.singleAchievements.some((data) => {
+          return data.data.id === item.id
+        }))
+      })
+      toAdd.forEach((item) => {
+        updateSingleAchievements(item)
+      })
     }
 
     setCombinedList([
@@ -161,8 +170,8 @@ const Profile = (props) => {
   }, [
     props.runs,
     props.history,
-    props.singleAchievements,
-    props.accruedAchievements
+    props.accruedAchievements,
+    props.singleAchievements
   ]);
 
   useEffect(() => {
@@ -345,8 +354,9 @@ const Profile = (props) => {
         <View style={styles.achievementMaster}>
           <SectionList
             sections={combinedList}
-            keyExtractor={(item, index) => item + index}
+            keyExtractor={(item) => item.id}
             renderItem={achListItem}
+            // ListEmptyComponent={<View></View>}
             renderSectionHeader={({ section: { title } }) => (
               <Text style={{fontSize: 22, fontWeight: 'bold', padding: 10}}>{title}:</Text>
             )}
@@ -367,13 +377,12 @@ const mapStateToProps = (store) => ({
   followers: store.user.followers,
   history: store.history.workouts,
   runs: store.history.runs,
-  accruedAchievements: store.user.accruedAchievements,
-  singleAchievements: store.user.singleAchievements,
+  accruedAchievements: store.achievements.accruedAchievements,
+  singleAchievements: store.achievements.singleAchievements,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addToAccrued: (accrued) => dispatch(addToAccruedAchievements(accrued)),
-  updateAccrued: (accrued) => dispatch(updateAccruedAchievements(accrued)),
   addToSingle: (single) => dispatch(addToSingleAchievements(single)),
 });
 

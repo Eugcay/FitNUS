@@ -32,6 +32,13 @@ export const getRunStats = (arr) => {
   return temp;
 };
 
+export const withinPeriod = (date, period) => {
+  const curr = date.getTime()
+  const end = period.end.seconds * 1000
+  const start = period.start.seconds * 1000
+  return (curr > start && curr <= end)
+}
+
 export const getStats = (arr) => {
   const temp = arr.reduce(
     (x, y) => ({
@@ -67,16 +74,15 @@ export const reloadPeriod = (period, hist) => {
 };
 
 export const reloadRunPeriod = (period, hist) => {
-    return getRunStats(
-      hist
-        .map((doc) => doc.data)
-        .filter(
-          (doc) =>
-            doc.date.seconds * 1000 < Date.parse(period.end) &&
-            doc.date.seconds * 1000 >= Date.parse(period.start)
-        )
-    );
-  };
+  return getRunStats(
+    hist
+      .map((doc) => doc.data)
+      .filter(
+        (doc) =>
+          doc.date.seconds * 1000 < Date.parse(period.end) &&
+          doc.date.seconds * 1000 >= Date.parse(period.start)
+      )
+  );
+};
 
 //reduce stats
-
