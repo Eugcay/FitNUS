@@ -235,6 +235,9 @@ const Post = ({ navigation, item, currUser }) => {
             scrollEnabled={false}
           />
         )}
+        {details && item.data.type === 'Run' && (
+          <Text style={{ marginVertical: 10, padding: 5, textAlign: "justify" }}>{item.data.details}</Text> 
+        )}
       </View>
     )
   );

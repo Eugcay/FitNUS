@@ -132,7 +132,7 @@ const RunDetails = (props) => {
       <Divider orientation="horizontal" width={1} />
       {jioState && (
             <View style={{marginHorizontal: 10, marginVertical: 15}}>
-            <Divider width={1}/>
+            
             <Text style={{ paddingTop: 5, marginHorizontal: 10, fontWeight: "bold", marginBottom: 5 }}>Workout Buddies</Text>
             <FlatList
               data={jioState.people}
@@ -160,10 +160,11 @@ const RunDetails = (props) => {
               }}
               horizontal={true}
             />
-            <Divider width={1}/>
+            
             </View>
           )}
       <View style={styles.statbar}>
+      <Divider width={1}/>
         <View style={styles.statbox}>
           <Text style={{fontWeight: "bold"}}>Distance: </Text>
           <Text>{distance.toFixed(2)} Km</Text>

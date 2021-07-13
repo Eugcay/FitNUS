@@ -23,9 +23,8 @@ function WorkoutDetails(props) {
   const date = props.route.params.workout?.date
     ? props.route.params.workout?.date
     : null;
-  const achievements = props.route.params.workout.achievements
-    ? props.route.params.workout.achievements
-    : 0;
+  const achievements = props.route.params.workout?.achievements.length || 0;
+  const PBs = props.route.params?.PBs || 0
   const id = props.route.params?.id ? props.route.params?.id : "";
   const jio = props.route.params?.jio;
   const jioState = props.route.params?.workout?.jioStatus;
@@ -35,7 +34,10 @@ function WorkoutDetails(props) {
     props.navigation.setOptions({
       headerRight: () =>
         date && (
-          <TouchableOpacity style={{marginHorizontal: 5}} onPress={deleteWorkout}>
+          <TouchableOpacity
+            style={{ marginHorizontal: 5 }}
+            onPress={deleteWorkout}
+          >
             <Text style={{ color: "red" }}>Delete</Text>
           </TouchableOpacity>
         ),
@@ -43,8 +45,8 @@ function WorkoutDetails(props) {
   }, []);
 
   const twoDigits = (num) => {
-   return (num <= 9 ? '0' : '') + num 
-  }
+    return (num <= 9 ? "0" : "") + num;
+  };
 
   const del = (id) => {
     firebase
@@ -114,7 +116,9 @@ function WorkoutDetails(props) {
               <MaterialCommunityIcons name="timer" size={17} color="red" />
               <Text>{date ? "" : "Expected"} Duration</Text>
               <Text style={{ fontWeight: "bold" }}>
-                {Math.floor(duration / 60) + ":" + twoDigits(Math.floor(duration % 60))}
+                {Math.floor(duration / 60) +
+                  ":" +
+                  twoDigits(Math.floor(duration % 60))}
               </Text>
             </View>
             <Divider orientation="vertical" />
@@ -140,14 +144,13 @@ function WorkoutDetails(props) {
                 size={20}
                 color="green"
               />
-              <Text>Achievements</Text>
+              <Text>PBs</Text>
               <Text>{achievements}</Text>
             </View>
           </View>
 
           {jioState && (
             <View style={{ marginHorizontal: 10, marginVertical: 10 }}>
-              <Divider />
               <Text
                 style={{
                   paddingTop: 5,
@@ -184,7 +187,6 @@ function WorkoutDetails(props) {
                 }}
                 horizontal={true}
               />
-              <Divider />
             </View>
           )}
           {workout.exercises && (

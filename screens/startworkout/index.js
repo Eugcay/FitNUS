@@ -31,6 +31,7 @@ const StartWorkout = (props) => {
   const [pulls, setPulls] = useState(1);
   const [workoutStatus, setStatus] = useState("Not Started");
   const [jioStatus, setJio] = useState(null);
+  const [PBs, setPBs] = useState(0)
   const achievements = [];
 
   useEffect(() => {
@@ -149,6 +150,7 @@ const StartWorkout = (props) => {
         exercises,
         achievements,
         jioStatus,
+        PBs
       };
       if (jioStatus) {
         finishJio(jioStatus.id, { ...workout, date: new Date() });
@@ -194,6 +196,7 @@ const StartWorkout = (props) => {
         : null;
       const currPb = doneBefore ? doneBefore.best : 0;
       if (max > currPb) {
+        setPBs(PBs + 1)
         if (doneBefore) {
           const data = [...props.currentUser.pb];
           const index = data.findIndex((ex) => ex.exercise === exName);
