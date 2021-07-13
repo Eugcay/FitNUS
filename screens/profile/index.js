@@ -19,7 +19,7 @@ import {
   reloadRunPeriod,
 } from "../../helpers/profile";
 import { returnAccruedTemp, returnSingleTemp } from "./achievements";
-import { addToAccruedAchievements, updateAccruedAchievements } from "../../store/actions/user"; 
+import { addToAccruedAchievements, updateAccruedAchievements, addToSingleAchievements} from "../../store/actions/user"; 
 
 const Profile = (props) => {
   const [user, setUser] = useState(null);
@@ -70,7 +70,6 @@ const Profile = (props) => {
 
     //Update accruedAchivements in database
     if (props.accruedAchievements.length === 0) {
-      console.log(props.accruedAchievements)
       accruedList.forEach((temp) => {
         const tempAch = {
           title: temp.title,
@@ -109,9 +108,37 @@ const Profile = (props) => {
       overallRun,
       overallWorkout
     )
-
+    console.log(props.singleAchievements)
     //Update singleAchivements in database
-    
+    if (props.singleAchievements.length === 0) {
+      singleList.forEach((temp) => {
+        const tempAch = {
+          title: temp.title,
+          id: temp.id,
+          description: temp.description,
+          category: temp.cat
+        }
+        props.addToSingle(tempAch);
+      })
+    } else {
+      singleList.forEach((temp) => {
+        props.singleAchievements.forEach((saved) => {
+          if (temp.id === saved.data.id) {
+            console.log("continued")
+            //continue
+          } else {
+            console.log("didnt")
+            const tempAch = {
+              title: temp.title,
+              id: temp.id,
+              description: temp.description,
+              category: temp.cat
+            }
+            props.addToSingle(tempAch);
+          }
+        })
+      })
+    }
     
   }, [props.currentUser, props.runs, props.history]);
 
@@ -381,13 +408,14 @@ const mapStateToProps = (store) => ({
   followers: store.user.followers,
   history: store.history.workouts,
   runs: store.history.runs,
-  accruedAchievements: store.user.accruedAchievements
+  accruedAchievements: store.user.accruedAchievements,
+  singleAchievements: store.user.singleAchievements
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addToAccrued: (accrued) => dispatch(addToAccruedAchievements(accrued)),
   updateAccrued: (accrued) => dispatch(updateAccruedAchievements(accrued)),
-  //addToSingle: (single) => dispatch(addToSingleAchievements(single))
+  addToSingle: (single) => dispatch(addToSingleAchievements(single))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

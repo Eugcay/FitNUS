@@ -17,6 +17,7 @@ import {
   getUserFollowing,
   getUserFollowers,
   getUserAccruedAchievements,
+  getUserSingleAchievements
 } from "../store/actions/user";
 
 import { fetchUpcoming, fetchCompleted } from "../store/actions/jios";
@@ -39,6 +40,7 @@ export const Main = (props) => {
     props.getUserAccruedAchievements();
     props.fetchCompleted()
     props.fetchUpcoming()
+    props.getUserSingleAchievements();
   }, []);
 
   return (
@@ -116,6 +118,7 @@ const mapDispatchProps = (dispatch) =>
       getUserFollowing,
       getUserFollowers,
       getUserAccruedAchievements,
+      getUserSingleAchievements,
       getUserRuns,
       getUserTemplates,
       fetchCompleted,
