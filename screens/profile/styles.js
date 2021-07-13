@@ -55,11 +55,11 @@ export const styles = StyleSheet.create({
   },
 
   achievementMaster: {
-    width: Dimensions.get("window").width * 0.85,
+    width: Dimensions.get("window").width * 0.9,
     justifyContent: "space-between",
     backgroundColor: "whitesmoke",
-    marginTop: 15,
-    marginBottom: 65,
+    marginTop: 0,
+    marginBottom: 200,
   },
   achievementBox: {
     flexDirection: "row",

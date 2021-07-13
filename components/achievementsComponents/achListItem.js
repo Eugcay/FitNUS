@@ -45,11 +45,15 @@ export default achListItem;
 
 const styles = StyleSheet.create({
   container: {
-    borderColor: 'black',
-    borderWidth: 2,
+    borderRadius: 3,
+    backgroundColor: 'white',
+    marginVertical: 5,
+    borderColor: 'gray',
+    borderWidth: 1,
     flexDirection: "row",
     height: 100,
-    flex: 1
+    flex: 1,
+    paddingVertical: 10
   },
   icons: {
     paddingLeft: 10,

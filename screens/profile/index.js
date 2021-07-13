@@ -348,7 +348,7 @@ const Profile = (props) => {
             keyExtractor={(item, index) => item + index}
             renderItem={achListItem}
             renderSectionHeader={({ section: { title } }) => (
-              <Text style={{fontSize: 22, fontWeight: 'bold', paddingBottom: 10}}>{title}</Text>
+              <Text style={{fontSize: 22, fontWeight: 'bold', padding: 10}}>{title}:</Text>
             )}
           />
         </View>
