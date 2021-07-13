@@ -11,6 +11,8 @@ import {
 import { setRandomColor } from "../../helpers";
 import { timestampToDate } from "../../helpers";
 import { Divider } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { color } from "react-native-reanimated";
 
 const HistoryBar = ({ navigation, hist, runs }) => {
   const images = [
@@ -18,6 +20,9 @@ const HistoryBar = ({ navigation, hist, runs }) => {
     require("../../assets/bg2.jpeg"),
     require("../../assets/bg3.jpeg"),
   ];
+
+  const histDisplay = hist.slice(0, 8).concat({ end: true });
+  const runsDisplay = runs.slice(0, 8).concat({ end: true });
 
   const WorkoutHistBar = ({ history }) => {
     //Passed in below as runs/hist
@@ -42,6 +47,7 @@ const HistoryBar = ({ navigation, hist, runs }) => {
             data={history}
             renderItem={renderItem} //Defined below
             keyExtractor={(item) => item.id}
+            style
           />
           <Divider />
         </>
@@ -51,7 +57,26 @@ const HistoryBar = ({ navigation, hist, runs }) => {
 
   const renderItem = ({ item }) => {
     const img = images[Math.floor(Math.random() * images.length)];
-    return (
+    return item.end ? (
+      <TouchableOpacity
+        style={{
+          alignSelf: "center",
+          marginHorizontal: 15,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onPress={() => navigation.navigate('History')}
+      >
+        <Text style={{ marginLeft: 5, fontSize: 25, color: "blue" }}>
+          Full History
+        </Text>
+        <MaterialCommunityIcons
+          name="arrow-right-bold"
+          color="blue"
+          size={22}
+        />
+      </TouchableOpacity>
+    ) : (
       <TouchableOpacity
         onPress={() => {
           navigation.navigate(
@@ -84,9 +109,12 @@ const HistoryBar = ({ navigation, hist, runs }) => {
   return (
     <View>
       <Text style={styles.barTitle}>Static Workouts</Text>
-      <WorkoutHistBar history={hist} />
+      <View style={{ flexDirection: "row" }}>
+        <WorkoutHistBar history={histDisplay} />
+      </View>
+
       <Text style={styles.barTitle}>Runs</Text>
-      <WorkoutHistBar history={runs} />
+      <WorkoutHistBar history={runsDisplay} />
     </View>
   );
 };
@@ -110,7 +138,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 32,
+    fontSize: 25,
   },
 
   text: {

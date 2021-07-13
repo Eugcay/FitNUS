@@ -8,6 +8,7 @@ import { TrackerStack } from "./trackerStack";
 import FitBudStack from "./fitBudStack";
 import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";
+import HistoryStack from "./historyStack";
 import WorkoutHistory from '../screens/history'
 
 import {
@@ -69,7 +70,7 @@ export const Main = (props) => {
             tabBarColor: "#0B2A59",
           }}
         />
-        <Tab.Screen name='History' component={WorkoutHistory} options={{
+        <Tab.Screen name='History' component={HistoryStack} options={{
           tabBarIcon: (({color, size}) => (
             <MaterialCommunityIcons name='calendar' color={color} size={25}/>
           )),

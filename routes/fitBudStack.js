@@ -1,6 +1,4 @@
 import React from "react";
-import { Button } from "react-native";
-import { logout } from "../Api/authApi";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import FitBud from "../screens/fitBud";
