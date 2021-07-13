@@ -2,11 +2,13 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ListItem } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native";
 
 const achListItem = ({ item }) => {
   console.log(item.data);
   return (
-    <View style={styles.container}>
+    <View>
+      <TouchableOpacity style={styles.container}>
       {/* Icon */}
       {item.data.category === "run" ? (
         <View style={styles.icons}>
@@ -37,6 +39,7 @@ const achListItem = ({ item }) => {
         <Text style={styles.title}>{item.data.title}</Text>
         <Text style={styles.description}>{item.data.description}</Text>
       </View>
+      </TouchableOpacity>
     </View>
   );
 };
