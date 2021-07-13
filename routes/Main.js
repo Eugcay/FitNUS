@@ -4,7 +4,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { Feather } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-
 import { TrackerStack } from "./trackerStack";
 import FitBudStack from "./fitBudStack";
 import Jio from "../screens/jio";

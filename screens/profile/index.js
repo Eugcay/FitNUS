@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  SafeAreaView,
+  SectionList,
+} from "react-native";
 import { Divider } from "react-native-elements";
 import { connect } from "react-redux";
 import Spinner from "../../components/Spinner";
@@ -19,7 +27,13 @@ import {
   reloadRunPeriod,
 } from "../../helpers/profile";
 import { returnAccruedTemp, returnSingleTemp } from "./achievements";
-import { addToAccruedAchievements, updateAccruedAchievements, addToSingleAchievements} from "../../store/actions/user"; 
+import {
+  addToAccruedAchievements,
+  updateAccruedAchievements,
+  addToSingleAchievements,
+} from "../../store/actions/user";
+import achListItem from "../../components/achievementsComponents/achListItem";
+
 
 const Profile = (props) => {
   const [user, setUser] = useState(null);
@@ -36,6 +50,7 @@ const Profile = (props) => {
   const [workoutWeek, setWorkoutWeek] = useState(null);
   const [overallRun, setOverallRun] = useState(null);
   const [overallWorkout, setOverallWorkout] = useState(null);
+  const [combinedList, setCombinedList] = useState(null);
 
   //Achievements stuff
   useEffect(() => {
@@ -69,17 +84,17 @@ const Profile = (props) => {
     );
 
     //Update accruedAchivements in database
-    if (props.accruedAchievements.length === 0) {
+    if (props.accruedAchievements?.length === 0) {
       accruedList.forEach((temp) => {
         const tempAch = {
           title: temp.title,
           id: temp.id,
           description: temp.description,
           category: temp.cat,
-          periodList: [thisWeek]
-        }
+          periodList: [thisWeek],
+        };
         props.addToAccrued(tempAch);
-      })
+      });
     } else {
       accruedList.forEach((temp) => {
         props.accruedAchievements.forEach((saved) => {
@@ -89,58 +104,66 @@ const Profile = (props) => {
             } else {
               //add thisWeek to saved periodList
               //update saved
-              const updated = {
-                id: saved.id,
-                data: {
-                  ...saved.data,
-                  periodList: saved.data.periodList.push(thisWeek)
-                }
-              }
-              props.updateAccrued(updated)
+              // const updated = {
+              //     ...saved,
+              //     periodList: saved.data.periodList.push(thisWeek), //need to change this to justtake data no time.
+              // };
+              // props.updateAccrued(updated);
             }
           }
-        })
-      })
+        });
+      });
     }
 
     //check if workout stats meet criteria -> overall - accrued
-    const singleList = returnSingleTemp(
-      overallRun,
-      overallWorkout
-    )
-    console.log(props.singleAchievements)
+    const singleList = returnSingleTemp(overallRun, overallWorkout);
+
     //Update singleAchivements in database
-    if (props.singleAchievements.length === 0) {
+    if (props.singleAchievements?.length === 0) {
       singleList.forEach((temp) => {
         const tempAch = {
           title: temp.title,
           id: temp.id,
           description: temp.description,
-          category: temp.cat
-        }
+          category: temp.cat,
+        };
         props.addToSingle(tempAch);
-      })
+      });
     } else {
       singleList.forEach((temp) => {
         props.singleAchievements.forEach((saved) => {
           if (temp.id === saved.data.id) {
-            console.log("continued")
             //continue
           } else {
-            console.log("didnt")
-            const tempAch = {
-              title: temp.title,
-              id: temp.id,
-              description: temp.description,
-              category: temp.cat
-            }
-            props.addToSingle(tempAch);
+            //this logic is flawed, will fix later...
+            // const tempAch = {
+            //   title: temp.title,
+            //   id: temp.id,
+            //   description: temp.description,
+            //   category: temp.cat,
+            // };
+            // props.addToSingle(tempAch);
           }
-        })
-      })
+        });
+      });
     }
-    
-  }, [props.currentUser, props.runs, props.history]);
+
+    setCombinedList([
+      {
+        title: "Stacked Achivements",
+        data: props.accruedAchievements,
+      },
+      {
+        title: "Milestones",
+        data: props.singleAchievements,
+      },
+    ]);
+  }, [
+    props.runs,
+    props.history,
+    props.singleAchievements,
+    props.accruedAchievements
+  ]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -320,78 +343,14 @@ const Profile = (props) => {
         )}
         <View style={styles.divider}></View>
         <View style={styles.achievementMaster}>
-          <TouchableOpacity style={styles.achievementBox}>
-            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
-              <Text style={styles.achievementTitle}>Master Jioer!</Text>
-              <Text style={styles.achievementDescription}>
-                Jioed 5 people to exercise with you! Wah, popular sia!
-              </Text>
-            </View>
-            <View style={{ justifyContent: "center", right: 30 }}>
-              <AntDesign name="team" size={24} color="black" />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.achievementBox}>
-            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
-              <Text style={styles.achievementTitle}>Loyal Jioee!</Text>
-              <Text style={styles.achievementDescription}>Joined 5 jios!</Text>
-            </View>
-            <View style={{ justifyContent: "center", left: 170 }}>
-              <AntDesign name="team" size={24} color="black" />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.achievementBox}>
-            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
-              <Text style={styles.achievementTitle}>ON FIRE</Text>
-              <Text style={styles.achievementDescription}>
-                One workout everyday for a week! Damn you're on fire
-              </Text>
-            </View>
-            <View style={{ justifyContent: "center", right: 30 }}>
-              <SimpleLineIcons name="fire" size={24} color="black" />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.achievementBox}>
-            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
-              <Text style={styles.achievementTitle}>Meep Meep</Text>
-              <Text style={styles.achievementDescription}>
-                Ran more than 20% the speed of a roadrunner!
-              </Text>
-            </View>
-            <View style={{ justifyContent: "center", right: -8 }}>
-              <MaterialCommunityIcons name="run-fast" size={24} color="black" />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.achievementBox}>
-            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
-              <Text style={styles.achievementTitle}>Pulling your weight</Text>
-              <Text style={styles.achievementDescription}>
-                Deadlifted more than your own body weight!
-              </Text>
-            </View>
-            <View style={{ justifyContent: "center", left: 20 }}>
-              <MaterialCommunityIcons
-                name="weight-lifter"
-                size={24}
-                color="black"
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.achievementBox}>
-            <View style={{ justifyContent: "center", paddingLeft: 10 }}>
-              <Text style={styles.achievementTitle}>Potty training</Text>
-              <Text style={styles.achievementDescription}>
-                Squat more than your own body weight
-              </Text>
-            </View>
-            <View style={{ justifyContent: "center", left: 45 }}>
-              <MaterialCommunityIcons
-                name="weight-lifter"
-                size={24}
-                color="black"
-              />
-            </View>
-          </TouchableOpacity>
+          <SectionList
+            sections={combinedList}
+            keyExtractor={(item, index) => item + index}
+            renderItem={achListItem}
+            renderSectionHeader={({ section: { title } }) => (
+              <Text style={{fontSize: 22, fontWeight: 'bold', paddingBottom: 10}}>{title}</Text>
+            )}
+          />
         </View>
       </View>
     </ScrollView>
@@ -409,13 +368,13 @@ const mapStateToProps = (store) => ({
   history: store.history.workouts,
   runs: store.history.runs,
   accruedAchievements: store.user.accruedAchievements,
-  singleAchievements: store.user.singleAchievements
+  singleAchievements: store.user.singleAchievements,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addToAccrued: (accrued) => dispatch(addToAccruedAchievements(accrued)),
   updateAccrued: (accrued) => dispatch(updateAccruedAchievements(accrued)),
-  addToSingle: (single) => dispatch(addToSingleAchievements(single))
+  addToSingle: (single) => dispatch(addToSingleAchievements(single)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
