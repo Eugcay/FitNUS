@@ -5,8 +5,10 @@ import {
   SET_USER_FOLLOWING,
   SET_USER_FOLLOWERS,
   SET_USER_ACCRUED_ACHIEVEMENTS,
+  SET_USER_SINGLE_ACHIEVEMENTS,
   ADD_ACCRUED_ACHIEVEMENT,
-  UPDATE_ACCRUED_ACHIEVEMENT
+  ADD_SINGLE_ACHIEVEMENT,
+  UPDATE_ACCRUED_ACHIEVEMENT,
 } from "../actions/types";
 
 const initialState = {
@@ -55,11 +57,23 @@ export const userReducer = (state = initialState, action) => {
         accruedAchievements: action.accruedAchievements,
       };
 
+    case SET_USER_SINGLE_ACHIEVEMENTS:
+      return {
+        ...state,
+        singleAchievements: action.singleAchievements,
+      };
+
+    case ADD_SINGLE_ACHIEVEMENT:
+      return {
+        ...state,
+        singleAchievements: action.singleAchievements,
+      };
+
     case UPDATE_ACCRUED_ACHIEVEMENT:
       return {
         ...state,
-        accruedAchievements: action.accruedAchievements
-      }
+        accruedAchievements: action.accruedAchievements,
+      };
 
     case CLEAR:
       return initialState;
