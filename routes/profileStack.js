@@ -1,10 +1,8 @@
 import React from "react";
-import { Button, Text } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { logout } from "../Api/authApi";
 
 import Profile from "../screens/profile";
-import EditProfile from "../screens/editProfile";
+import EditProfile from "../screens/profile/editProfile";
 
 const Stack = createStackNavigator();
 

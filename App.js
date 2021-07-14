@@ -14,7 +14,7 @@ import LoginStack from "./routes/loginStack";
 import Main from "./routes/Main";
 import addWorkoutStack from "./routes/addWorkoutStack";
 import JioStack from "./routes/jioStack";
-import Verification from "./screens/verification";
+import Verification from "./screens/auth/verification";
 
 const prefix = Linking.createURL("/");
 

@@ -4,7 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import WorkoutHistory from "../screens/history";
 import WorkoutDetails from "../screens/workoutDetails";
 import RunDetails from "../screens/runDetails";
-import PostPage from "../screens/postPage";
+import PostPage from "../screens/jio/PostPage";
 
 const Stack = createStackNavigator();
 

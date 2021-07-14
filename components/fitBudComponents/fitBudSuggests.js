@@ -10,7 +10,7 @@ import MapView from "react-native-maps";
 import { presetLocations } from "../../mapConfig";
 
 
-import { getWorkouts } from "../../Api/workoutApi";
+import { getWorkouts } from "../../helpers";
 
 const FitBudSuggests = ({ navigation }) => {
   const [workout, setWorkout] = useState({});

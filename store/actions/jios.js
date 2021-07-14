@@ -20,14 +20,16 @@ export const fetchFeed = () => {
 
 export const fetchUpcoming = () => {
   const uid = firebase.auth().currentUser.uid;
-  const posts = [];
+  
   return (dispatch) => {
     firebase
       .firestore()
       .collection("jios")
       .where("completed", '!=', true)
       .onSnapshot((snapshot) => {
+        const posts = [];
         snapshot.docs.forEach((doc) => {
+
           if (doc.data().likes.find((liker) => liker.uid === uid) || doc.data().user === uid) {
             posts.push({ id: doc.id, data: doc.data() });
           }
@@ -39,26 +41,14 @@ export const fetchUpcoming = () => {
 
 export const fetchCompleted = () => {
   const uid = firebase.auth().currentUser.uid;
-  const completed = [];
+  
   return (dispatch) => {
-    // await firebase
-    //   .firestore()
-    //   .collection("jios")
-    //   .where("user", "<=", uid)
-    //   .where("user", ">=", uid)
-    //   .onSnapshot((snapshot) => {
-    //     snapshot.docs.forEach((doc) => {
-    //       if (doc.data().completed) {
-    //         completed.push({ id: doc.id, data: doc.data() });
-    //       }
-    //     });
-    //   });
-
     firebase
       .firestore()
       .collection("jios")
       .where("completed", "==", true)
       .onSnapshot((snapshot) => {
+        const completed = [];
         snapshot.docs.forEach((doc) => {
           if (doc.data().user === uid || doc.data().likes.find((liker) => liker.uid === uid)) {
             completed.push({ id: doc.id, data: doc.data() });

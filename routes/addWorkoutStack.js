@@ -1,15 +1,14 @@
 import React from "react";
-import { Button, Text } from "react-native";
-
 import { createStackNavigator } from "@react-navigation/stack";
-import StartWorkout from "../screens/startworkout";
+
+import Startworkout from "../screens/startworkout";
 import Map from "../screens/map";
-import AddExercises from "../screens/addExercises";
-import { ExerciseDetails } from "../screens/exerciseDetails";
-import EditExercise from "../screens/editWorkout";
+import AddExercises from "../screens/startworkout/addExercises";
+import { ExerciseDetails } from "../screens/startworkout/exerciseDetails";
+import EditExercise from "../screens/startworkout/editWorkout";
 import workoutDetails from "../screens/workoutDetails";
-import SelectWorkoutType from "../screens/selectWorkoutType";
-import RunMap from "../screens/runMap";
+import SelectWorkoutType from "../screens/startworkout/selectWorkout";
+import RunMap from "../screens/startworkout/runMap";
 
 const Stack = createStackNavigator();
 

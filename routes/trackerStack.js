@@ -3,7 +3,7 @@ import { View} from 'react-native'
 import { createStackNavigator } from "@react-navigation/stack";
 
 import Tracker from '../screens/tracker';
-import AddExercises from '../screens/addExercises';
+import AddExercises from '../screens/startworkout/addExercises';
 
 const Stack = createStackNavigator()
 

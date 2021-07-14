@@ -5,7 +5,6 @@ import { Header } from "react-native-elements";
 import { connect } from "react-redux";
 import moment from "moment";
 import { TouchableOpacity } from "react-native";
-import { ListItem } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const WorkoutHistory = (props) => {
@@ -21,7 +20,6 @@ const WorkoutHistory = (props) => {
   }, [props.history, props.runs]);
 
   const withinRange = (curr, date) => {
-    console.log(curr.timestamp, Date.parse(date));
     return (
       Date.parse(date) > curr.timestamp - 31 * 24 * 60 * 60 * 1000 &&
       Date.parse(date) < curr.timestamp + 31 * 24 * 60 * 60 * 1000
@@ -30,16 +28,18 @@ const WorkoutHistory = (props) => {
 
   const setNewItems = (arr, day) => {
     for (let i = -31; i <= 31; i++) {
-        const strTime = timeToString(new Date(day.timestamp + i * 24 * 60 * 60 * 1000))
-        if (!items[strTime]) {
-            items[strTime] = [];
-          }
+      const strTime = timeToString(
+        new Date(day.timestamp + i * 24 * 60 * 60 * 1000)
+      );
+      if (!items[strTime]) {
+        items[strTime] = [];
+      }
     }
     arr
       .filter((workout) => withinRange(day, workout.data.date.toDate()))
       .forEach((workout) => {
         const strTime = timeToString(workout.data.date.toDate());
-        
+
         const template = { ...workout.data, id: workout.id };
         if (!items[strTime].find((item) => item.id === template.id)) {
           items[strTime].push(template);
@@ -63,7 +63,6 @@ const WorkoutHistory = (props) => {
         })),
         day
       );
-      console.log(items);
     }, 500);
   };
 
@@ -75,28 +74,49 @@ const WorkoutHistory = (props) => {
   const renderItem = (item) => {
     return (
       <TouchableOpacity
-        style={[styles.container, {backgroundColor: (item?.jioStatus || item.type) ? 'palegreen' : 'white'}]}
+        style={[
+          styles.container,
+          {
+            backgroundColor:
+              item?.jioStatus || item.type ? "palegreen" : "white",
+          },
+        ]}
         onPress={() =>
-          props.navigation.navigate(item?.exercises ?  "Workout Details" : item?.locList ? "Run Details" : "Jio Details", item.type ? { item: {data: item, id: item.id}, currUser: props.currentUser } : { workout: item })
+          props.navigation.navigate(
+            item?.exercises
+              ? "Workout Details"
+              : item?.locList
+              ? "Run Details"
+              : "Jio Details",
+            item.type
+              ? {
+                  item: { data: item, id: item.id },
+                  currUser: props.currentUser,
+                }
+              : { workout: item }
+          )
         }
       >
-        <View style={{ flexDirection: "row", alignItems: 'center' }}>
-          <View style={{width: '90%'}}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={{ width: "90%" }}>
             <Text style={styles.title}>{item.name}</Text>
-            <Text style={{fontSize: 15}}>{moment(item.date.toDate()).format("h:mm a")}</Text>
+            <Text style={{ fontSize: 15 }}>
+              {moment(item.date.toDate()).format("h:mm a")}
+            </Text>
           </View>
           <MaterialCommunityIcons
             name={
-              item?.exercises || item.type === 'Static'
+              item?.exercises || item.type === "Static"
                 ? "dumbbell"
-                :  "run-fast"
-             
+                : "run-fast"
             }
             size={20}
             color={
-              item?.exercises || item.type === 'Static' ? "goldenrod" : "crimson"
+              item?.exercises || item.type === "Static"
+                ? "goldenrod"
+                : "crimson"
             }
-            style={{justifyContent: 'center'}}
+            style={{ justifyContent: "center" }}
           />
         </View>
       </TouchableOpacity>
@@ -128,7 +148,7 @@ const mapStateToProps = (store) => ({
   runs: store.history.runs,
   completed: store.jios.completed,
   upcoming: store.jios.upcoming,
-  user: store.user.currentUser
+  user: store.user.currentUser,
 });
 
 export default connect(mapStateToProps, null)(WorkoutHistory);
@@ -140,7 +160,7 @@ const styles = StyleSheet.create({
     margin: 5,
     borderRadius: 15,
     justifyContent: "center",
-    alignItems: 'center',
+    alignItems: "center",
     padding: 10,
   },
 

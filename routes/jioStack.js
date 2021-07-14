@@ -11,14 +11,14 @@ import {
 
 import JioTabs from "./jioTabs";
 import profile from "../screens/profile";
-import JioStart from "../screens/jioStart";
-import JioDetails from "../screens/jioDetails";
+import JioStart from '../screens/jio/Start'
+import JioDetails from '../screens/jio/Details'
 import workoutDetails from "../screens/workoutDetails";
-import AddExercises from "../screens/addExercises";
-import EditExercise from "../screens/editWorkout";
-import JioSearch from "../screens/jioSearch";
-import JioLikes from "../screens/JioLikes";
-import PostPage from "../screens/postPage";
+import AddExercises from "../screens/startworkout/addExercises";
+import EditExercise from "../screens/startworkout/editWorkout";
+import JioSearch from '../screens/jio/Search'
+import JioLikes from '../screens/jio/Likes'
+import PostPage from '../screens/jio/PostPage'
 
 const Stack = createStackNavigator();
 

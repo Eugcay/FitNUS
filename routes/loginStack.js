@@ -2,10 +2,10 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { KeyboardAvoidingView } from "react-native";
 
-import LandingPage from "../screens/landingPage";
-import LoginScreen from "../screens/LoginScreen";
-import SignupScreen from "../screens/SignupScreen";
-import ResetPassword from "../screens/resetPassword";
+import LandingPage from "../screens/auth/landingPage";
+import LoginScreen from "../screens/auth/LoginScreen";
+import SignupScreen from "../screens/auth/SignupScreen";
+import ResetPassword from "../screens/auth/resetPassword";
 
 const Stack = createStackNavigator();
 

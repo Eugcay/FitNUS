@@ -1,10 +1,10 @@
 import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
-import JioFeed from "../screens/jioFeed";
-import JioSearch from "../screens/jioSearch";
-import MyJios from "../screens/myJios";
-import jiosCompleted from "../screens/jiosCompleted";
+import JioFeed from '../screens/jio/Feed'
+import JioSearch from "../screens/jio/Search";
+import MyJios from "../screens/jio/myJios";
+import jiosCompleted from '../screens/jio/Completed'
 
 const Tab = createMaterialTopTabNavigator();
 
