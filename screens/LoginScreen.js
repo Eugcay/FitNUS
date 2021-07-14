@@ -43,9 +43,11 @@ export default function LoginScreen({ navigation }) {
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <AntDesign name="arrowleft" size={22} color="azure" />
-          <Text style={{color: 'azure', fontSize: 15, marginLeft: 7}}>Back</Text>
+          <Text style={{ color: "azure", fontSize: 15, marginLeft: 7 }}>
+            Back
+          </Text>
         </View>
       </TouchableOpacity>
       <Image
@@ -73,7 +75,7 @@ export default function LoginScreen({ navigation }) {
         />
       </View>
       <TouchableOpacity onPress={() => navigation.navigate("SignupScreen")}>
-        <Text style={styles.forgotButton}>Sign up</Text>
+        <Text style={styles.signUpButton}>Sign up</Text>
       </TouchableOpacity>
       <TouchableOpacity
         title="Login"
@@ -81,6 +83,11 @@ export default function LoginScreen({ navigation }) {
         onPress={handleSubmit}
       >
         <Text style={{ color: "#0B2A59" }}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate('Reset Password')}>
+        <Text style={{ fontSize: 13, color: "#F5DC3C" }}>
+          Forgot Your Password?
+        </Text>
       </TouchableOpacity>
     </Background>
   );
@@ -112,7 +119,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 3,
     opacity: 0.8,
-    minHeight: 40
+    minHeight: 40,
   },
 
   layout: {
@@ -125,7 +132,6 @@ const styles = StyleSheet.create({
 
   loginButton: {
     marginTop: 7,
-    marginBottom: 120,
     width: "80%",
     alignItems: "center",
     paddingTop: 10,
@@ -136,9 +142,19 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
   },
 
-  forgotButton: {
+  signUpButton: {
     height: 30,
     marginBottom: 2,
+    fontSize: 14,
+    color: "#F5DC3C",
+  },
+
+  forgotButton: {
+    alignItems: "flex-end",
+    width: "76%",
+    height: 30,
+    marginTop: 8,
+    marginBottom: 22,
     fontSize: 14,
     color: "#F5DC3C",
   },

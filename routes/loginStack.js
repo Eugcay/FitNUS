@@ -5,7 +5,7 @@ import { KeyboardAvoidingView } from "react-native";
 import LandingPage from "../screens/landingPage";
 import LoginScreen from "../screens/LoginScreen";
 import SignupScreen from "../screens/SignupScreen";
-import Verification from "../screens/verification";
+import ResetPassword from "../screens/resetPassword";
 
 const Stack = createStackNavigator();
 
@@ -21,7 +21,7 @@ const LoginStack = () => {
         <Stack.Screen name="Landing" component={LandingPage} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
-        <Stack.Screen name='Verification' component={Verification} />
+        <Stack.Screen name='Reset Password' component={ResetPassword} />
       </Stack.Navigator>
     </>
   );

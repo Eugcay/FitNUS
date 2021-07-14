@@ -8,8 +8,7 @@ import { styles } from "./styles";
 
 function LandingPage({ navigation }) {
   
-  const link =
-    "https://vafs.nus.edu.sg/adfs/oauth2/authorize";
+
   return (
     <Background>
       <Image
@@ -46,6 +45,9 @@ export default LandingPage;
   //   additionalParameters: {},
   //   scopes: ['openid', 'profile']
   // };
+
+  // const link =
+  // "https://vafs.nus.edu.sg/adfs/oauth2/authorize";
 
   // const authURL = 'https://vafs.nus.edu.sg/adfs/oauth2/authorize?'
   // const clientId = 'INC000002364746'

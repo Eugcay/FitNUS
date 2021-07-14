@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import firebase from "firebase";
+import { deleteUser } from "../../helpers/auth";
 import { styles } from "./styles";
 
 const reducer = (state, action) => {
@@ -29,9 +30,16 @@ function EditProfile(props) {
   const { user } = props.route.params;
   const [userState, dispatch] = useReducer(reducer, user);
 
+
   const [changePhoto, setChange] = useState(false);
   const [galleryPermission, setGalleryPermission] = useState(null);
   const path = `users/${firebase.auth().currentUser.uid}/profile`;
+
+  useEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () => <TouchableOpacity onPress={deleteUser}><Text style={{marginRight: 5, color: 'crimson', fontSize: 12}}>Delete Account</Text></TouchableOpacity>
+    })
+  }, [])
 
   useEffect(() => {
     (async () => {
@@ -125,8 +133,8 @@ function EditProfile(props) {
   const setUserState = (value, input, numeric) => {
     const digits = "0123456789";
     if (numeric) {
-      for (let i = 0; i < text.length; i++) {
-        if (digits.indexOf(text[i]) === -1) {
+      for (let i = 0; i < value.length; i++) {
+        if (digits.indexOf(value[i]) === -1) {
           alert("numbers only!");
         }
       }

@@ -21,8 +21,10 @@ const HistoryBar = ({ navigation, hist, runs }) => {
     require("../../assets/bg3.jpeg"),
   ];
 
-  const histDisplay = (hist && hist.length > 0) ? hist.slice(0, 8).concat({ end: true }) : hist;
-  const runsDisplay = (hist && hist.length > 0) ? runs.slice(0, 8).concat({ end: true }) : hist;
+  const histDisplay =
+    hist && hist.length > 0 ? hist.slice(0, 8).concat({ end: true }) : hist;
+  const runsDisplay =
+    hist && hist.length > 0 ? runs.slice(0, 8).concat({ end: true }) : hist;
 
   const WorkoutHistBar = ({ history }) => {
     //Passed in below as runs/hist
@@ -64,16 +66,12 @@ const HistoryBar = ({ navigation, hist, runs }) => {
           alignItems: "center",
           justifyContent: "center",
         }}
-        onPress={() => navigation.navigate('History')}
+        onPress={() => navigation.navigate("History")}
       >
         <Text style={{ marginLeft: 5, fontSize: 25, color: "blue" }}>
           Full History
         </Text>
-        <MaterialCommunityIcons
-          name="arrow-right"
-          color="darkblue"
-          size={22}
-        />
+        <MaterialCommunityIcons name="arrow-right" color="darkblue" size={22} />
       </TouchableOpacity>
     ) : (
       <TouchableOpacity
@@ -108,10 +106,7 @@ const HistoryBar = ({ navigation, hist, runs }) => {
   return (
     <View>
       <Text style={styles.barTitle}>Static Workouts</Text>
-      <View style={{ flexDirection: "row" }}>
-        <WorkoutHistBar history={histDisplay} />
-      </View>
-
+      <WorkoutHistBar history={histDisplay} />
       <Text style={styles.barTitle}>Runs</Text>
       <WorkoutHistBar history={runsDisplay} />
     </View>

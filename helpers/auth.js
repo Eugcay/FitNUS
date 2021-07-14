@@ -7,7 +7,7 @@ export async function signUp(name, email, password) {
 
     // send verification email
     const currUser = firebase.auth().currentUser;
-    await currUser.sendEmailVerification()
+    await currUser.sendEmailVerification();
 
     firebase.firestore().collection("users").doc(currUser.uid).set({
       name,
@@ -16,7 +16,7 @@ export async function signUp(name, email, password) {
       photoURL: "",
       caloriesGoal: "",
       durationGoal: "",
-      pb: []
+      pb: [],
     });
   } catch (error) {
     alert(error);
@@ -38,3 +38,33 @@ export async function logout() {
     alert(error);
   }
 }
+export const resend = async () => {
+  try {
+    const user = firebase.auth().currentUser;
+    console.log(user.email);
+    await user.sendEmailVerification();
+  } catch (error) {
+    alert(error);
+  }
+};
+
+export const resetPassword = async (email) => {
+  try {
+    firebase.auth().sendPasswordResetEmail(email);
+  } catch (error) {
+    const errCode = error.code;
+    const errMsg = error.message;
+    alert(errMsg)
+  }
+};
+
+export const deleteUser = async () => {
+  try {
+    const user = firebase.auth().currentUser;
+    await user.delete();
+    await firebase.firestore().collection('user').doc(firebase.auth().currentUser.uid).delete()
+    console.log("success");
+  } catch (error) {
+    alert(error);
+  }
+};

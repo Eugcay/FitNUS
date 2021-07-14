@@ -1,41 +1,31 @@
-import React, {useState} from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from "react-native";
-import firebase from "firebase";
-import { createNativeWrapper } from "react-native-gesture-handler";
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import { resend, deleteUser } from "../helpers/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { logout } from "../helpers/auth";
 
 const Verification = (props) => {
-
   const goback = async () => {
-    // try {
-    //   const user = firebase.auth().currentUser
-    //   await user.delete()
-    //   console.log('success')
-    // } catch (error) {
-    //   alert(error)
-    // }
-     logout()
-  }
-
-  const resend = async () => {
-    try {
-      const user = firebase.auth().currentUser;
-      console.log(user.email)
-      await user.sendEmailVerification();
-    } catch (error) {
-      alert(error)
-    }
-  }
+    // deleteUser()
+    logout();
+  };
 
   return (
     <View style={styles.background}>
       <TouchableOpacity onPress={goback} style={styles.backButton}>
-        <MaterialCommunityIcons name='arrow-left' size={17} color='lightblue'/>
-        <Text style={{color: 'lightblue', marginLeft: 3}}>Cancel</Text>
+        <MaterialCommunityIcons name="arrow-left" size={17} color="lightblue" />
+        <Text style={{ color: "lightblue", marginLeft: 3 }}>Cancel</Text>
       </TouchableOpacity>
       <Text style={styles.title}>Verify Your Email</Text>
-      <Text style={styles.info}>Please check your email inbox and verify your email</Text>
+      <Text style={styles.info}>
+        Please check your email inbox and verify your email
+      </Text>
       <TouchableOpacity onPress={resend} style={styles.resendButton}>
         {/* <TextInput value={email}/> */}
         <Text>Resend Verification Email</Text>
@@ -58,28 +48,28 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     color: "gold",
-    marginVertical: 30
+    marginVertical: 30,
   },
 
   info: {
-    color: 'gold',
-    marginVertical: 10
+    color: "gold",
+    marginVertical: 10,
   },
 
   resendButton: {
     backgroundColor: "gold",
     width: "60%",
-    height: '5%',
+    height: "5%",
     borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 10,
   },
 
   backButton: {
-    flexDirection: 'row',
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 30,
-    left:  30
-  }
+    flexDirection: "row",
+    position: "absolute",
+    top: Platform.OS === "ios" ? 50 : 30,
+    left: 30,
+  },
 });
