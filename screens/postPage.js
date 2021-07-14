@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { Text, View } from 'react-native'
+import { Text, ScrollView } from 'react-native'
 import Post from '../components/jioComponents/Post'
 
 const PostPage = ({navigation, route}) => {
     return (
-        <View>
+        <ScrollView>
             <Post navigation={navigation} item={route.params.item} currUser={route.params.currUser}/>
-        </View>
+        </ScrollView>
     )
 }
 

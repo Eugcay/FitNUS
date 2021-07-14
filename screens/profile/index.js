@@ -12,7 +12,7 @@ import { Divider } from "react-native-elements";
 import { connect } from "react-redux";
 import Spinner from "../../components/Spinner";
 import firebase from "firebase";
-import { logout } from "../../Api/authApi";
+import { logout } from "../../helpers/auth";
 import { AntDesign } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";

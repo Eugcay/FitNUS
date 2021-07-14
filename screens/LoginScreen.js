@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Background from "../components/Background";
 import { AntDesign } from "@expo/vector-icons";
-import { login } from "../Api/authApi";
+import { login } from "../helpers/auth";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 3,
     opacity: 0.8,
+    minHeight: 40
   },
 
   layout: {

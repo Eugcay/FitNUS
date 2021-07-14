@@ -21,8 +21,8 @@ const HistoryBar = ({ navigation, hist, runs }) => {
     require("../../assets/bg3.jpeg"),
   ];
 
-  const histDisplay = hist.slice(0, 8).concat({ end: true });
-  const runsDisplay = runs.slice(0, 8).concat({ end: true });
+  const histDisplay = (hist && hist.length > 0) ? hist.slice(0, 8).concat({ end: true }) : hist;
+  const runsDisplay = (hist && hist.length > 0) ? runs.slice(0, 8).concat({ end: true }) : hist;
 
   const WorkoutHistBar = ({ history }) => {
     //Passed in below as runs/hist
@@ -47,7 +47,6 @@ const HistoryBar = ({ navigation, hist, runs }) => {
             data={history}
             renderItem={renderItem} //Defined below
             keyExtractor={(item) => item.id}
-            style
           />
           <Divider />
         </>
@@ -71,8 +70,8 @@ const HistoryBar = ({ navigation, hist, runs }) => {
           Full History
         </Text>
         <MaterialCommunityIcons
-          name="arrow-right-bold"
-          color="blue"
+          name="arrow-right"
+          color="darkblue"
           size={22}
         />
       </TouchableOpacity>
@@ -138,7 +137,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 25,
+    fontSize: 27,
   },
 
   text: {

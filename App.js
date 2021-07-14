@@ -8,12 +8,13 @@ import * as Linking from "expo-linking";
 import config from "./linking";
 import Spinner from "./components/Spinner";
 import { Provider } from "react-redux";
-import Store from "./store";
+import Store from "./store"
 
 import LoginStack from "./routes/loginStack";
 import Main from "./routes/Main";
 import addWorkoutStack from "./routes/addWorkoutStack";
 import JioStack from "./routes/jioStack";
+import Verification from "./screens/verification";
 
 const prefix = Linking.createURL("/");
 
@@ -28,6 +29,7 @@ export class App extends Component {
     super(props);
     this.state = {
       loaded: false,
+      verified: false,
     };
   }
 
@@ -41,46 +43,61 @@ export class App extends Component {
       if (!user) {
         this.setState({
           loggedIn: false,
+          verified: false,
           loaded: true,
+        });
+      } else if (!user.emailVerified) {
+        this.setState({
+          loggedIn: true,
+          loaded: true,
+          verified: false,
         });
       } else {
         this.setState({
           loggedIn: true,
           loaded: true,
+          verified: true,
         });
       }
     });
   }
 
   render() {
-    const { loggedIn, loaded } = this.state;
-    if (!loaded) {
-      return (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Spinner />
-        </View>
-      );
-    } else {
-      return (
-        <Provider store={Store}>
+    const { loggedIn, loaded, verified } = this.state;
+    return (
+      <Provider store={Store}>
+        {!loaded ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Spinner />
+          </View>
+        ) : (
           <NavigationContainer linking={this.linking}>
-            {loggedIn ? (
-              <Stack.Navigator initialRouteName="Main" screenOptions={{
-                headerShown: false,
-              }}>
+            {loggedIn && verified ? (
+              <Stack.Navigator
+                initialRouteName="Main"
+                screenOptions={{
+                  headerShown: false,
+                }}
+              >
                 <Stack.Screen name="Main" component={Main} />
-                <Stack.Screen name="Start Workout" component={addWorkoutStack}/>
+                <Stack.Screen
+                  name="Start Workout"
+                  component={addWorkoutStack}
+                />
                 <Stack.Screen name="Exercise Jio" component={JioStack} />
               </Stack.Navigator>
-            ) : (
+            ) : loggedIn && !verified ? (
+              <Verification />
+            )
+             : (
               <LoginStack />
             )}
           </NavigationContainer>
-        </Provider>
-      );
-    }
+        )}
+      </Provider>
+    );
   }
 }
 

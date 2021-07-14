@@ -67,6 +67,7 @@
     "react-native-view-more-text": "^2.1.0",
     "react-native-web": "^0.16.3",
     "react-redux": "^7.2.4",
+    "react-redux-firebase": "^3.10.0",
     "redux": "^4.1.0",
     "redux-thunk": "^2.3.0",
     "uri-scheme": "^1.0.83",

@@ -67,7 +67,8 @@ function EditProfile(props) {
 
       profile.on("state_change", progress, error, completed);
     } else {
-      update(user?.photoURL);
+      console.log(userState)
+      update(user?.photoURL || null);
     }
   };
 
@@ -155,10 +156,10 @@ function EditProfile(props) {
           <TextInput
             style={styles.fields}
             // onChangeText={(text) => console.log(text)}
-            onBlur={(text) => setUserState(text, "name", false)}
+            onChangeText={(text) => setUserState(text, "name", false)}
             placeholder="name"
             value={userState.name}
-            textContentType="name"
+
           ></TextInput>
         </View>
 

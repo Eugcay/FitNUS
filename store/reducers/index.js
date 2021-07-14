@@ -3,6 +3,7 @@ import { workoutReducer } from "./workouts";
 import { historyReducer } from "./history";
 import { templatesReducer } from "./templates";
 import { jioReducer } from "./jios";
+import { firebaseReducer } from "react-redux-firebase";
 import { combineReducers } from "redux";
 
 const rootReducer = combineReducers({
@@ -10,7 +11,8 @@ const rootReducer = combineReducers({
     workout: workoutReducer,
     history: historyReducer,
     jios: jioReducer,
-    templates: templatesReducer
+    templates: templatesReducer,
+    firebase: firebaseReducer
 })
 
 export default rootReducer

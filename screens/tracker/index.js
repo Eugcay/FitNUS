@@ -203,6 +203,7 @@ const Tracker = (props) => {
     }
   };
 
+  // convert time in seconds to displayed form
   const secondsToDuration = (seconds) => {
     return (
       (seconds >= 3600 ? Math.floor(seconds / 3600) + "h " : "") +
@@ -315,16 +316,14 @@ const Tracker = (props) => {
                       flexDirection: "row",
                       justifyContent: "center",
                       alignItems: "center",
-                      marginBottom: 5
+                      marginBottom: 5,
                     }}
                   >
-                    <Text
-                      style={styles.workoutFreq}
-                    >
+                    <Text style={styles.workoutFreq}>
                       {period.workouts + periodRun.runs}
                     </Text>
                     <Text>
-                      {" out of " + goals.workouts || "2"} workouts completed!
+                      {" out of " + (goals.workouts || "2")} workouts completed!
                     </Text>
                   </View>
 
@@ -363,42 +362,58 @@ const Tracker = (props) => {
             <View style={{ justifyContent: "center" }}>
               <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
                 <View style={styles.genStat}>
-                <MaterialCommunityIcons name='clock-time-four-outline' size={17} color='red' />
-                  
+                  <MaterialCommunityIcons
+                    name="clock-time-four-outline"
+                    size={17}
+                    color="red"
+                  />
+
                   <Text style={styles.statTitleSmall}>Total Duration</Text>
                   <Text>
                     {secondsToDuration(period.duration + periodRun.duration)}
                   </Text>
                 </View>
                 <View style={styles.genStat}>
-                <MaterialCommunityIcons name='timer-outline' size={16} color='blue' />
+                  <MaterialCommunityIcons
+                    name="timer-outline"
+                    size={16}
+                    color="blue"
+                  />
                   <Text style={styles.statTitleSmall}>Avg Duration</Text>
                   <Text>
-                    {secondsToDuration(
-                          (period.workouts === 0
-                            ? 0
-                            : period.duration + periodRun.duration) /
+                    {period.workouts + periodRun.runs === 0
+                      ? "0m 0s"
+                      : secondsToDuration(
+                          (period.duration + periodRun.duration) /
                             (period.workouts + periodRun.runs)
                         )}
                   </Text>
                 </View>
 
                 <View style={styles.genStat}>
-                  <MaterialCommunityIcons name="weight-lifter" size={17} color='goldenrod'/>
+                  <MaterialCommunityIcons
+                    name="weight-lifter"
+                    size={17}
+                    color="goldenrod"
+                  />
                   <Text style={styles.statTitleSmall}>Sets</Text>
                   <Text>{period.sets}</Text>
                 </View>
                 <View style={styles.genStat}>
-                  <MaterialCommunityIcons name="map-marker-distance" size={17} color='gray' />
+                  <MaterialCommunityIcons
+                    name="map-marker-distance"
+                    size={17}
+                    color="gray"
+                  />
                   <Text style={styles.statTitleSmall}>Distance</Text>
                   <Text>{periodRun.distance.toFixed(2)} km</Text>
                 </View>
               </View>
               {statsType !== "weekly" && (
-                <View
-                  style={styles.workoutCircle}
-                >
-                  <Text style={styles.workoutFreq}>{period.workouts + periodRun.runs}</Text>
+                <View style={styles.workoutCircle}>
+                  <Text style={styles.workoutFreq}>
+                    {period.workouts + periodRun.runs}
+                  </Text>
                   <Text>Workouts</Text>
                 </View>
               )}
@@ -422,7 +437,14 @@ const Tracker = (props) => {
               >
                 Muscles Used
               </Text>
-              <View style={{ flexDirection: "row", paddingBottom: 10, alignItems: 'center', justifyContent: 'center' }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  paddingBottom: 10,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <View style={{ width: "80%" }}>
                   <MuscleCategoryPie
                     data={period.categories}

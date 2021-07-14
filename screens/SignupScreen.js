@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Background from "../components/Background";
 import { AntDesign } from "@expo/vector-icons";
-import { signUp } from "../Api/authApi";
+import { signUp } from "../helpers/auth";
 
 const SignupScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -61,7 +61,7 @@ const SignupScreen = ({ navigation }) => {
       <View style={styles.input}>
         <AntDesign name="user" size={24} color="blue" />
         <TextInput
-          placeholder="Username"
+          placeholder="NUS or personal email"
           style={{ paddingHorizontal: 10 }}
           onChangeText={(text) => setEmail(text)}
         />
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 3,
     opacity: 0.8,
+    minHeight: 40
   },
 
   inputbox: {
