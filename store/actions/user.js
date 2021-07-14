@@ -181,27 +181,7 @@ export function addToSingleAchievements(single) {
 
     dispatch({
       type: ADD_SINGLE_ACHIEVEMENT,
-      data: {
-        ...single,
-      },
-    });
-  };
-}
-
-export function updateAccruedAchievements(accrued) {
-  return async (dispatch) => {
-    await firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("accruedAchievements")
-      .doc(accrued.id)
-      .set(accrued);
-    dispatch({
-      type: UPDATE_ACCRUED_ACHIEVEMENT,
-      data: {
-        ...accrued,
-      },
+      single
     });
   };
 }

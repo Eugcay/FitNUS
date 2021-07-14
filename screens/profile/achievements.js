@@ -120,6 +120,7 @@ export const returnSingleTemp = (runStats, workoutStats) => {
             cat: "run",
             criteria: runStats.distance >= 193
         },
+        
         //Workouts - 200
         {
             id: 201,
@@ -135,6 +136,13 @@ export const returnSingleTemp = (runStats, workoutStats) => {
             cat: "workout",
             criteria: workoutNo >= 10
         },
+        {
+          id: 2000,
+          title: "Test",
+          description: "Test",
+          cat: "workout",
+          criteria: true
+      },
         //Jio - 300
     ]
     const cleanedSingleList = rawSingleList.filter((doc) => {
