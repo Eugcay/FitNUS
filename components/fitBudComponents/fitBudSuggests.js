@@ -9,13 +9,11 @@ import {
 import MapView from "react-native-maps";
 import { presetLocations } from "../../mapConfig";
 
-
 import { getWorkouts } from "../../helpers";
 
 const FitBudSuggests = ({ navigation }) => {
   const [workout, setWorkout] = useState({});
   const [loading, setLoading] = useState(true);
-  
 
   useEffect(() => {
     const fetchWorkouts = getWorkouts()
@@ -37,7 +35,6 @@ const FitBudSuggests = ({ navigation }) => {
 
     return fetchWorkouts;
   }, []);
-
 
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
@@ -68,34 +65,40 @@ const FitBudSuggests = ({ navigation }) => {
       </View>
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
-          style={[styles.image, { width: "48%" }]}
+          style={[
+            styles.image,
+            {
+              width: "48%",
+              borderRadius: 15,
+              overflow: "hidden",
+              alignSelf: "center",
+            },
+          ]}
           onPress={() => navigation.navigate("Front Map")}
         >
           <MapView
             style={styles.map}
             initialRegion={{
-              latitude: 1.2966,
-              longitude: 103.7764,
-              latitudeDelta: 0.045,
-              longitudeDelta: 0.02,
+              latitude: 1.302,
+              longitude: 103.7758,
+              latitudeDelta: 0.015,
+              longitudeDelta: 0.015,
             }}
             provider="google"
             showsUserLocation={true}
+            showsMyLocationButton={false}
             showsCompass={true}
+            scrollEnabled={false}
             onPress={() => navigation.navigate("Front Map")}
           >
-            {presetLocations.map((marker) => (
-              <MapView.Marker
-                key={marker.index}
-                coordinate={marker.latlng}
-                title={marker.title}
-                description={marker.description}
-              />
-            ))}
           </MapView>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Start Workout", { screen: 'Select Workout Type' })}
+          onPress={() =>
+            navigation.navigate("Start Workout", {
+              screen: "Select Workout Type",
+            })
+          }
           style={[styles.image, {}]}
         >
           <Text style={styles.text}>Create Custom Workout</Text>
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
 
   map: {
     height: "100%",
-    borderRadius: 15,
+    width: "100%",
   },
 
   headers: {

@@ -197,7 +197,7 @@ const Profile = (props) => {
     return (
       <View>
         <Text style={{ fontSize: 22, fontWeight: "bold", padding: 10 }}>
-          Empty achivements list: 
+          achievments.length === 0
         </Text>
         <TouchableOpacity
           onPress={() =>
