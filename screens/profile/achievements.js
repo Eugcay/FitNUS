@@ -7,6 +7,7 @@ export const returnAccruedTemp = (
   //runStats - Weekly
   const averagePace = runStats.duration / 60 / (runStats.duration * 1000);
   const distance = runStats.distance;
+  console.log(distanceGoal)
   const metDistanceGoal = distanceGoal ? distance >= distanceGoal : false;
 
   //workoutStats - Weekly
@@ -139,6 +140,7 @@ export const returnSingleTemp = (runStats, workoutStats) => {
     },
     //Jio - 300
   ];
+  
   const cleanedSingleList = rawSingleList.filter((doc) => {
     return doc.criteria;
   });
