@@ -9,11 +9,11 @@ import {
 import { resend, deleteUser } from "../../../helpers/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { logout } from "../../../helpers/auth";
+import firebase from "firebase";
 
 const Verification = (props) => {
   const goback = async () => {
-    // deleteUser()
-    logout();
+    deleteUser()
   };
 
   return (

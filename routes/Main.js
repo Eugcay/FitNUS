@@ -10,6 +10,7 @@ import FitBudStack from "./fitBudStack";
 import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";
 import HistoryStack from "./historyStack";
+import firebase from "firebase";
 
 import {
   clearData,
@@ -44,6 +45,7 @@ export const Main = (props) => {
     props.fetchCompleted()
     props.fetchUpcoming()
     props.getUserSingleAchievements();
+    // console.log(firebase.auth().currentUser.uid)
   }, []);
 
   return (

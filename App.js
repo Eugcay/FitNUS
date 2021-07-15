@@ -39,7 +39,11 @@ export class App extends Component {
   };
 
   componentDidMount() {
-    firebase.auth().onAuthStateChanged((user) => {
+    setInterval(() => {
+      const user = firebase.auth().currentUser
+      if (user) {
+        user.reload();
+      }
       if (!user) {
         this.setState({
           loggedIn: false,
@@ -52,14 +56,38 @@ export class App extends Component {
           loaded: true,
           verified: false,
         });
+        console.log('not verified')
       } else {
         this.setState({
           loggedIn: true,
           loaded: true,
           verified: true,
         });
+        console.log('verified')
       }
-    });
+    }, 1000);
+    // firebase.auth().onAuthStateChanged((user) => {
+    //   if (!user) {
+    //     this.setState({
+    //       loggedIn: false,
+    //       verified: false,
+    //       loaded: true,
+    //     });
+    //   } else if (!user.emailVerified) {
+    //     this.setState({
+    //       loggedIn: true,
+    //       loaded: true,
+    //       verified: false,
+    //     });
+    //   } else {
+    //     this.setState({
+    //       loggedIn: true,
+    //       loaded: true,
+    //       verified: true,
+    //     });
+    //   }
+   //});
+
   }
 
   render() {

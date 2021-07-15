@@ -80,6 +80,30 @@ function EditProfile(props) {
     }
   };
 
+  const deleteProfile =  () => {
+
+    Alert.alert("Confirm Delete?", "Are you sure You want to delete your profile?", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => {
+          if (userState?.photoURL && userState.photoURL !== '') {
+            const ref = firebase.storage().refFromURL(userState.photoURL)
+            ref.delete().then(() => deleteProfile()).catch(err => console.log(err))
+          } else {
+            deleteProfile()
+          }
+          
+        },
+      },
+    ]);
+    
+  }
+
   const update = async (url) => {
     await firebase
       .firestore()
