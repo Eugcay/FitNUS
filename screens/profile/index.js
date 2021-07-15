@@ -156,8 +156,10 @@ const Profile = (props) => {
         updateSingleAchievements(item);
       });
     }
+
     setCombinedList(
-      props.accruedAchievements.length > 0 && props.singleAchievements.length > 0
+      props.accruedAchievements.length > 0 &&
+        props.singleAchievements.length > 0
         ? [
             {
               title: "Stacked Achivements",
@@ -192,8 +194,48 @@ const Profile = (props) => {
   ]);
 
   const emptyList = () => {
-    <View></View>
-  }
+    return (
+      <View>
+        <Text style={{ fontSize: 22, fontWeight: "bold", padding: 10 }}>
+          achievments.length === 0
+        </Text>
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation.navigate("Select Workout Type", {
+              user,
+            })
+          }
+          style={{
+            borderRadius: 5,
+            backgroundColor: "white",
+            marginVertical: 5,
+            borderColor: "gray",
+            borderWidth: 1,
+            flexDirection: "row",
+            height: 120,
+            flex: 1,
+            paddingVertical: 10,
+          }}
+        >
+          <View style={{ paddingLeft: 10, alignSelf: "center" }}>
+            <MaterialCommunityIcons name="baguette" size={24} color="#C68958" />
+          </View>
+          <View style={{ paddingTop: 12, paddingLeft: 10 }}>
+            <Text style={{ fontWeight: "bold" }}>Loaf</Text>
+            <Text
+              style={{
+                paddingTop: 2,
+                paddingRight: 50,
+              }}
+            >
+              Your achivements list is looking slightly empty... That bread,
+              let's get it!
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -377,7 +419,7 @@ const Profile = (props) => {
             sections={combinedList}
             keyExtractor={(item) => item.id}
             renderItem={achListItem}
-            ListEmptyComponent={<Text>HI</Text>}
+            ListEmptyComponent={emptyList}
             renderSectionHeader={({ section: { title } }) => (
               <Text style={{ fontSize: 22, fontWeight: "bold", padding: 10 }}>
                 {title}:

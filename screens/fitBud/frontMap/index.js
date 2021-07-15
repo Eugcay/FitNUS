@@ -333,6 +333,7 @@ class FrontMap extends React.Component {
               latitudeDelta: 0.03,
               longitudeDelta: 0.03,
             }}
+            scrollEnabled={true}
             region={region}
             onRegionChange={this.onRegionChange}
           >
