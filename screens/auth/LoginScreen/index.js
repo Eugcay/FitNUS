@@ -12,6 +12,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { login } from "../../../helpers/auth";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
+import { styles } from "./styles";
 
 export default function LoginScreen({ navigation }) {
   const [userId, setUserId] = useState("");

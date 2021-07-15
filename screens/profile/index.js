@@ -100,7 +100,7 @@ const Profile = (props) => {
     );
 
     //Update accruedAchivements in database
-    if (props.accruedAchievements?.length === 0) {
+    if (props?.accruedAchievements?.length === 0) {
       setWeek(getCurrWeek())
       accruedList.forEach((temp) => {
         const tempAch = {
@@ -114,7 +114,7 @@ const Profile = (props) => {
       });
     } else {
       accruedList.forEach((temp) => {
-        props.accruedAchievements.forEach((saved) => {
+        props?.accruedAchievements.forEach((saved) => {
           if (temp.id === saved.data.id) {
             //console.log(new Date(saved.data.periodList[0].end.seconds * 1000))
             const pList = saved.data.periodList
@@ -135,7 +135,7 @@ const Profile = (props) => {
     //check if workout stats meet criteria -> overall - accrued
     const singleList = returnSingleTemp(overallRun, overallWorkout);
     //Update singleAchivements in database
-    if (props.singleAchievements?.length === 0) {
+    if (props?.singleAchievements?.length === 0) {
       singleList.forEach((temp) => {
         const tempAch = {
           id: temp.id,
@@ -148,7 +148,7 @@ const Profile = (props) => {
       });
     } else {
       let toAdd = singleList.filter((item) => {
-        return !(props.singleAchievements.some((data) => {
+        return !(props?.singleAchievements.some((data) => {
           return data.data.id === item.id
         }))
       })

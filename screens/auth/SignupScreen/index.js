@@ -10,6 +10,7 @@ import {
 import Background from "../../../components/Background";
 import { AntDesign } from "@expo/vector-icons";
 import { signUp } from "../../../helpers/auth";
+import { styles } from "./styles";
 
 const SignupScreen = ({ navigation }) => {
   const [name, setName] = useState("");

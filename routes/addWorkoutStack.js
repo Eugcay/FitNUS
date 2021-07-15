@@ -1,7 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import Startworkout from "../screens/startworkout";
+import StartWorkout from "../screens/startworkout";
 import Map from "../screens/map";
 import AddExercises from "../screens/startworkout/addExercises";
 import { ExerciseDetails } from "../screens/startworkout/exerciseDetails";
