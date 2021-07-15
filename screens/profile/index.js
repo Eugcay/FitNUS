@@ -25,7 +25,7 @@ import {
   getRunStats,
   getStats,
   reloadRunPeriod,
-  withinPeriod
+  withinPeriod,
 } from "../../helpers/profile";
 import { returnAccruedTemp, returnSingleTemp } from "./achievements";
 import {
@@ -33,7 +33,6 @@ import {
   addToSingleAchievements,
 } from "../../store/actions/achievements";
 import achListItem from "../../components/achievementsComponents/achListItem";
-
 
 const Profile = (props) => {
   const [user, setUser] = useState(null);
@@ -50,7 +49,8 @@ const Profile = (props) => {
 
   //achievements functions
   //Update accrued periodList
-  const updateAccruedAchievement = async (id, newList) => { //
+  const updateAccruedAchievement = async (id, newList) => {
+    //
     await firebase
       .firestore()
       .collection("users")
@@ -60,7 +60,7 @@ const Profile = (props) => {
       .update({
         periodList: newList,
       });
-  }
+  };
   //Update single achievements
   const updateSingleAchievements = async (toAdd) => {
     await firebase
@@ -69,7 +69,7 @@ const Profile = (props) => {
       .doc(firebase.auth().currentUser.uid)
       .collection("singleAchievements")
       .add(toAdd);
-  }
+  };
 
   //Achievements stuff
   useEffect(() => {
@@ -100,8 +100,8 @@ const Profile = (props) => {
     );
 
     //Update accruedAchivements in database
-    if (props.accruedAchievements?.length === 0) {
-      setWeek(getCurrWeek())
+    if (props?.accruedAchievements?.length === 0) {
+      setWeek(getCurrWeek());
       accruedList.forEach((temp) => {
         const tempAch = {
           id: temp.id,
@@ -114,18 +114,18 @@ const Profile = (props) => {
       });
     } else {
       accruedList.forEach((temp) => {
-        props.accruedAchievements.forEach((saved) => {
-          if (temp.id === saved.data.id) {
+        props?.accruedAchievements.forEach((saved) => {
+          if (temp.id === saved?.data.id) {
             //console.log(new Date(saved.data.periodList[0].end.seconds * 1000))
-            const pList = saved.data.periodList
+            const pList = saved?.data.periodList;
             if (withinPeriod(new Date(), pList[pList.length - 1])) {
               //continue;
             } else {
               //add thisWeek to saved periodList
               //update saved
-              setWeek(getCurrWeek())
-              const newList = saved.data.periodList.concat([getCurrWeek()])
-              updateAccruedAchievement(saved.id, newList);
+              setWeek(getCurrWeek());
+              const newList = saved?.data.periodList.concat([getCurrWeek()]);
+              updateAccruedAchievement(saved?.id, newList);
             }
           }
         });
@@ -135,7 +135,7 @@ const Profile = (props) => {
     //check if workout stats meet criteria -> overall - accrued
     const singleList = returnSingleTemp(overallRun, overallWorkout);
     //Update singleAchivements in database
-    if (props.singleAchievements?.length === 0) {
+    if (props?.singleAchievements?.length === 0) {
       singleList.forEach((temp) => {
         const tempAch = {
           id: temp.id,
@@ -148,31 +148,52 @@ const Profile = (props) => {
       });
     } else {
       let toAdd = singleList.filter((item) => {
-        return !(props.singleAchievements.some((data) => {
-          return data.data.id === item.id
-        }))
-      })
+        return !props?.singleAchievements.some((data) => {
+          return data.data.id === item.id;
+        });
+      });
       toAdd.forEach((item) => {
-        updateSingleAchievements(item)
-      })
+        updateSingleAchievements(item);
+      });
     }
-
-    setCombinedList([
-      {
-        title: "Stacked Achivements",
-        data: props.accruedAchievements,
-      },
-      {
-        title: "Milestones",
-        data: props.singleAchievements,
-      },
-    ]);
+    setCombinedList(
+      props.accruedAchievements.length > 0 && props.singleAchievements.length > 0
+        ? [
+            {
+              title: "Stacked Achivements",
+              data: props.accruedAchievements,
+            },
+            {
+              title: "Milestones",
+              data: props.singleAchievements,
+            },
+          ]
+        : props.accruedAchievements > 0
+        ? [
+            {
+              title: "Stacked Achivements",
+              data: props.accruedAchievements,
+            },
+          ]
+        : props.singleAchievements > 0
+        ? [
+            {
+              title: "Milestones",
+              data: props.singleAchievements,
+            },
+          ]
+        : []
+    );
   }, [
     props.runs,
     props.history,
     props.accruedAchievements,
-    props.singleAchievements
+    props.singleAchievements,
   ]);
+
+  const emptyList = () => {
+    <View></View>
+  }
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -356,9 +377,11 @@ const Profile = (props) => {
             sections={combinedList}
             keyExtractor={(item) => item.id}
             renderItem={achListItem}
-            // ListEmptyComponent={<View></View>}
+            ListEmptyComponent={<Text>HI</Text>}
             renderSectionHeader={({ section: { title } }) => (
-              <Text style={{fontSize: 22, fontWeight: 'bold', padding: 10}}>{title}:</Text>
+              <Text style={{ fontSize: 22, fontWeight: "bold", padding: 10 }}>
+                {title}:
+              </Text>
             )}
           />
         </View>

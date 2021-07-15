@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { resetPassword } from "../../../helpers/auth";
+import { styles } from "./styles";
 
 const ResetPassword = ({navigation}) => {
   const [email, setEmail] = useState("");
