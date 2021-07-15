@@ -45,7 +45,6 @@ export const Main = (props) => {
     props.fetchCompleted()
     props.fetchUpcoming()
     props.getUserSingleAchievements();
-    // console.log(firebase.auth().currentUser.uid)
   }, []);
 
   return (

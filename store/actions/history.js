@@ -1,5 +1,5 @@
 import firebase from "firebase";
-import { SET_USER_RUNS, SET_USER_HISTORY, ADD_RUN } from "./types";
+import { SET_USER_RUNS, SET_USER_HISTORY, ADD_RUN, ADD_WORKOUT } from "./types";
 
 export function getUserRuns() {
   return (dispatch) => {

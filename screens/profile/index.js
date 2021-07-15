@@ -115,7 +115,7 @@ const Profile = (props) => {
     } else {
       accruedList.forEach((temp) => {
         props?.accruedAchievements.forEach((saved) => {
-          if (temp.id === saved?.data.id) {
+          if (temp.id === saved?.data.id && saved?.data.periodList) {
             //console.log(new Date(saved.data.periodList[0].end.seconds * 1000))
             const pList = saved?.data.periodList;
             if (withinPeriod(new Date(), pList[pList.length - 1])) {

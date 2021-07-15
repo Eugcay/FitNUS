@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
   View,
   Text,
@@ -8,13 +8,26 @@ import {
 } from "react-native";
 import { resend, deleteUser } from "../../../helpers/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { logout } from "../../../helpers/auth";
 import firebase from "firebase";
 
 const Verification = (props) => {
   const goback = async () => {
     deleteUser()
   };
+
+  useEffect(() => {
+    setInterval(() => {
+        const user = firebase.auth().currentUser
+        if (user) {
+          user.reload();
+          if (user.emailVerified) {
+            props.verify()
+          }
+        }
+  
+        
+      }, 1000);
+  }, [])
 
   return (
     <View style={styles.background}>

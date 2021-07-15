@@ -79,8 +79,8 @@ export const reloadRunPeriod = (period, hist) => {
       .map((doc) => doc.data)
       .filter(
         (doc) =>
-          doc.date.seconds * 1000 < Date.parse(period.end) &&
-          doc.date.seconds * 1000 >= Date.parse(period.start)
+          doc.date.toDate() < period.end &&
+          doc.date.toDate() >= period.start
       )
   );
 };

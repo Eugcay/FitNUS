@@ -8,11 +8,9 @@ import {
   View,
   ImageBackground,
 } from "react-native";
-import { setRandomColor } from "../../helpers";
-import { timestampToDate } from "../../helpers";
+import { setRandomColor,timestampToDate } from "../../helpers";
 import { Divider } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { color } from "react-native-reanimated";
 
 const HistoryBar = ({ navigation, hist, runs }) => {
   const images = [
@@ -24,7 +22,7 @@ const HistoryBar = ({ navigation, hist, runs }) => {
   const histDisplay =
     hist && hist.length > 0 ? hist.slice(0, 8).concat({ end: true }) : hist;
   const runsDisplay =
-    hist && hist.length > 0 ? runs.slice(0, 8).concat({ end: true }) : hist;
+    runs && runs.length > 0 ? runs.slice(0, 8).concat({ end: true }) : runs;
 
   const WorkoutHistBar = ({ history }) => {
     //Passed in below as runs/hist
@@ -107,8 +105,10 @@ const HistoryBar = ({ navigation, hist, runs }) => {
     <View>
       <Text style={styles.barTitle}>Static Workouts</Text>
       <WorkoutHistBar history={histDisplay} />
+      <Divider/>
       <Text style={styles.barTitle}>Runs</Text>
       <WorkoutHistBar history={runsDisplay} />
+      <Divider />
     </View>
   );
 };

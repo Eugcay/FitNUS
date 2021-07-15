@@ -7,9 +7,7 @@ export async function signUp(name, email, password) {
 
     // send verification email
     const currUser = firebase.auth().currentUser;
-    await  currUser.sendEmailVerification();
-
-     firebase.firestore().collection("users").doc(currUser.uid).set({
+    await firebase.firestore().collection("users").doc(currUser.uid).set({
       name,
       email,
       bio: "",
@@ -18,6 +16,9 @@ export async function signUp(name, email, password) {
       durationGoal: "",
       pb: [],
     });
+    currUser.sendEmailVerification();
+
+   
     
     
     
@@ -64,9 +65,9 @@ export const resetPassword = async (email) => {
 export const deleteUser = async () => {
   try {
     const user = firebase.auth().currentUser
+    await firebase.firestore().collection('users').doc(user.uid).delete()
     await logout()
     await user.delete();
-    await firebase.firestore().collection('users').doc(user.uid).delete()
     console.log("success");
   } catch (error) {
     alert(error);
