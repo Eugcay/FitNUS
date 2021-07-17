@@ -94,6 +94,7 @@ const RunMap = (props) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [screenShot, setScreenshot] = useState(null);
   const [userLoc, setUserLoc] = useState(true);
+  const [index, setIndex] = useState(-1);
 
   //takeSnapshot
   const takeScreenshot = async () => {
@@ -130,24 +131,12 @@ const RunMap = (props) => {
     
   };
 
-  // (async () => {
-  //   let screenshot = await refer.takeSnapshot({
-  //     format: "png", // image formats: 'png', 'jpg' (default: 'png')
-  //     quality: 0.8, // image quality: 0..1 (only relevant for jpg, default: 1)
-  //     result: "file", // result types: 'file', 'base64' (default: 'file')
-  //   });
-  //   setScreenshot(screenshot);
-  // })();
-
   const calcDistance = (prevLatLng, newLatLng) => {
     return haversine(prevLatLng, newLatLng) || 0;
   };
 
   //Carry on
   useEffect(() => {
-    // if (screenShot !== null) {
-    //   finishRun(); /////////////////////////FINISH RUN HERE!!!!!!!!!!! so snapshot will ne taken first
-    // }
 
     (async () => {
       console.log("Effect Rendered");
@@ -174,23 +163,29 @@ const RunMap = (props) => {
           longitude: loc.coords.longitude,
         };
         setCurrentLocation(newLocation);
-        setLocList((oldList) => [...oldList, newLocation]);
-        console.log(
-          "Initial Current Location Retrieved: " +
-            "{ lat: " +
-            newLocation.latitude +
-            " lon: " +
-            newLocation.longitude +
-            " }"
-        );
+        setLocList((locList) => [...locList, newLocation]);
+        setIndex(index + 1)
+        // console.log(
+        //   "Initial Current Location Retrieved: " +
+        //     "{ lat: " +
+        //     newLocation.latitude +
+        //     " lon: " +
+        //     newLocation.longitude +
+        //     " }"
+        // );
       } else {
-        console.log("Initial Current Location is not null");
-        console.log("Total Distance Travelled: " + distance + " Km");
-        console.log("Pace: " + (distance * 1000) / (timeNow / 1000));
+        console.log(locList);
+        //set distance by drawing from locList
+        if (locList.length >= 2 && locList.length >= index) {
+          setNewDistance((oldDistance) => oldDistance + calcDistance(locList[index], locList[index + 1]))
+          //increase index
+          setIndex((oldIndex) => oldIndex + 1);
+          //console.log(distance)
+        }
       }
       ////////////////////////////////////////////////////////////
     })();
-  }, [currentLocation, screenShot]); //only rerender if loclist changes
+  }, [currentLocation, screenShot]); //only rerender if currentLocation changes
 
   const start = () => {
     setStatus("Continue");
@@ -198,10 +193,10 @@ const RunMap = (props) => {
       "-----------------------------------Start Pressed------------------------------------------"
     );
     ////////////////////////////////////////////////////////////
-    (async () => {
-      let locations = await Location.watchPositionAsync(
+    async function watchPos(index) {
+      let locations = await Location.watchPositionAsync( //Only use this to change state, dont use this to change sideEffects, e.g don calc inside
         {
-          accuracy: Location.Accuracy.Highest,
+          accuracy: Location.Accuracy.High,
           timeInterval: 6000,
           distanceInterval: 1,
         },
@@ -210,11 +205,9 @@ const RunMap = (props) => {
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,
           };
-          const newDistance = calcDistance(currentLocation, latlon);
-          setNewDistance((distance) => distance + newDistance);
           setCurrentLocation(latlon);
-          setLocList((oldList) => [...oldList, latlon]);
-
+          //Everytime the location changes -> Add location into locList.
+          setLocList((locList) => [...locList, latlon]);
           console.log(
             "==========Location Changed: " +
               "{ lat: " +
@@ -223,23 +216,19 @@ const RunMap = (props) => {
               latlon.longitude +
               " }=========="
           );
-          console.log(
-            "Distance Travelled in Recent Change: " + newDistance + " Km"
-          );
         }
       );
-      if (remove == null) {
-        setRemove(locations);
-      } else {
-        console.log("Remove function is no longer undefined");
-      }
-    })();
+      setRemove(locations);
+    }
+
+    watchPos(index);
   };
 
   const stop = () => {
     console.log(
       "-------------------------------Finish Run Pressed-----------------------------------"
     );
+    console.log(remove)
     remove.remove();
     console.log(
       "---------------------------------Function Removed?-------------------------------------"
