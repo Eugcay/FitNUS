@@ -15,8 +15,9 @@ import { presetLocations, testCords } from "./config";
 import { styles, options } from "./styles";
 import firebase from "firebase";
 import { connect } from "react-redux";
-import { addToRuns } from "../../../store/actions/history"; 
+import { addToRuns } from "../../../store/actions/history";
 import Spinner from "../../../components/Spinner";
+import { Entypo } from "@expo/vector-icons";
 
 const RunMap = (props) => {
   //RunDetails Stuff
@@ -26,7 +27,7 @@ const RunMap = (props) => {
   const [showhideRoute, setshowhideRoute] = useState(true);
   const [description, setDescription] = useState(null);
   const [jioStatus, setJio] = useState(null);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const oldRun = props.route.params?.details;
   const startPoint = oldRun?.start;
   const endPoint = oldRun?.end;
@@ -41,7 +42,7 @@ const RunMap = (props) => {
 
   const [mTop, setMargin] = useState(0);
   const [dark, setDark] = useState(false);
-  const [title, setTitle] = useState("Workout title");
+  const [title, setTitle] = useState("Custom Run");
   const [refer, setRefer] = useState(null);
   //detailsloclist
   //display polyline and markers
@@ -66,13 +67,23 @@ const RunMap = (props) => {
     }, 0);
   }).current;
 
+  // convert time in seconds to displayed form
+  const secondsToDuration = (seconds) => {
+    return (
+      (seconds >= 3600 ? Math.floor(seconds / 3600) + "h " : "") +
+      Math.floor((seconds % 3600) / 60) +
+      "m " +
+      (seconds < 3600 ? Math.floor(seconds % 60) + "s" : "")
+    );
+  };
+
   useEffect(() => {
     const template = props.route.params?.template;
     if (template) {
       setTitle(template?.name);
       setJio(template?.jio);
       setDescription(template?.description);
-      console.log(template)
+      console.log(template);
     }
 
     props.navigation.setOptions({
@@ -100,35 +111,36 @@ const RunMap = (props) => {
   const takeScreenshot = async () => {
     // 'takeSnapshot' takes a config object with the
     // following options
-      let screenshot = await refer.takeSnapshot({
-        format: "png", // image formats: 'png', 'jpg' (default: 'png')
-        quality: 0.8, // image quality: 0..1 (only relevant for jpg, default: 1)
-        result: "file", // result types: 'file', 'base64' (default: 'file')
-      });
+    let screenshot = await refer.takeSnapshot({
+      format: "png", // image formats: 'png', 'jpg' (default: 'png')
+      quality: 0.8, // image quality: 0..1 (only relevant for jpg, default: 1)
+      result: "file", // result types: 'file', 'base64' (default: 'file')
+    });
 
-      const res = await fetch(screenshot)
-      const blob = await res.blob()
-      const path = `runs/${firebase.auth().currentUser.uid}/${Math.random().toString(36)}`
+    const res = await fetch(screenshot);
+    const blob = await res.blob();
+    const path = `runs/${
+      firebase.auth().currentUser.uid
+    }/${Math.random().toString(36)}`;
 
-      const task = firebase.storage().ref().child(path).put(blob);
+    const task = firebase.storage().ref().child(path).put(blob);
 
-      const progress = (snapshot) => {
-        console.log(`transferred: ${snapshot.bytesTransferred}`);
-      };
+    const progress = (snapshot) => {
+      console.log(`transferred: ${snapshot.bytesTransferred}`);
+    };
 
-      const completed = () => {
-        task.snapshot.ref.getDownloadURL().then((snapshot) => {
-          finishRun(snapshot);
-          console.log(snapshot);
-        });
-      };
-
-      const error = (snapshot) => {
+    const completed = () => {
+      task.snapshot.ref.getDownloadURL().then((snapshot) => {
+        finishRun(snapshot);
         console.log(snapshot);
-      };
+      });
+    };
 
-      task.on("state_change", progress, error, completed);
-    
+    const error = (snapshot) => {
+      console.log(snapshot);
+    };
+
+    task.on("state_change", progress, error, completed);
   };
 
   const calcDistance = (prevLatLng, newLatLng) => {
@@ -137,7 +149,6 @@ const RunMap = (props) => {
 
   //Carry on
   useEffect(() => {
-
     (async () => {
       console.log("Effect Rendered");
 
@@ -164,7 +175,7 @@ const RunMap = (props) => {
         };
         setCurrentLocation(newLocation);
         setLocList((locList) => [...locList, newLocation]);
-        setIndex(index + 1)
+        setIndex(index + 1);
         // console.log(
         //   "Initial Current Location Retrieved: " +
         //     "{ lat: " +
@@ -177,7 +188,10 @@ const RunMap = (props) => {
         console.log(locList);
         //set distance by drawing from locList
         if (locList.length >= 2 && locList.length > index + 1) {
-          setNewDistance((oldDistance) => oldDistance + calcDistance(locList[index], locList[index + 1]))
+          setNewDistance(
+            (oldDistance) =>
+              oldDistance + calcDistance(locList[index], locList[index + 1])
+          );
           //increase index
           setIndex((oldIndex) => oldIndex + 1);
           //console.log(distance)
@@ -194,7 +208,8 @@ const RunMap = (props) => {
     );
     ////////////////////////////////////////////////////////////
     async function watchPos(index) {
-      let locations = await Location.watchPositionAsync( //Only use this to change state, dont use this to change sideEffects, e.g don calc inside
+      let locations = await Location.watchPositionAsync(
+        //Only use this to change state, dont use this to change sideEffects, e.g don calc inside
         {
           accuracy: Location.Accuracy.High,
           timeInterval: 6000,
@@ -229,6 +244,7 @@ const RunMap = (props) => {
     //   "-------------------------------Finish Run Pressed-----------------------------------"
     // );
     //console.log(remove)
+    setIndex((oldIndex) => oldIndex + 1);
     remove.remove();
     // console.log(
     //   "---------------------------------Function Removed?-------------------------------------"
@@ -247,36 +263,44 @@ const RunMap = (props) => {
       date: new Date(),
       imageURL: ss,
       ran,
-      jioStatus
+      jioStatus,
     };
     if (jioStatus) {
-      setLoading(true)
-      await finishJio(jioStatus.id, {...run})
+      setLoading(true);
+      await finishJio(jioStatus.id, { ...run });
     } else {
-      setLoading(true)
+      setLoading(true);
       await firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("runs")
-      .add(run)
+        .firestore()
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .collection("runs")
+        .add(run);
       // props.finish(run)
     }
-    props.navigation.navigate("Main", {name: 'FitBud'});
+    props.navigation.navigate("Main", { name: "FitBud" });
   };
 
   const finishJio = async (id, workout) => {
-    await firebase.firestore().collection('jios').doc(id).update({completed: true})
-    const db = firebase.firestore()
-    const batch = db.batch()
-    
-    jioStatus.people.forEach(user => {
-      const docRef = db.collection('users').doc(user.uid).collection('runs').doc()
-      batch.set(docRef, workout)
-    })
+    await firebase
+      .firestore()
+      .collection("jios")
+      .doc(id)
+      .update({ completed: true });
+    const db = firebase.firestore();
+    const batch = db.batch();
 
-    batch.commit()
-  }
+    jioStatus.people.forEach((user) => {
+      const docRef = db
+        .collection("users")
+        .doc(user.uid)
+        .collection("runs")
+        .doc();
+      batch.set(docRef, workout);
+    });
+
+    batch.commit();
+  };
 
   const _onMapReady = () => setMargin(60);
 
@@ -468,33 +492,82 @@ const RunMap = (props) => {
         ) : (
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={400}
             style={styles.finishRunBorder}
           >
-            {loading && <Spinner/>}
-            <TextInput
-              style={{
-                height: 50,
-                borderColor: "gray",
-                borderWidth: 1,
-                marginVertical: 10,
-                paddingLeft: 15,
-                fontSize: 28,
-              }}
-              onChangeText={(text) => setTitle(text)}
-              value={title}
-              maxLength={20}
-            />
+            {loading && <Spinner />}
+            <View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 20,
+                }}
+              >
+                <Entypo name="medal" size={64} color="#0B2A59" />
+                <View
+                  style={{
+                    flexDirection: "column",
+                    paddingLeft: 10,
+                    alignContent: "space-around",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+                    Run title:{" "}
+                  </Text>
+                  <TextInput
+                    style={{
+                      height: 32,
+                      width: 200,
+                      borderColor: "gray",
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      marginVertical: 10,
+                      paddingLeft: 15,
+                      fontSize: 16,
+                    }}
+                    onChangeText={(text) => setTitle(text)}
+                    value={title}
+                    maxLength={31}
+                    defaultValue={"Custom run"}
+                  />
+                </View>
+              </View>
+              <View style={{ paddingTop: 30 }}>
+                <Text
+                  style={{
+                    fontSize: 22,
+                    paddingBottom: 10,
+                    fontWeight: "bold",
+                    color: "#0B2A59",
+                  }}
+                >
+                  Great Job!
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    textAlign: "justify",
+                    lineHeight: 32,
+                  }}
+                >
+                  You ran a total of {distance.toFixed(2)} Km in{"\n"}
+                  {secondsToDuration(timeNow / 1000)}, with an average pace of{" "}
+                  {(timeNow / 1000 / 60 / distance.toFixed(2)).toFixed(2)}{" "}
+                  min/Km.
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    paddingTop: 10,
+                    color: "#0B2A59",
+                  }}
+                >
+                  Keep it up!
+                </Text>
+              </View>
+            </View>
 
-            <Text style={styles.finishRunDistance}>
-              Total Distance: {distance.toFixed(2)} Km
-            </Text>
-            <Text style={styles.finishRunTime}>
-              Total Time: {(timeNow / 1000 / 60).toFixed(2)} minutes
-            </Text>
-            <Text style={styles.finishRunPace}>
-              Average Pace:{" "}
-              {(distance.toFixed(2) / (timeNow / 1000 / 60)).toFixed(2)} Km/m
-            </Text>
             <TouchableOpacity //Finishfinish
               style={styles.finishRunButton}
               onPress={() => {

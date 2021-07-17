@@ -147,14 +147,17 @@ const Profile = (props) => {
         props.addToSingle(tempAch);
       });
     } else {
-      let toAdd = singleList.filter((item) => {
-        return !props?.singleAchievements.some((data) => {
-          return data.data.id === item.id;
+      if (singleList.length > props?.singleAchievements.length) {
+        let toAdd = singleList.filter((item) => {
+          return !props?.singleAchievements.some((data) => {
+            return data.data.id === item.id;
+          });
         });
-      });
-      toAdd.forEach((item) => {
-        updateSingleAchievements(item);
-      });
+        toAdd.forEach((item) => {
+          updateSingleAchievements(item);
+        });
+      }
+      
     }
 
     setCombinedList(
