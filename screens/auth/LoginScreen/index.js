@@ -64,6 +64,7 @@ export default function LoginScreen({ navigation }) {
           style={{ paddingHorizontal: 10 }}
           onChangeText={(text) => {console.log(text); setUserId(text)}}
           errorText="Please enter valid email"
+          autoCapitalize='none'
         />
       </View>
       <View style={styles.input}>
@@ -75,6 +76,7 @@ export default function LoginScreen({ navigation }) {
           errorText="Please enter valid password"
           secureTextEntry={true}
           value={password}
+          autoCapitalize='none'
         />
       </View>
       <TouchableOpacity onPress={() => navigation.navigate("SignupScreen")}>

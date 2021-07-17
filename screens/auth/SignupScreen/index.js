@@ -72,6 +72,7 @@ const SignupScreen = ({ navigation }) => {
           placeholder="NUS or personal email"
           style={{ paddingHorizontal: 10 }}
           onChangeText={(text) => setEmail(text)}
+          autoCapitalize='none'
         />
       </View>
       <View style={styles.input}>
@@ -80,6 +81,8 @@ const SignupScreen = ({ navigation }) => {
           placeholder="Password"
           style={{ paddingHorizontal: 10 }}
           onChangeText={(text) => setPassword(text)}
+          autoCapitalize='none'
+          secureTextEntry
         />
       </View>
       <View style={styles.input}>
@@ -88,6 +91,8 @@ const SignupScreen = ({ navigation }) => {
           placeholder="Confirm Password"
           style={{ paddingHorizontal: 10 }}
           onChangeText={(text) => setConfirm(text)}
+          autoCapitalize='none'
+          secureTextEntry
         />
       </View>
       <TouchableOpacity

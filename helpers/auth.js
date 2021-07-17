@@ -7,7 +7,8 @@ export async function signUp(name, email, password) {
 
   
     // send verification email
-    const currUser = await firebase.auth().currentUser;
+    const currUser = firebase.auth().currentUser;
+    console.log(currUser)
       
     await firebase.firestore().collection("users").doc(currUser.uid).set({
       name,
@@ -19,7 +20,7 @@ export async function signUp(name, email, password) {
       pb: [],
     });
 
-    currUser.sendEmailVerification();
+    await currUser.sendEmailVerification();
 
   } catch (error) {
     alert(error);

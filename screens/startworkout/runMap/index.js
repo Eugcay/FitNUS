@@ -163,7 +163,7 @@ const RunMap = (props) => {
           longitude: loc.coords.longitude,
         };
         setCurrentLocation(newLocation);
-        setLocList((locList) => [...locList, newLocation]);
+        setLocList((locList) => [...locList, {...newLocation, end: true}]);
         setIndex(index + 1)
         // console.log(
         //   "Initial Current Location Retrieved: " +
@@ -176,8 +176,10 @@ const RunMap = (props) => {
       } else {
         console.log(locList);
         //set distance by drawing from locList
-        if (locList.length >= 2 && locList.length >= index) {
-          setNewDistance((oldDistance) => oldDistance + calcDistance(locList[index], locList[index + 1]))
+        if (locList.length >= 1 && locList.length >= index + 1) {
+          if (!locList[index]?.end) {
+            setNewDistance((oldDistance) => oldDistance + calcDistance(locList[index], locList[index + 1]))
+          }
           //increase index
           setIndex((oldIndex) => oldIndex + 1);
           //console.log(distance)
@@ -193,7 +195,7 @@ const RunMap = (props) => {
       "-----------------------------------Start Pressed------------------------------------------"
     );
     ////////////////////////////////////////////////////////////
-    async function watchPos(index) {
+    async function watchPos() {
       let locations = await Location.watchPositionAsync( //Only use this to change state, dont use this to change sideEffects, e.g don calc inside
         {
           accuracy: Location.Accuracy.High,
@@ -207,6 +209,9 @@ const RunMap = (props) => {
           };
           setCurrentLocation(latlon);
           //Everytime the location changes -> Add location into locList.
+          if (locList.length === 1 || locList[index]?.end) {
+            setLocList((locList) => [...locList, {...latlon, start: true}]);
+          }
           setLocList((locList) => [...locList, latlon]);
           console.log(
             "==========Location Changed: " +
@@ -221,7 +226,7 @@ const RunMap = (props) => {
       setRemove(locations);
     }
 
-    watchPos(index);
+    watchPos();
   };
 
   const stop = () => {
@@ -229,6 +234,9 @@ const RunMap = (props) => {
       "-------------------------------Finish Run Pressed-----------------------------------"
     );
     console.log(remove)
+    setLocList((locList) => [...locList, {...locList[index + 1], end: true}])
+    setIndex(oldIndex => oldIndex + 1)
+    console.log(locList[locList.length - 1])
     remove.remove();
     console.log(
       "---------------------------------Function Removed?-------------------------------------"
@@ -272,6 +280,7 @@ const RunMap = (props) => {
     
     jioStatus.people.forEach(user => {
       const docRef = db.collection('users').doc(user.uid).collection('runs').doc()
+
       batch.set(docRef, workout)
     })
 
@@ -493,7 +502,7 @@ const RunMap = (props) => {
             </Text>
             <Text style={styles.finishRunPace}>
               Average Pace:{" "}
-              {(distance.toFixed(2) / (timeNow / 1000 / 60)).toFixed(2)} Km/m
+              {(timeNow / 1000 / 60).toFixed(2) / distance.toFixed(2)} min/km
             </Text>
             <TouchableOpacity //Finishfinish
               style={styles.finishRunButton}
