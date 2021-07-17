@@ -6,10 +6,10 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "rgba(255, 255, 255, 0.7)",
     borderRadius: 20,
-    bottom: 120,
-    height: Dimensions.get("window").height * 0.5,
+    bottom: 80,
+    height: Dimensions.get("window").height * 0.6,
     padding: 30,
-    width: Dimensions.get("window").width * 0.75,
+    width: Dimensions.get("window").width * 0.9,
   },
   finishRunDistance: {
     color: "black",
