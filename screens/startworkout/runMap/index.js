@@ -176,7 +176,7 @@ const RunMap = (props) => {
       } else {
         console.log(locList);
         //set distance by drawing from locList
-        if (locList.length >= 2 && locList.length >= index) {
+        if (locList.length >= 2 && locList.length > index + 1) {
           setNewDistance((oldDistance) => oldDistance + calcDistance(locList[index], locList[index + 1]))
           //increase index
           setIndex((oldIndex) => oldIndex + 1);
@@ -208,14 +208,14 @@ const RunMap = (props) => {
           setCurrentLocation(latlon);
           //Everytime the location changes -> Add location into locList.
           setLocList((locList) => [...locList, latlon]);
-          console.log(
-            "==========Location Changed: " +
-              "{ lat: " +
-              latlon.latitude +
-              " lon: " +
-              latlon.longitude +
-              " }=========="
-          );
+          // console.log(
+          //   "==========Location Changed: " +
+          //     "{ lat: " +
+          //     latlon.latitude +
+          //     " lon: " +
+          //     latlon.longitude +
+          //     " }=========="
+          // );
         }
       );
       setRemove(locations);
@@ -225,14 +225,14 @@ const RunMap = (props) => {
   };
 
   const stop = () => {
-    console.log(
-      "-------------------------------Finish Run Pressed-----------------------------------"
-    );
-    console.log(remove)
+    // console.log(
+    //   "-------------------------------Finish Run Pressed-----------------------------------"
+    // );
+    //console.log(remove)
     remove.remove();
-    console.log(
-      "---------------------------------Function Removed?-------------------------------------"
-    );
+    // console.log(
+    //   "---------------------------------Function Removed?-------------------------------------"
+    // );
   };
 
   const finishRun = async (ss) => {
