@@ -62,7 +62,6 @@ const JioStart = (props) => {
   };
 
   useEffect(() => {
-   
     if (jioData) {
       dispatch({ type: "SET", value: { ...jioData.data, id: jioData.id } });
       props.navigation.setOptions({
@@ -96,7 +95,10 @@ const JioStart = (props) => {
   const removeJio = async (id) => {
     const storageRef = firebase.storage().refFromURL(jioState.img);
 
-    storageRef.delete().then(() => console.log('success')).catch(err => console.log(err))
+    storageRef
+      .delete()
+      .then(() => console.log("success"))
+      .catch((err) => console.log(err));
 
     firebase
       .firestore()
@@ -134,9 +136,8 @@ const JioStart = (props) => {
   };
 
   const updateAndSubmit = async () => {
-
-    if (jioState.img && jioState.img.indexOf('firebase') === -1) {
-      console.log('ye')
+    if (jioState.img && jioState.img.indexOf("firebase") === -1) {
+      console.log("ye");
       const res = await fetch(jioState.img);
       const blob = await res.blob();
       const path = `jios/${
@@ -162,13 +163,12 @@ const JioStart = (props) => {
 
       task.on("state_change", progress, error, completed);
     } else {
-      console.log('no')
-       submitJio(jioState?.img || null)
-     }
+      console.log("no");
+      submitJio(jioState?.img || null);
+    }
   };
 
   const submitJio = async (snapshot) => {
-
     const created = firebase.firestore.FieldValue.serverTimestamp();
     const ref = await firebase.firestore().collection("jios");
     if (jioData) {
@@ -177,7 +177,7 @@ const JioStart = (props) => {
         .update({
           ...jioState,
           creation: created,
-          img: snapshot
+          img: snapshot,
         })
         .then(props.navigation.navigate("Main"));
     } else {
@@ -187,7 +187,7 @@ const JioStart = (props) => {
           user: firebase.auth().currentUser.uid,
           creation: created,
           likes: [user],
-          img: snapshot
+          img: snapshot,
         })
         .then(props.navigation.navigate("Main"));
     }
@@ -381,13 +381,18 @@ const JioStart = (props) => {
                 </>
               ) : (
                 <>
-                  <Text style={styles.bottomButton}>{jioData && 'Edit'} Workout Details</Text>
+                  <Text style={styles.bottomButton}>
+                    {jioData && "Edit"} Workout Details
+                  </Text>
                   <Ionicons name="arrow-forward" size={17} color="blue" />
-
                 </>
               )}
             </TouchableOpacity>
-            {jioData && jioState.type !== "Run" && <TouchableOpacity onPress={() => updateAndSubmit()}><Text style={styles.bottomButton}>Save</Text></TouchableOpacity>}
+            {jioData && jioState.type !== "Run" && (
+              <TouchableOpacity onPress={() => updateAndSubmit()}>
+                <Text style={styles.bottomButton}>Save</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </ScrollView>

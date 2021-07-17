@@ -10,17 +10,15 @@ export default class MuscleCategoryPie extends Component {
     this.state = {
       selectedSlice: "",
     };
-    console.log(props.data)
+    console.log(props.data);
   }
 
   select = (id) => {
-    this.setState({selectedSlice: id})
+    this.setState({ selectedSlice: id });
     setTimeout(() => {
-      this.setState({selectedSlice: ""})
-    }, 500)
-  }
-
-  
+      this.setState({ selectedSlice: "" });
+    }, 500);
+  };
 
   render() {
     const data = this.props.data;
@@ -40,7 +38,9 @@ export default class MuscleCategoryPie extends Component {
             stroke={"black"}
             strokeWidth={0.05}
           >
-            {Math.round((slice.data.value / total) * 100) + "%"}
+            {Math.round((slice.data.value / total) * 100) > 4
+              ? Math.round((slice.data.value / total) * 100) + "%"
+              : ""}
           </Text>
         );
       });
@@ -56,8 +56,8 @@ export default class MuscleCategoryPie extends Component {
           onPress: () => this.select(cat.id),
         },
         arc: {
-          outerRadius: this.state.selectedSlice === cat.id ? "100%" : "95%",
-          padAngle: this.state.selectedSlice === cat.id ? 0.08 : 0.04,
+          outerRadius: this.state.selectedSlice === cat.id ? "100%" : "97%",
+          padAngle: this.state.selectedSlice === cat.id ? 0.06 : 0.04,
         },
       }));
 
@@ -71,7 +71,7 @@ export default class MuscleCategoryPie extends Component {
         <Labels />
       </PieChart>
     ) : (
-      <NoData/> 
+      <NoData />
     );
   }
 }

@@ -4,6 +4,7 @@ export const styles = StyleSheet.create({
   logo: {
     width: "60%",
     height: "12%",
+    minHeight: 95,
     alignSelf: "center",
     marginBottom: 10,
   },

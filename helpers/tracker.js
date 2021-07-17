@@ -89,7 +89,7 @@ export const yearlyData = (hist) => {
   const DataPerMonth = months.map(
     (month) =>
       hist.filter(
-        (workout) => new Date(workout.date.seconds * 1000).getMonth() === month
+        (workout) => workout.date.toDate().getMonth() === month
       ).length
   );
   return DataPerMonth;
@@ -110,7 +110,7 @@ export const statsByEx = (exercise, hist) => {
   }
   const res = workoutsWithEx
     .map((workout) => ({
-      date: workout.date.seconds * 1000,
+      date: Date.parse(workout.date.toDate()),
       exStats: workout.exercises
         .filter((ex) => ex.data.name === exercise.data.name)
         .map((ex) => ex.sets.length)

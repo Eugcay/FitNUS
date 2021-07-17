@@ -16,6 +16,7 @@ import { styles, options } from "./styles";
 import firebase from "firebase";
 import { connect } from "react-redux";
 import { addToRuns } from "../../../store/actions/history"; 
+import Spinner from "../../../components/Spinner";
 
 const RunMap = (props) => {
   //RunDetails Stuff
@@ -25,6 +26,7 @@ const RunMap = (props) => {
   const [showhideRoute, setshowhideRoute] = useState(true);
   const [description, setDescription] = useState(null);
   const [jioStatus, setJio] = useState(null);
+  const [loading, setLoading] = useState(false)
   const oldRun = props.route.params?.details;
   const startPoint = oldRun?.start;
   const endPoint = oldRun?.end;
@@ -253,17 +255,25 @@ const RunMap = (props) => {
       duration: timeNow / 1000,
       distance,
       locList,
-      date: firebase.firestore.FieldValue.serverTimestamp(),
+      date: new Date(),
       imageURL: ss,
       ran,
       jioStatus
     };
     if (jioStatus) {
-      await finishJio(jioStatus.id, {...run, date: new Date()})
+      setLoading(true)
+      await finishJio(jioStatus.id, {...run})
     } else {
-      props.finish(run)
+      setLoading(true)
+      await firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("runs")
+      .add(run)
+      // props.finish(run)
     }
-    props.navigation.navigate("Main");
+    props.navigation.navigate("Main", {name: 'FitBud'});
   };
 
   const finishJio = async (id, workout) => {
@@ -471,6 +481,7 @@ const RunMap = (props) => {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.finishRunBorder}
           >
+            {loading && <Spinner/>}
             <TextInput
               style={{
                 height: 50,

@@ -31,7 +31,7 @@ const StartWorkout = (props) => {
   const [pulls, setPulls] = useState(1);
   const [workoutStatus, setStatus] = useState("Not Started");
   const [jioStatus, setJio] = useState(null);
-  const [PBs, setPBs] = useState(0)
+  const [PBs, setPBs] = useState(0);
   const achievements = [];
 
   useEffect(() => {
@@ -103,17 +103,22 @@ const StartWorkout = (props) => {
   };
 
   const saveTemplate = () => {
-    firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('templates').add({
-      name,
-      description,
-      duration: timeNow / 1000,
-      distance: 0,
-      calories: 100,
-      imageURL,
-      exercises: formatExercises(),
-      template: true 
-    })
-  }
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("templates")
+      .add({
+        name,
+        description,
+        duration: timeNow / 1000,
+        distance: 0,
+        calories: 100,
+        imageURL,
+        exercises: formatExercises(),
+        template: true,
+      });
+  };
 
   const formatExercises = () => {
     return exercises.map((exercise) => ({
@@ -133,13 +138,14 @@ const StartWorkout = (props) => {
     return completed && exercises.length > 0;
   };
 
-  const finishWorkout = () => {
+  const finishWorkout = async () => {
     if (workoutComplete()) {
       setStatus("Paused");
       setIsStopwatchStart(false);
       console.log(timeNow);
       checkPb();
-      checkAchievements();
+      console.log(PBs)
+
       const workout = {
         name,
         description,
@@ -150,18 +156,26 @@ const StartWorkout = (props) => {
         exercises,
         achievements,
         jioStatus,
-        PBs
+        PBs,
       };
       if (jioStatus) {
         finishJio(jioStatus.id, { ...workout, date: new Date() });
       } else {
-        props.finish(workout);
+        await firebase
+          .firestore()
+          .collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .collection("history")
+          .add({
+            ...workout,
+            date: new Date(),
+          });
       }
       clearWorkout();
-      props.navigation.navigate("Main", { screen: "Fit Bud" });
+      props.navigation.navigate("Main", { screen: 'FitBud' });
     } else {
       Alert.alert("Workout incomplete!");
-    }
+     }
   };
 
   const finishJio = async (id, workout) => {
@@ -186,33 +200,34 @@ const StartWorkout = (props) => {
   };
 
   const checkPb = () => {
+    let currPBs = [...props.currentUser?.pb] || []
     exercises.forEach((exe) => {
       const exName = exe.data.name;
       const max = exe.sets
         .map((set) => set.weight)
         .reduce((x, y) => Math.max(x, y), 0);
+      
       const doneBefore = props.currentUser?.pb
-        ? props.currentUser.pb.find((ex) => ex.exercise === exName)
+        ? currPBs.find((ex) => ex.exercise === exName)
         : null;
+      
       const currPb = doneBefore ? doneBefore.best : 0;
+      console.log(max, currPb)
       if (max > currPb) {
-        setPBs(PBs + 1)
+        setPBs(PBs + 1);
         if (doneBefore) {
-          const data = [...props.currentUser.pb];
+          const data = [...currPBs];
           const index = data.findIndex((ex) => ex.exercise === exName);
           data.splice(index, 1, { exercise: exName, best: max });
-          props.updatePB({ ...props.currentUser, pb: data });
+          currPBs = data;
         } else {
-          props.updatePB({
-            ...props.currentUser,
-            pb: props.currentUser.pb.concat({ exercise: exName, best: max }),
-          });
+           currPBs = currPBs.concat({ exercise: exName, best: max })
         }
       }
     });
-  };
 
-  const checkAchievements = () => {};
+    props.updatePB({...props.currentUser, pb: currPBs})
+  };
 
   const renderItem = ({ item }) => {
     return (
@@ -274,7 +289,6 @@ const StartWorkout = (props) => {
       setName(template?.name); //name
       setDescription(template?.description); //desc
       setImageURL(template?.imageURL || ""); //ImageUrl
-      console.log(jioStatus);
       setPulls(pulls + 1);
     } else if (props.route.params?.exercise && updating) {
       updateWorkout(props.route.params?.exercise);
@@ -303,7 +317,7 @@ const StartWorkout = (props) => {
   return (
     <View style={{ flexGrow: 1, justifyContent: "space-evenly" }}>
       <ScrollView>
-        <View style={{ flexGrow: 1, justifyContent: "space-between" }}>
+        <View style={{ flex: 1, justifyContent: "space-between" }}>
           <View style={{ paddingBottom: 10 }}>
             <HeaderTop
               name={name}

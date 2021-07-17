@@ -57,120 +57,125 @@ const Tracker = (props) => {
 
   useEffect(() => {
     ///////////Runs
-    const totRun = props.runs
-      ? getRunStats(props.runs.map((doc) => doc.data))
-      : null;
-    const runsPerMonth =
-      props.runs && yearlyData(props.runs.map((doc) => doc.data));
+    
+      const totRun = props.runs
+        ? getRunStats(props.runs.map((doc) => doc.data))
+        : null;
+      const runsPerMonth =
+        props.runs && yearlyData(props.runs.map((doc) => doc.data));
 
-    const mR = props.runs && reloadRunPeriod(month, props.runs);
-    const runsPerWeek =
-      props.runs &&
-      monthlyData(
-        props.runs.map((doc) => doc.data),
-        month
+      const mR = props.runs && reloadRunPeriod(month, props.runs);
+      const runsPerWeek =
+        props.runs &&
+        monthlyData(
+          props.runs.map((doc) => doc.data),
+          month
+        );
+      const wR = props.runs ? reloadRunPeriod(week, props.runs) : null;
+      /////Workouts
+      const tot =
+        props.history && getStats(props.history.map((doc) => doc.data));
+
+      const workoutsPerMonth =
+        props.history && yearlyData(props.history.map((doc) => doc.data));
+
+      const m = props.history && reloadPeriod(month, props.history);
+      const workoutsPerWeek =
+        props.history &&
+        monthlyData(
+          props.history.map((doc) => doc.data),
+          month
+        );
+
+      const w = props.history ? reloadPeriod(week, props.history) : null;
+
+      ///////Favs - Overall
+      const favourites = favExercises(props.history.map((doc) => doc.data));
+      setFavs(favourites);
+      //////User data
+      setUser(props.currentUser);
+      ///////Tracked exercises with the graph and stats
+      setExercises(
+        props.currentUser?.tracked ? props.currentUser?.tracked : []
       );
-    const wR = props.runs ? reloadRunPeriod(week, props.runs) : null;
-    /////Workouts
-    const tot = props.history && getStats(props.history.map((doc) => doc.data));
-
-    const workoutsPerMonth =
-      props.history && yearlyData(props.history.map((doc) => doc.data));
-
-    const m = props.history && reloadPeriod(month, props.history);
-    const workoutsPerWeek =
-      props.history &&
-      monthlyData(
-        props.history.map((doc) => doc.data),
-        month
-      );
-
-    const w = props.history ? reloadPeriod(week, props.history) : null;
-
-    ///////Favs - Overall
-    const favourites = favExercises(props.history.map((doc) => doc.data));
-    setFavs(favourites);
-    //////User data
-    setUser(props.currentUser);
-    ///////Tracked exercises with the graph and stats
-    setExercises(props.currentUser?.tracked ? props.currentUser?.tracked : []);
-    ////////Goals
-    setGoals({
-      duration: props.currentUser?.durationGoal || null,
-      workouts: props.currentUser?.workoutGoal || null,
-      runs: props.currentUser?.runGoal || null,
-    });
-    /////////Workout sets
-    setTotal({
-      ...tot,
-      workoutFreq: workoutsPerMonth.map(
-        (run, index) => run + runsPerMonth[index]
-      ),
-    });
-    setMonthly({
-      ...m,
-      workoutFreq: workoutsPerWeek.map((week, index) => ({
-        ...week,
-        count: week.count + runsPerWeek[index].count,
-      })),
-    });
-    //.map((run, index) => run + runsPerWeek[index])
-    setWeekly(w);
-    ///////////Run sets
-    setRunTotal({
-      ...totRun,
-      workoutFreq: runsPerMonth,
-    });
-    setRunMonthly({
-      ...mR,
-      workoutFreq: runsPerWeek,
-    });
-    setRunWeekly(wR);
-    ///////////WorkoutPeriod
-    const getPeriod = () => {
-      switch (statsType) {
-        case "weekly":
-          return w;
-        case "monthly":
-          return {
-            ...m,
-            workoutFreq: workoutsPerWeek.map((week, index) => ({
-              ...week,
-              count: week.count + runsPerWeek[index].count,
-            })),
-          };
-        case "total":
-          return {
-            ...tot,
-            workoutFreq: workoutsPerMonth.map(
-              (run, index) => run + runsPerMonth[index]
-            ),
-          };
-        default:
-          return w;
-      }
-    };
-    setPeriod(getPeriod());
-    ///////////////RunPeriod specific stats
-    const getRunPeriod = () => {
-      switch (statsType) {
-        case "weekly":
-          return wR;
-        case "monthly":
-          return {
-            ...mR,
-            workoutFreq: runsPerWeek,
-          };
-        case "total":
-          return {
-            ...totRun,
-            workoutFreq: runsPerMonth,
-          };
-        default:
-          return wR;
-      }
-    };
-    setRunPeriod(getRunPeriod());
+      ////////Goals
+      setGoals({
+        duration: props.currentUser?.durationGoal || null,
+        workouts: props.currentUser?.workoutGoal || null,
+        runs: props.currentUser?.runGoal || null,
+      });
+      /////////Workout sets
+      setTotal({
+        ...tot,
+        workoutFreq: workoutsPerMonth.map(
+          (run, index) => run + runsPerMonth[index]
+        ),
+      });
+      setMonthly({
+        ...m,
+        workoutFreq: workoutsPerWeek.map((week, index) => ({
+          ...week,
+          count: week.count + runsPerWeek[index].count,
+        })),
+      });
+      //.map((run, index) => run + runsPerWeek[index])
+      setWeekly(w);
+      ///////////Run sets
+      setRunTotal({
+        ...totRun,
+        workoutFreq: runsPerMonth,
+      });
+      setRunMonthly({
+        ...mR,
+        workoutFreq: runsPerWeek,
+      });
+      setRunWeekly(wR);
+      ///////////WorkoutPeriod
+      const getPeriod = () => {
+        switch (statsType) {
+          case "weekly":
+            return w;
+          case "monthly":
+            return {
+              ...m,
+              workoutFreq: workoutsPerWeek.map((week, index) => ({
+                ...week,
+                count: week.count + runsPerWeek[index].count,
+              })),
+            };
+          case "total":
+            return {
+              ...tot,
+              workoutFreq: workoutsPerMonth.map(
+                (run, index) => run + runsPerMonth[index]
+              ),
+            };
+          default:
+            return w;
+        }
+      };
+      setPeriod(getPeriod());
+      ///////////////RunPeriod specific stats
+      const getRunPeriod = () => {
+        switch (statsType) {
+          case "weekly":
+            return wR;
+          case "monthly":
+            return {
+              ...mR,
+              workoutFreq: runsPerWeek,
+            };
+          case "total":
+            return {
+              ...totRun,
+              workoutFreq: runsPerMonth,
+            };
+          default:
+            return wR;
+        }
+      };
+      setRunPeriod(getRunPeriod());
+    
   }, [props.history, props.currentUser, props.runs, week, month, statsType]);
 
   useEffect(() => {
@@ -298,7 +303,7 @@ const Tracker = (props) => {
           </TouchableOpacity>
         </View>
       )}
-      {period ? (
+      {period && periodRun? (
         <>
           <View style={styles.statContainer}>
             <Text style={styles.statsTitle}>General Stats</Text>

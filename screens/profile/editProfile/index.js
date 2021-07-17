@@ -51,6 +51,15 @@ function EditProfile(props) {
     })();
   }, []);
 
+  const handleOnChangeText = async (content) => {
+    if (content === '') return;
+    const copiedContent = await Clipboard.getString();
+    
+    if (copiedContent === '') return;
+    const isPasted = content.includes(copiedContent);
+    if (isPasted) this.handleOnPaste(content);
+  }
+
   const upload = async () => {
     if (changePhoto) {
       const res = await fetch(userState.photoURL);
@@ -109,7 +118,7 @@ function EditProfile(props) {
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
-      .set( userState );
+      .set( {...userState, photoURL: url} );
     props.navigation.goBack();
   };
 
@@ -247,7 +256,7 @@ function EditProfile(props) {
             placeholder="Set goal for minimum workouts per week"
             value={userState.workoutGoal}
             maxLength={6}
-          ></TextInput>
+          />
         </View>
 
         <TouchableOpacity

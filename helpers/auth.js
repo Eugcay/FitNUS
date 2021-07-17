@@ -5,8 +5,6 @@ export async function signUp(name, email, password) {
   try {
     await firebase.auth().createUserWithEmailAndPassword(email, password);
 
-    // send verification email
-    const currUser = firebase.auth().currentUser;
     await firebase.firestore().collection("users").doc(currUser.uid).set({
       name,
       email,
@@ -16,12 +14,12 @@ export async function signUp(name, email, password) {
       durationGoal: "",
       pb: [],
     });
+
+    // send verification email
+    const currUser = firebase.auth().currentUser;  
+
     currUser.sendEmailVerification();
 
-   
-    
-    
-    
   } catch (error) {
     alert(error);
   }

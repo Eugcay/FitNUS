@@ -23,12 +23,12 @@ function WorkoutDetails(props) {
   const date = props.route.params.workout?.date
     ? props.route.params.workout?.date
     : null;
-  const achievements = props.route.params.workout?.achievements.length || 0;
-  const PBs = props.route.params?.PBs || 0
+  // const achievements = props.route.params.workout?.achievements.length || 0;
+  const PBs = props.route.params?.workout.PBs || 0
   const id = props.route.params?.id ? props.route.params?.id : "";
   const jio = props.route.params?.jio;
   const jioState = props.route.params?.workout?.jioStatus;
-  console.log(jioState);
+  // console.log(jioState);
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -145,7 +145,7 @@ function WorkoutDetails(props) {
                 color="green"
               />
               <Text>PBs</Text>
-              <Text>{achievements}</Text>
+              <Text>{PBs}</Text>
             </View>
           </View>
 

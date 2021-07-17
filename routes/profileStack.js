@@ -20,20 +20,20 @@ const ProfileStack = () => {
           name="Select Workout Type"
           component={SelectWorkoutType}
           options={{ headerShown: false }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="Start Workout"
           component={StartWorkout} 
-        ></Stack.Screen>
+        />
         <Stack.Screen name="Run Map" component={RunMap} />
         <Stack.Screen
           name="Add Exercises"
           component={AddExercises}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="Exercise Details"
           component={ExerciseDetails}
-        ></Stack.Screen>
+        />
       </Stack.Navigator>
   );
 };

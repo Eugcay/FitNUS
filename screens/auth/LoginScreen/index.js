@@ -62,7 +62,7 @@ export default function LoginScreen({ navigation }) {
         <TextInput
           placeholder="Email"
           style={{ paddingHorizontal: 10 }}
-          onChangeText={(text) => setUserId(text)}
+          onChangeText={(text) => {console.log(text); setUserId(text)}}
           errorText="Please enter valid email"
         />
       </View>
@@ -73,6 +73,8 @@ export default function LoginScreen({ navigation }) {
           style={{ paddingHorizontal: 10 }}
           onChangeText={(text) => setPassword(text)}
           errorText="Please enter valid password"
+          secureTextEntry={true}
+          value={password}
         />
       </View>
       <TouchableOpacity onPress={() => navigation.navigate("SignupScreen")}>

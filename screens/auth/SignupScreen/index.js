@@ -16,16 +16,23 @@ const SignupScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState('')
 
   const handleSubmit = () => {
-    signUp(name, email, password);
+    if (name.length === 0) {
+      alert("No valid name entered!");
+    } else if (password !== confirm) {
+      alert ("Passwords do not match")
+    } else {
+      signUp(name, email, password);
+    }
   };
 
   return (
     <Background>
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => navigation.replace('Landing')}
+        onPress={() => navigation.replace("Landing")}
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <AntDesign name="arrowleft" size={22} color="azure" />
@@ -75,6 +82,14 @@ const SignupScreen = ({ navigation }) => {
           onChangeText={(text) => setPassword(text)}
         />
       </View>
+      <View style={styles.input}>
+        <AntDesign name="lock" size={24} color="blue" />
+        <TextInput
+          placeholder="Confirm Password"
+          style={{ paddingHorizontal: 10 }}
+          onChangeText={(text) => setConfirm(text)}
+        />
+      </View>
       <TouchableOpacity
         title="Sign Up"
         style={styles.loginButton}
@@ -83,10 +98,8 @@ const SignupScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.SignupButton} onPress={handleSubmit}>
         <Text>Sign up</Text>
       </TouchableOpacity>
-      
     </Background>
   );
 };
 
 export default SignupScreen;
-

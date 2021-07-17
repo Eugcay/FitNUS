@@ -10,14 +10,16 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 const WorkoutHistory = (props) => {
   const [workouts, setWorkouts] = useState([]);
   const [runs, setRuns] = useState([]);
-
+  const [upcoming, setUpcoming] = useState([])
   const [selectedDate, setDate] = useState(new Date().toDateString());
   const [items, setItems] = useState({});
 
   useEffect(() => {
+    reloadItems({timestamp: Date.now()})
     setWorkouts(props.history);
     setRuns(props.runs);
-  }, [props.history, props.runs]);
+    setUpcoming(props.upcoming)
+  }, [props.history, props.runs, props.upcoming]);
 
   const withinRange = (curr, date) => {
     return (
@@ -52,12 +54,17 @@ const WorkoutHistory = (props) => {
     setItems(newItems);
   };
 
+  const reloadItems = (day) => {
+    setItems({})
+    loadItems(day)
+  }
+
   const loadItems = (day) => {
     setTimeout(() => {
       setNewItems(workouts, day);
       setNewItems(runs, day);
       setNewItems(
-        props.upcoming.map((item) => ({
+        upcoming.map((item) => ({
           ...item,
           data: { ...item.data, date: item.data.time },
         })),
@@ -158,6 +165,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     margin: 5,
+    marginTop: 10,
     borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
