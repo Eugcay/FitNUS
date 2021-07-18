@@ -4,7 +4,7 @@ import {
   Text,
   FlatList,
   TextInput,
-  SafeAreaView,
+  ScrollView,
   TouchableOpacity,
   Button,
 } from "react-native";
@@ -174,12 +174,20 @@ const EditExercise = (props) => {
       );
     } else {
       return (
-        <View style={styles.setHeader}>
+        <View style={[styles.setHeader, {marginVertical: 10}]}>
           <Text style={styles.setTitle}>Set {index + 1} completed!</Text>
           <Text>
             {item.weight ? item.weight : 0} kg x {item.reps ? item.reps : 0}{" "}
             reps
           </Text>
+          <TouchableOpacity
+              onPress={() => {
+                deleteSet(index);
+              }}
+              style={{ position: "absolute", right: 10 }}
+            >
+              <MaterialCommunityIcons name="delete" size={17} />
+            </TouchableOpacity>
         </View>
       );
     }
@@ -208,20 +216,22 @@ const EditExercise = (props) => {
           style: { fontSize: 20, color: "#fff" },
         }}
       ></Header>
-      <SafeAreaView style={styles.container}>
+      <ScrollView >
+        <View style={styles.container}>
         <FlatList
           data={sets}
           keyExtractor={(item) => item.key}
           renderItem={renderItem}
           extraData={sets}
           style={{ width: "80%", marginVertical: 5 }}
+          scrollEnabled={false}
         />
         <TouchableOpacity onPress={addSet} style={styles.addSet}>
           <Ionicons name="add-outline" color="green" size={23} />
           <Text style={{ color: "green" }}>ADD SET</Text>
         </TouchableOpacity>
-        <Button onPress={saveEx} title="Save" color="green" />
-      </SafeAreaView>
+        </View>
+      </ScrollView>
     </>
   );
 };

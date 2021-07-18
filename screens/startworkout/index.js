@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
+  SafeAreaView
 } from "react-native";
 import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
@@ -316,7 +317,7 @@ const StartWorkout = (props) => {
 
   return (
     <View style={{ flexGrow: 1, justifyContent: "space-evenly" }}>
-      <ScrollView>
+      <ScrollView style={{height: '88%'}}>
         <View style={{ flex: 1, justifyContent: "space-between" }}>
           <View style={{ paddingBottom: 10 }}>
             <HeaderTop

@@ -12,7 +12,7 @@ const JioLikes = (props) => {
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
-      headerRight: () => (
+      headerRight: () => postID && (
         <TouchableOpacity
           style={{ marginRight: 8 }}
           onPress={() =>

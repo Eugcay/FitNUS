@@ -77,7 +77,7 @@ const JioDetails = (props) => {
 
   const submitJio = async (snapshot) => {
     const created = firebase.firestore.FieldValue.serverTimestamp();
-    if (props.route.params.jioState?.info?.id) {
+    if (props.route.params.jioState?.id) {
       firebase
         .firestore()
         .collection("jios")

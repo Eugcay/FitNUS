@@ -369,7 +369,7 @@ const JioStart = (props) => {
                 jioState.type === "Run"
                   ? updateAndSubmit()
                   : props.navigation.navigate("Details", {
-                      jioState,
+                      jioState: {...jioState, details: null},
                       user: user,
                     })
               }

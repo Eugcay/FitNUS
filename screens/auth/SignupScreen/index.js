@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
-  StyleSheet,
+  ScrollView,
 } from "react-native";
 import Background from "../../../components/Background";
 import { AntDesign } from "@expo/vector-icons";
