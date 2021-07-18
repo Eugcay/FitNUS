@@ -22,7 +22,7 @@ import { Entypo } from "@expo/vector-icons";
 const RunMap = (props) => {
   //RunDetails Stuff
   const [oldLocList, setOldLocList] = useState(null);
-  const [ran, setRan] = useState(0);
+  const [ran, setRan] = useState(1);
   const [pulls, setPulls] = useState(1);
   const [showhideRoute, setshowhideRoute] = useState(true);
   const [description, setDescription] = useState(null);
@@ -437,6 +437,7 @@ const RunMap = (props) => {
               <TouchableOpacity //Finish
                 style={styles.finishButtonBox}
                 onPress={() => {
+                  setRan(ran + 1);
                   setStatus("Finished");
                   setIsStopwatchStart(false);
                   stop();
@@ -487,6 +488,7 @@ const RunMap = (props) => {
                   stop();
                   fitAllMarkers();
                   setUserLoc(false);
+                  setRan(ran + 1);
                 }}
               >
                 <Text style={styles.pauseButton}>Finish</Text>
@@ -575,7 +577,6 @@ const RunMap = (props) => {
             <TouchableOpacity //Finishfinish
               style={styles.finishRunButton}
               onPress={() => {
-                setRan(ran + 1);
                 takeScreenshot();
               }}
             >
