@@ -22,7 +22,7 @@ import { Entypo } from "@expo/vector-icons";
 const RunMap = (props) => {
   //RunDetails Stuff
   const [oldLocList, setOldLocList] = useState(null);
-  const [ran, setRan] = useState(1);
+  const [ran, setRan] = useState(0);
   const [pulls, setPulls] = useState(1);
   const [showhideRoute, setshowhideRoute] = useState(true);
   const [description, setDescription] = useState(null);
@@ -150,8 +150,6 @@ const RunMap = (props) => {
   //Carry on
   useEffect(() => {
     (async () => {
-      console.log("Effect Rendered");
-
       ////////////////////////////////////////////////////////////
       let { currentStatus } = await Location.getForegroundPermissionsAsync();
       if (currentStatus !== "granted") {
@@ -176,18 +174,9 @@ const RunMap = (props) => {
         setCurrentLocation(newLocation);
         setLocList((locList) => [...locList, {...newLocation, end: true}]);
         setIndex(index + 1)
-        // console.log(
-        //   "Initial Current Location Retrieved: " +
-        //     "{ lat: " +
-        //     newLocation.latitude +
-        //     " lon: " +
-        //     newLocation.longitude +
-        //     " }"
-        // );
       } else {
-        console.log(locList);
         //set distance by drawing from locList
-        if (locList.length >= 1 && locList.length >= index + 1) {
+        if (locList.length >= 2 && locList.length >= index + 1) {
           if (!locList[index]?.end) {
             setNewDistance((oldDistance) => oldDistance + calcDistance(locList[index], locList[index + 1]))
           }
@@ -202,9 +191,6 @@ const RunMap = (props) => {
 
   const start = () => {
     setStatus("Continue");
-    console.log(
-      "-----------------------------------Start Pressed------------------------------------------"
-    );
     ////////////////////////////////////////////////////////////
     async function watchPos(index) {
       let locations = await Location.watchPositionAsync(
@@ -225,14 +211,6 @@ const RunMap = (props) => {
             setLocList((locList) => [...locList, {...latlon, start: true}]);
           }
           setLocList((locList) => [...locList, latlon]);
-          // console.log(
-          //   "==========Location Changed: " +
-          //     "{ lat: " +
-          //     latlon.latitude +
-          //     " lon: " +
-          //     latlon.longitude +
-          //     " }=========="
-          // );
         }
       );
       setRemove(locations);
@@ -242,17 +220,10 @@ const RunMap = (props) => {
   };
 
   const stop = () => {
-    console.log(
-      "-------------------------------Finish Run Pressed-----------------------------------"
-    );
-    console.log(remove)
-    setLocList((locList) => [...locList, {...locList[index + 2], end: true}])
+    setLocList((locList) => [...locList, {...locList[index + 1], end: true}])
     setIndex(oldIndex => oldIndex + 1)
-    console.log(locList[locList.length - 1])
     remove.remove();
-    // console.log(
-    //   "---------------------------------Function Removed?-------------------------------------"
-    // );
+
   };
 
   const finishRun = async (ss) => {
@@ -260,7 +231,7 @@ const RunMap = (props) => {
     const uid = firebase.auth().currentUser.uid;
     const run = {
       name: title,
-      description,
+      description: `${title} completed on ${(new Date())}`,
       duration: timeNow / 1000,
       distance,
       locList,
