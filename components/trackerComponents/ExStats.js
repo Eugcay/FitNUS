@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { Divider } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LineChart, Grid, YAxis, XAxis } from "react-native-svg-charts";
+import * as scale from "d3-scale";
 import moment from "moment";
 import { statsByEx } from "../../helpers/tracker"; 
 
@@ -16,6 +17,7 @@ const ExStats = ({ item, hist, pb, del }) => {
     [...stat.exHist].sort((x, y) => x.date.seconds - y.date.seconds);
 
   const deleteEx = () => del(item);
+  console.log(pb)
 
   const Decorator = ({ x, y, data }) => {
     return data.map((value, index) => (
@@ -115,7 +117,7 @@ const ExStats = ({ item, hist, pb, del }) => {
               style={{ width: "6%", justifyContent: "center" }}
               contentInset={{ top: 10, bottom: 10 }}
               svg={{ fontSize: 10, fill: "grey" }}
-              yMax={100}
+              
             />
             <LineChart
               style={{ flex: 1,  height: 180, width: "96%" }}
@@ -124,8 +126,8 @@ const ExStats = ({ item, hist, pb, del }) => {
               })}
               svg={{ stroke: "rgb(134, 65, 244)" }}
               contentInset={{ top: 10, bottom: 10 }}
-              ymin={100}
-              yMax={100}
+              
+              yMax={(pb % 100 + 1) * 100}
             >
               <Grid />
             </LineChart>
@@ -136,6 +138,7 @@ const ExStats = ({ item, hist, pb, del }) => {
             formatLabel={(value, index) =>
               moment(chartData[index].date.seconds * 1000).format("DD-MMM-YY")
             }
+            scale={scale.scaleBand}
             svg={{ fontSize: 10, fill: "black" }}
             contentInset={{ left: 30, right: 30 }}
             spacingInner={0.2}

@@ -17,6 +17,7 @@ export const FrequencyBarChart = (props) => {
   const yVals = [];
 
   for (let i = 0; i <= max; i = i + 1) {
+    
     yVals.push(max - i);
   }
 
@@ -53,11 +54,12 @@ export const FrequencyBarChart = (props) => {
       <View style={{ flex: 1, flexDirection: "row", padding: 5 }}>
         <YAxis
           style={{ width: "4%", justifyContent: "center" }}
-          data={yVals}
+          data={yaxis}
           svg={{ fill: "rgba(134, 65, 244, 0.8)" }}
           spacingInner={0.5}
-          scale={scale.scaleBand}
+          contentInset={{ top: 10, bottom: 10 }} 
           formatLabel={(value, index) => value}
+          numberOfTicks={5}
         />
         <BarChart
           style={{ width: "95%" }}
@@ -69,6 +71,7 @@ export const FrequencyBarChart = (props) => {
           gridMin={0}
           contentInset={{ top: 10, bottom: 10 }}
           animate={true}
+          numberOfTicks={5}
         >
           <Grid
             direction={Grid.Direction.HORIZONTAL}
