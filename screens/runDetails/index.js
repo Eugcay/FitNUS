@@ -73,7 +73,7 @@ const RunDetails = (props) => {
 
   const fit = () => {
     refer.fitToCoordinates(locList, {
-      edgePadding: { top: 200, right: 200, bottom: 200, left: 200 },
+      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
       animated: false,
     });
   };
@@ -126,7 +126,7 @@ const RunDetails = (props) => {
       <Divider orientation="horizontal" width={1} />
       <View>
         <Text style={styles.title}>Description</Text>
-        <Text style={styles.body}>{description ? description : ""}</Text>
+        <Text style={styles.body}>{description ? description : "help"}</Text>
       </View>
       <Divider orientation="horizontal" width={1} />
       {jioState && (

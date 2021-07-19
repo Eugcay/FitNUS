@@ -5,11 +5,11 @@
     "slug": "fitNUS",
     "version": "0.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/FitNUS.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/FitNUS.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#d3d3d3"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

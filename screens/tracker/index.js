@@ -339,8 +339,8 @@ const Tracker = (props) => {
                     }
                     width={Dimensions.get("screen").width * 0.85}
                     borderColor={
-                      period.workouts + periodRun.runs >
-                        (goals.workouts || 2) && "gold"
+                      (period.workouts + periodRun.runs >
+                        (goals.workouts || 2)) ? "gold" : "blue"
                     }
                     borderWidth={
                       period.workouts + periodRun.runs > (goals.workouts || 2)
