@@ -61,7 +61,7 @@ export default function LoginScreen({ navigation }) {
         <AntDesign name="user" size={24} color="blue" />
         <TextInput
           placeholder="Email"
-          style={{ paddingHorizontal: 10 }}
+          style={{ paddingHorizontal: 10, width: '90%' }}
           onChangeText={(text) => {console.log(text); setUserId(text)}}
           errorText="Please enter valid email"
           autoCapitalize='none'
@@ -71,7 +71,7 @@ export default function LoginScreen({ navigation }) {
         <AntDesign name="lock" size={24} color="blue" />
         <TextInput
           placeholder="Password"
-          style={{ paddingHorizontal: 10 }}
+          style={{ paddingHorizontal: 10, width: '90%' }}
           onChangeText={(text) => setPassword(text)}
           errorText="Please enter valid password"
           secureTextEntry={true}

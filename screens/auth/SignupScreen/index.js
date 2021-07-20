@@ -62,7 +62,7 @@ const SignupScreen = ({ navigation }) => {
         <AntDesign name="lock" size={24} color="blue" />
         <TextInput
           placeholder="Name"
-          style={{ paddingHorizontal: 10 }}
+          style={{ paddingHorizontal: 10, width: '90%' }}
           onChangeText={(text) => setName(text)}
         />
       </View>
@@ -70,7 +70,7 @@ const SignupScreen = ({ navigation }) => {
         <AntDesign name="user" size={24} color="blue" />
         <TextInput
           placeholder="NUS or personal email"
-          style={{ paddingHorizontal: 10 }}
+          style={{ paddingHorizontal: 10, width: '90%' }}
           onChangeText={(text) => setEmail(text)}
           autoCapitalize='none'
         />
@@ -79,7 +79,7 @@ const SignupScreen = ({ navigation }) => {
         <AntDesign name="lock" size={24} color="blue" />
         <TextInput
           placeholder="Password"
-          style={{ paddingHorizontal: 10 }}
+          style={{ paddingHorizontal: 10, width: '90%' }}
           onChangeText={(text) => setPassword(text)}
           autoCapitalize='none'
           secureTextEntry
@@ -89,7 +89,7 @@ const SignupScreen = ({ navigation }) => {
         <AntDesign name="lock" size={24} color="blue" />
         <TextInput
           placeholder="Confirm Password"
-          style={{ paddingHorizontal: 10 }}
+          style={{ paddingHorizontal: 10, width: '90%' }}
           onChangeText={(text) => setConfirm(text)}
           autoCapitalize='none'
           secureTextEntry

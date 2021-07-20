@@ -19,7 +19,7 @@ const ResetPassword = ({navigation}) => {
       </TouchableOpacity>
       <Text style={styles.title}>Reset Password</Text>
       <View style={styles.emailBox}>
-        <TextInput  placeholder='Enter email' onChangeText={(value) => setEmail(value)} />
+        <TextInput  placeholder='Enter email' onChangeText={(value) => setEmail(value)} autoCapitalize='none'/>
       </View>
       <TouchableOpacity onPress={reset} style={styles.resetButton}>
           <Text style={{ fontSize: 16}}>Reset</Text>
