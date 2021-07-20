@@ -2,11 +2,10 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   logo: {
-    width: "60%",
-    height: "12%",
-    minHeight: 95,
+    aspectRatio: 1,
+    height: '20%',
+    minHeight: 100,
     alignSelf: "center",
-    marginBottom: 10,
   },
 
   input: {
@@ -45,7 +44,7 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#fff",
-    marginBottom: 60,
+    marginBottom: 80,
   },
 
   forgotButton: {

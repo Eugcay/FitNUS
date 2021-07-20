@@ -155,7 +155,7 @@ const EditExercise = (props) => {
               <TextInput
                 placeholder="0"
                 value={item.reps !== 0 ? item.reps.toString() : ""}
-                onChangeText={(text) => setReps(index, parseFloat(text))}
+                onChangeText={(text) => setReps(index, parseFloatexpo(text))}
                 style={{ fontSize: 20, width: "40%", textAlign: "center" }}
                 keyboardType='numeric'
               />

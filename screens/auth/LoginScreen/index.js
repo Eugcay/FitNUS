@@ -52,8 +52,9 @@ export default function LoginScreen({ navigation }) {
         </View>
       </TouchableOpacity>
       <Image
-        source={require("../../../assets/National_University_of_Singapore_logo_NUS.png")}
+        source={require("../../../assets/FitNUS_white_and_gold.png")}
         style={styles.logo}
+       
       />
 
       <Image source={require("../../../assets/Girls.png")} style={styles.image} />

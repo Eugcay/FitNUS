@@ -2,10 +2,11 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   logo: {
-    width: "70%",
-    height: "14%",
+    aspectRatio: 1,
+    height: '20%',
     minHeight: 100,
     alignSelf: "center",
+    
   },
 
   image: {

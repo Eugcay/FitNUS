@@ -43,7 +43,7 @@ const SignupScreen = ({ navigation }) => {
       </TouchableOpacity>
 
       <Image
-        source={require("../../../assets/National_University_of_Singapore_logo_NUS.png")}
+        source={require("../../../assets/FitNUS_white_and_gold.png")}
         style={styles.logo}
       />
 

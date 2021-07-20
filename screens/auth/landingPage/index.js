@@ -10,13 +10,11 @@ function LandingPage({ navigation }) {
   return (
     <Background>
       <Image
-        source={require("../../../assets/National_University_of_Singapore_logo_NUS.png")}
+        source={require("../../../assets/FitNUS_white_and_gold.png")}
         style={styles.logo}
       />
-      <Text style={styles.name}>FITNUS</Text>
-    
-      <Ionicons name="md-barbell" size={60} color="#FFC94A" />
-      
+      {/* <Text style={styles.name}>FITNUS</Text> */}
+      <Ionicons name="md-barbell" size={60} color="#FFC94A" />  
       <TouchableOpacity
         title="Login"
         style={styles.nusButton}
