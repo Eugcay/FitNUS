@@ -135,7 +135,7 @@ const EditExercise = (props) => {
               </TouchableOpacity>
               <TextInput
                 placeholder="0"
-                onChangeText={(text) => setWeight(index, text)}
+                onChangeText={(text) => setWeight(index, parseFloat(text))}
                 value={item.weight !== 0 ? item.weight.toString() : ""}
                 style={{ fontSize: 20, width: "40%", textAlign: "center" }}
                 keyboardType='numeric'
@@ -155,7 +155,7 @@ const EditExercise = (props) => {
               <TextInput
                 placeholder="0"
                 value={item.reps !== 0 ? item.reps.toString() : ""}
-                onChangeText={(text) => setReps(index, text)}
+                onChangeText={(text) => setReps(index, parseFloat(text))}
                 style={{ fontSize: 20, width: "40%", textAlign: "center" }}
                 keyboardType='numeric'
               />

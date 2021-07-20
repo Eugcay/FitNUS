@@ -3,7 +3,9 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { Divider } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LineChart, Grid, YAxis, XAxis } from "react-native-svg-charts";
+import { G, Circle, Line, Rect } from "react-native-svg";
 import * as scale from "d3-scale";
+import * as shape from "d3-shape"
 import moment from "moment";
 import { statsByEx } from "../../helpers/tracker"; 
 
@@ -16,8 +18,11 @@ const ExStats = ({ item, hist, pb, del }) => {
     stat?.exHist &&
     [...stat.exHist].sort((x, y) => x.date.seconds - y.date.seconds);
 
+    // const data = [ 50, 10, 40, 95, -4, -24, 85, 91, 35, 53, -53, 24, 50, -20, -80 ]
+    const data = chartData.map(item => item.exs)
+
   const deleteEx = () => del(item);
-  console.log(pb)
+  console.log(data)
 
   const Decorator = ({ x, y, data }) => {
     return data.map((value, index) => (
@@ -31,6 +36,49 @@ const ExStats = ({ item, hist, pb, del }) => {
       />
     ));
   };
+
+  const Tooltip = ({ x, y }) => (
+    <G
+        x={ x(0)  }
+        key={ 'tooltip' }
+        onPress={ () => console.log('tooltip clicked') }
+    >
+        <G y={ 50 }>
+            <Rect
+                height={ 20 }
+                width={ 40 }
+                stroke={ 'grey' }
+                fill={ 'white' }
+                ry={ 10 }
+                rx={ 10 }
+            />
+            <Text
+                x={ 75 / 2 }
+                dy={ 20 }
+                alignmentBaseline={ 'middle' }
+                textAnchor={ 'middle' }
+                stroke={ 'rgb(134, 65, 244)' }
+            >
+                { data[1] }
+            </Text>
+        </G>
+        <G x={ 75 / 2 }>
+            <Line
+                y1={ 50 + 40 }
+                y2={ y(data[ 1 ]) }
+                stroke={ 'grey' }
+                strokeWidth={ 2 }
+            />
+            <Circle
+                cy={ y(data[ 1 ]) }
+                r={ 6 }
+                stroke={ 'rgb(134, 65, 244)' }
+                strokeWidth={ 2 }
+                fill={ 'white' }
+            />
+        </G>
+    </G>
+)
 
   return (
     <View
@@ -94,7 +142,7 @@ const ExStats = ({ item, hist, pb, del }) => {
         <View style={{ width: "33%", alignItems: "center" }}>
           <MaterialCommunityIcons name="podium" size={22} color="goldenrod" />
           <Text style={{ color: "gray" }}>Personal Best</Text>
-          <Text>{pb}</Text>
+          <Text>{`${pb} kg`}</Text>
         </View>
         <Divider orientation="vertical" />
         <View style={{ width: "33%", alignItems: "center" }}>
@@ -113,36 +161,39 @@ const ExStats = ({ item, hist, pb, del }) => {
           <Text style={{ textAlign: "center" }}>Progress Chart</Text>
           <View style={{ flex: 1, flexDirection: "row", padding: 5 }}>
             <YAxis
-              data={chartData.map((item) => item.exs)}
+              data={data}
               style={{ width: "6%", justifyContent: "center" }}
               contentInset={{ top: 10, bottom: 10 }}
               svg={{ fontSize: 10, fill: "grey" }}
-              
+              formatLabel={(value, index) => value}
+              numberOfTicks={8}
             />
             <LineChart
-              style={{ flex: 1,  height: 180, width: "96%" }}
-              data={chartData.map((item) => {
-                return item.exs;
-              })}
+              style={{ flex: 1,  height: 150, width: "96%" }}
+              data={data}
               svg={{ stroke: "rgb(134, 65, 244)" }}
               contentInset={{ top: 10, bottom: 10 }}
-              
-              yMax={(pb % 100 + 1) * 100}
+              yMax={pb }
+              numberOfTicks={8}
+              curve={ shape.curveLinear }
+  
             >
               <Grid />
+              {/* <Tooltip /> */}
             </LineChart>
-          </View>
+          </View>{
           <XAxis
-            style={{ marginBottom: 12, width: "95%", alignSelf: "flex-end" }}
-            data={chartData}
+            style={{ marginBottom: 12, width: "96%", alignSelf: "flex-end" }}
+            data={data}
             formatLabel={(value, index) =>
-              moment(chartData[index].date.seconds * 1000).format("DD-MMM-YY")
+              
+              moment(chartData[index].date.seconds * 1000).format("DD-MMM")
             }
-            scale={scale.scaleBand}
+            
             svg={{ fontSize: 10, fill: "black" }}
             contentInset={{ left: 30, right: 30 }}
             spacingInner={0.2}
-          />
+          />}
         </View>
       ) : (
         <View

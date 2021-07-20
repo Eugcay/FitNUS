@@ -517,8 +517,8 @@ const Tracker = (props) => {
                     )
                       ? props.currentUser.pb.find(
                           (ex) => ex.exercise === item.data.name
-                        ).best + " kg"
-                      : "No PB found"
+                        ).best 
+                      : 0
                   }
                   del={deleteEx}
                 />
