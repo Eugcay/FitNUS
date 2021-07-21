@@ -239,7 +239,7 @@ const Profile = (props) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (props.route.params?.user) { //over here
+      if (props.route.params?.user) { //over here 
         const uid = props.route.params?.user.id;
         await fetchfollowData(uid);
         setCurr(uid === firebase.auth().currentUser.uid);

@@ -11,6 +11,7 @@ import {
   Dimensions,
   Platform,
   FlatList,
+  Linking
 } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
