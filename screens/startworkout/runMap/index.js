@@ -220,10 +220,9 @@ const RunMap = (props) => {
   };
 
   const stop = () => {
-    setLocList((locList) => [...locList, {...locList[index + 1], end: true}])
-    setIndex(oldIndex => oldIndex + 1)
     remove.remove();
-
+    setLocList((locList) => [...locList, {...locList[index + 1], end: true}])
+    setIndex(oldIndex => oldIndex + 1) 
   };
 
   const finishRun = async (ss) => {
