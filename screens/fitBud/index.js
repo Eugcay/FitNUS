@@ -25,6 +25,7 @@ import { styles } from "./styles";
 
   // get workouts
   useEffect(() => {
+    
     const fetchWorkouts = getWorkouts().onSnapshot((querySnapshot) => {
       const workouts = props.template;
       querySnapshot.forEach((documentSnapshot) => {

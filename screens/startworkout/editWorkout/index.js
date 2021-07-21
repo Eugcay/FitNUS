@@ -47,6 +47,13 @@ const EditExercise = (props) => {
     setSets(data);
   };
 
+  const changeTextHandler = (text) => {
+    const s = ''
+    if (s.charAt(s.length - 1) === '.') {
+
+    }
+  }
+
   const addSet = () => {
     let data = [...sets];
     data = data.concat({
@@ -77,16 +84,16 @@ const EditExercise = (props) => {
   const editSet = (index, type) => {
     let data = [...sets];
     if (type === "INCREMENT_WEIGHT") {
-      const newWeight = data[index].weight + 2.5;
+      const newWeight = parseFloat(data[index].weight) + 2.5;
       data[index] = { ...data[index], weight: newWeight };
     } else if (type === "DECREASE_WEIGHT") {
-      const newWeight = data[index].weight > 0 ? data[index].weight - 2.5 : 0;
+      const newWeight = parseFloat(data[index].weight) > 0 ? parseFloat(data[index].weight) - 2.5 : 0;
       data[index] = { ...data[index], weight: newWeight };
     } else if (type === "INCREMENT_REPS") {
-      const newReps = data[index].reps + 1;
+      const newReps = parseInt(data[index].reps)+ 1;
       data[index] = { ...data[index], reps: newReps };
     } else if (type === 'DECREASE_REPS'){
-      const newReps = data[index].reps > 0 ? data[index].reps - 1 : 0;
+      const newReps = parseInt(data[index].reps) > 0 ? parseInt(data[index].reps) - 1 : 0;
       data[index] = { ...data[index], reps: newReps };
     }
     console.log(data[index]);
@@ -135,7 +142,7 @@ const EditExercise = (props) => {
               </TouchableOpacity>
               <TextInput
                 placeholder="0"
-                onChangeText={(text) => setWeight(index, parseFloat(text))}
+                onChangeText={(text) => {console.log(text); setWeight(index, text)}}
                 value={item.weight !== 0 ? item.weight.toString() : ""}
                 style={{ fontSize: 20, width: "40%", textAlign: "center" }}
                 keyboardType='numeric'
@@ -155,7 +162,7 @@ const EditExercise = (props) => {
               <TextInput
                 placeholder="0"
                 value={item.reps !== 0 ? item.reps.toString() : ""}
-                onChangeText={(text) => setReps(index, parseFloatexpo(text))}
+                onChangeText={(text) => setReps(index, text)}
                 style={{ fontSize: 20, width: "40%", textAlign: "center" }}
                 keyboardType='numeric'
               />

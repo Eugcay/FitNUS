@@ -103,8 +103,8 @@ const StartWorkout = (props) => {
     setExercises(data);
   };
 
-  const saveTemplate = () => {
-    firebase
+  const saveTemplate = async () => {
+    await firebase
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
@@ -119,6 +119,7 @@ const StartWorkout = (props) => {
         exercises: formatExercises(),
         template: true,
       });
+      Alert.alert('Saved to Templates!')
   };
 
   const formatExercises = () => {
