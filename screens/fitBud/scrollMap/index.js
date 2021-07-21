@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,21 +10,22 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  FlatList,
 } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import { markers, mapDarkStyle, mapStandardStyle } from "./mapData";
-import StarRating from "./starRating";
 
 import { useTheme } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
-const CARD_HEIGHT = 220;
-const CARD_WIDTH = width * 0.8;
+const CARD_HEIGHT = 280;
+const CARD_WIDTH = width * 0.85;
 const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 const ExploreScreen = () => {
@@ -34,7 +35,7 @@ const ExploreScreen = () => {
     markers,
     categories: [
       {
-        name: "Fastfood Center",
+        name: "Gyms",
         icon: (
           <MaterialCommunityIcons
             style={styles.chipsIcon}
@@ -44,19 +45,19 @@ const ExploreScreen = () => {
         ),
       },
       {
-        name: "Restaurant",
+        name: "Tracks and Fields",
         icon: (
           <Ionicons name="ios-restaurant" style={styles.chipsIcon} size={18} />
         ),
       },
       {
-        name: "Dineouts",
+        name: "Indoor Courts",
         icon: (
           <Ionicons name="md-restaurant" style={styles.chipsIcon} size={18} />
         ),
       },
       {
-        name: "Snacks Corner",
+        name: "Pools",
         icon: (
           <MaterialCommunityIcons
             name="food"
@@ -66,15 +67,19 @@ const ExploreScreen = () => {
         ),
       },
       {
-        name: "Hotel",
+        name: "Rock walls",
+        icon: <Fontisto name="hotel" style={styles.chipsIcon} size={15} />,
+      },
+      {
+        name: "Outdoor Courts",
         icon: <Fontisto name="hotel" style={styles.chipsIcon} size={15} />,
       },
     ],
     region: {
-      latitude: 1.3012,
-      longitude: 103.77442,
-      latitudeDelta: 0.02,
-      longitudeDelta: 0.040142817690068,
+      latitude: 1.2985,
+      longitude: 103.775,
+      latitudeDelta: 0.012,
+      longitudeDelta: 0.012,
     },
   };
 
@@ -176,15 +181,6 @@ const ExploreScreen = () => {
           );
         })}
       </MapView>
-      <View style={styles.searchBox}>
-        <TextInput
-          placeholder="Search here"
-          placeholderTextColor="#000"
-          autoCapitalize="none"
-          style={{ flex: 1, padding: 0 }}
-        />
-        <Ionicons name="ios-search" size={20} />
-      </View>
       <ScrollView
         horizontal
         scrollEventThrottle={1}
@@ -252,32 +248,41 @@ const ExploreScreen = () => {
               <Text numberOfLines={1} style={styles.cardtitle}>
                 {marker.title}
               </Text>
-              {/* <StarRating ratings={marker.rating} reviews={marker.reviews} /> */}
-              <Text numberOfLines={1} style={styles.cardDescription}>
-                {marker.description}
-              </Text>
-              <View style={styles.button}>
-                <TouchableOpacity
-                  onPress={() => {}}
-                  style={[
-                    styles.signIn,
-                    {
-                      borderColor: "#FF6347",
-                      borderWidth: 1,
-                    },
-                  ]}
+              <View
+                style={{
+                  flexDirection: "row",
+                }}
+              >
+                <MaterialIcons name="info-outline" size={20} color="black" />
+                <Text>: </Text>
+                <Text style={[styles.cardDescription]}>
+                  {marker.description}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons name="md-location-outline" size={20} color="black" />
+                <Text>: </Text>
+                <Text style={[styles.cardDescription]}>{marker.address}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <MaterialCommunityIcons name="web" size={20} color="black" />
+                <Text>: </Text>
+                <Text
+                  style={{ color: "blue", paddingRight: 30, fontSize: 12 }}
+                  onPress={() => Linking.openURL(marker.website)}
                 >
-                  <Text
-                    style={[
-                      styles.textSign,
-                      {
-                        color: "#FF6347",
-                      },
-                    ]}
-                  >
-                    Order Now
-                  </Text>
-                </TouchableOpacity>
+                  Click here for more information
+                </Text>
               </View>
             </View>
           </View>
@@ -310,7 +315,7 @@ const styles = StyleSheet.create({
   },
   chipsScrollView: {
     position: "absolute",
-    top: Platform.OS === "ios" ? 90 : 80,
+    top: Platform.OS === "ios" ? 30 : 20,
     paddingHorizontal: 10,
   },
   chipsIcon: {
@@ -341,7 +346,6 @@ const styles = StyleSheet.create({
     paddingRight: width - CARD_WIDTH,
   },
   card: {
-    // padding: 10,
     elevation: 2,
     backgroundColor: "#FFF",
     borderTopLeftRadius: 5,
@@ -364,6 +368,7 @@ const styles = StyleSheet.create({
   textContent: {
     flex: 2,
     padding: 10,
+    paddingRight: 30,
   },
   cardtitle: {
     fontSize: 12,
@@ -381,8 +386,8 @@ const styles = StyleSheet.create({
     height: 50,
   },
   marker: {
-    width: 30,
-    height: 30,
+    width: 14,
+    height: 14,
   },
   button: {
     alignItems: "center",
@@ -398,5 +403,16 @@ const styles = StyleSheet.create({
   textSign: {
     fontSize: 14,
     fontWeight: "bold",
+  },
+  searchItem: {
+    padding: 15,
+    fontSize: 15,
+    width: "91%",
+  },
+  result: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#C0C0C0",
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

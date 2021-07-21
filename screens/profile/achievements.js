@@ -5,7 +5,7 @@ export const returnAccruedTemp = (
   workoutStats
 ) => {
   //runStats - Weekly
-  const averagePace = runStats.duration / 60 / (runStats.duration * 1000);
+  const averagePace = runStats.duration / 60 / (runStats.distance);
   const distance = runStats.distance;
   console.log(distanceGoal)
   const metDistanceGoal = distanceGoal ? distance >= distanceGoal : false;

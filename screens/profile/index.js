@@ -61,15 +61,6 @@ const Profile = (props) => {
         periodList: newList,
       });
   };
-  //Update single achievements
-  const updateSingleAchievements = async (toAdd) => {
-    await firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("singleAchievements")
-      .add(toAdd);
-  };
 
   //Achievements stuff
   useEffect(() => {
@@ -149,15 +140,21 @@ const Profile = (props) => {
     } else {
       if (singleList.length > props?.singleAchievements.length) {
         let toAdd = singleList.filter((item) => {
-          return !props?.singleAchievements.some((data) => {
-            return data.data.id === item.id;
+          return props?.singleAchievements.some((data) => {
+            return !data.data.id === item.id;
           });
         });
-        toAdd.forEach((item) => {
-          updateSingleAchievements(item);
+        toAdd.forEach((temp) => {
+          const tempAch = {
+            id: temp.id,
+            title: temp.title,
+            description: temp.description,
+            cat: temp.cat,
+            criteria: true,
+          };
+          props.addToSingle(tempAch);
         });
       }
-      
     }
 
     setCombinedList(
@@ -173,14 +170,14 @@ const Profile = (props) => {
               data: props.singleAchievements,
             },
           ]
-        : props.accruedAchievements > 0
+        : props.accruedAchievements.length > 0
         ? [
             {
               title: "Stacked Achivements",
               data: props.accruedAchievements,
             },
           ]
-        : props.singleAchievements > 0
+        : props.singleAchievements.length > 0
         ? [
             {
               title: "Milestones",
@@ -200,12 +197,12 @@ const Profile = (props) => {
     return (
       <View>
         <Text style={{ fontSize: 22, fontWeight: "bold", padding: 10 }}>
-          achievments.length === 0
+          Achievements? Zero!
         </Text>
         <TouchableOpacity
           onPress={() =>
             props.navigation.navigate("Start Workout", {
-              screen: 'Select Workout Type',
+              screen: "Select Workout Type",
             })
           }
           style={{
@@ -242,7 +239,7 @@ const Profile = (props) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (props.route.params?.user) {
+      if (props.route.params?.user) { //over here
         const uid = props.route.params?.user.id;
         await fetchfollowData(uid);
         setCurr(uid === firebase.auth().currentUser.uid);
