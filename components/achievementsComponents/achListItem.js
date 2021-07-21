@@ -14,7 +14,7 @@ const achListItem = ({ item }) => {
     <View>
       <TouchableOpacity style={styles.container}>
         {/* Icon */}
-        {item.data.cat === "run" ? (
+        {item?.data?.cat === "run" ? (
           <View style={styles.icons}>
             <MaterialCommunityIcons
               name="run-fast"
@@ -22,7 +22,7 @@ const achListItem = ({ item }) => {
               color={iconColor}
             />
           </View>
-        ) : item.data.cat === "workout" ? (
+        ) : item?.data?.cat === "workout" ? (
           <View style={styles.icons}>
             <MaterialCommunityIcons
               name="weight-lifter"
@@ -41,9 +41,9 @@ const achListItem = ({ item }) => {
         )}
         <View style={styles.words}>
           <Text style={styles.title}>
-            {item.data.title} {stack}
+            {item?.data?.title} {stack}
           </Text>
-          <Text style={styles.description}>{item.data.description}</Text>
+          <Text style={styles.description}>{item?.data?.description}</Text>
         </View>
       </TouchableOpacity>
     </View>
