@@ -344,7 +344,7 @@ const RunMap = (props) => {
       </MapView>
       <View style={styles.overlay}>
         {workoutStatus == "Not Started" ? (
-          <View>
+          <View style={{alignItems: "center"}}>
             <View style={styles.timeBox}>
               <Text style={styles.time}>Time elapsed:</Text>
             </View>
