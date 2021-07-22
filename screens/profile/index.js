@@ -50,6 +50,7 @@ const Profile = (props) => {
   //for other user
   const [singleOther, setSingleOther] = useState([]);
   const [accruedOther, setAccruedOther] = useState([]);
+  const [pulls, setPulls] = useState(0);
 
   //achievements functions
   //Update accrued periodList
@@ -192,77 +193,83 @@ const Profile = (props) => {
           : []
       );
     } else {
-      console.log(1)
-      //get Single and Accrued from other user
-      const getUserAccruedAchievements = async (uid) => {
-        await firebase
-          .firestore()
-          .collection("users")
-          .doc(uid)
-          .collection("accruedAchievements")
-          .get()
-          .then((snapshot) => {
-            const accruedAchievements = [];
-            snapshot.docs.forEach((doc) =>
-              accruedAchievements.push({ id: doc.id, data: doc.data() })
-            );
-            setAccruedOther(accruedAchievements);
-          });
-      };
+      if (pulls < 3) {
+        setPulls(pulls + 1)
+        //get Single and Accrued from other user
+        const getUserAccruedAchievements = async (uid) => {
+          await firebase
+            .firestore()
+            .collection("users")
+            .doc(uid)
+            .collection("accruedAchievements")
+            .get()
+            .then((snapshot) => {
+              const accruedAchievements = [];
+              snapshot.docs.forEach((doc) =>
+                accruedAchievements.push({ id: doc.id, data: doc.data() })
+              );
+              setAccruedOther(accruedAchievements);
+            });
+        };
 
-      const getUserSingleAchievements = async (uid) => {
-        await firebase
-          .firestore()
-          .collection("users")
-          .doc(uid)
-          .collection("singleAchievements")
-          .get()
-          .then((snapshot) => {
-            const singleAchievements = [];
-            snapshot.docs.forEach((doc) =>
-              singleAchievements.push({ id: doc.id, data: doc.data() })
-            );
-            setSingleOther(singleAchievements);
-          });
-      };
-      const uid = props.route.params?.user.id;
-      getUserAccruedAchievements(uid);
-      getUserSingleAchievements(uid);
+        const getUserSingleAchievements = async (uid) => {
+          await firebase
+            .firestore()
+            .collection("users")
+            .doc(uid)
+            .collection("singleAchievements")
+            .get()
+            .then((snapshot) => {
+              const singleAchievements = [];
+              snapshot.docs.forEach((doc) =>
+                singleAchievements.push({ id: doc.id, data: doc.data() })
+              );
+              setSingleOther(singleAchievements);
+            });
+        };
+        
+        const uid = props.route.params?.user.id;
 
-      setCombinedList(
-        accruedOther.length > 0 && singleOther.length > 0
-          ? [
-              {
-                title: "Stacked Achivements",
-                data: accruedOther,
-              },
-              {
-                title: "Milestones",
-                data: singleOther,
-              },
-            ]
-          : accruedOther.length > 0
-          ? [
-              {
-                title: "Stacked Achivements",
-                data: accruedOther,
-              },
-            ]
-          : singleOther.length > 0
-          ? [
-              {
-                title: "Milestones",
-                data: singleOther,
-              },
-            ]
-          : []
-      );
+        getUserAccruedAchievements(uid);
+        getUserSingleAchievements(uid);
+
+        setCombinedList(
+          accruedOther.length > 0 && singleOther.length > 0
+            ? [
+                {
+                  title: "Stacked Achivements",
+                  data: accruedOther,
+                },
+                {
+                  title: "Milestones",
+                  data: singleOther,
+                },
+              ]
+            : accruedOther.length > 0
+            ? [
+                {
+                  title: "Stacked Achivements",
+                  data: accruedOther,
+                },
+              ]
+            : singleOther.length > 0
+            ? [
+                {
+                  title: "Milestones",
+                  data: singleOther,
+                },
+              ]
+            : []
+        );
+      }
     }
   }, [
     props.runs,
     props.history,
     props.accruedAchievements,
     props.singleAchievements,
+    singleOther,
+    accruedOther,
   ]);
 
   const emptyList = () => {
