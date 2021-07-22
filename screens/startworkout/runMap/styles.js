@@ -53,7 +53,6 @@ export const styles = StyleSheet.create({
   overlay: {
     position: "absolute",
     bottom: 50,
-    alignItems: "center",
   },
   bottombar: {
     flex: 1,
@@ -77,20 +76,20 @@ export const styles = StyleSheet.create({
     },
   },
   timeBox: {
-    bottom: 335,
-    left: 64,
+    bottom: 338,
   },
   time: {
     color: "#0B2A59",
     fontSize: 15,
+    fontWeight: "bold"
   },
   ranBox: {
-    bottom: 354,
-    left: 125,
+    bottom: 356,
   },
   ran: {
     color: "#0B2A59",
     fontSize: 15,
+    fontWeight: "bold"
   },
   startButtonBox: {
     alignSelf: "center",
