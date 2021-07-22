@@ -1,7 +1,8 @@
 import moment from "moment";
 
 export const getCurrWeek = () => {
-  const currWeek = getWeek(new Date())
+  const date = new Date()
+  const currWeek = getWeek(new Date(date.getFullYear(), date.getMonth(), date.getDate(), 8))
   return currWeek;
 };
 
@@ -210,6 +211,7 @@ export const favExercises = (hist) => {
 };
 
 export const reloadPeriod = (period, hist) => {
+  console.log(period)
   return getStats(
     hist
       .map((doc) => doc.data)

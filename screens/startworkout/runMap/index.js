@@ -173,7 +173,7 @@ const RunMap = (props) => {
         };
         setCurrentLocation(newLocation);
         setLocList((locList) => [...locList, {...newLocation, end: true}]);
-        setIndex(index + 1)
+        setIndex((oldIndex) => oldIndex + 1)
       } else {
         //set distance by drawing from locList
         const len = locList.length
@@ -182,13 +182,13 @@ const RunMap = (props) => {
             setNewDistance((oldDistance) => oldDistance + calcDistance(locList[len - 2], locList[len - 1]))
           }
           //increase index
-          setIndex((oldIndex) => len - 1);
+          setIndex((oldIndex) => oldIndex + 1);
           //console.log(distance)
         }
       }
       ////////////////////////////////////////////////////////////
     })();
-  }, [currentLocation, screenShot]); //only rerender if currentLocation changes
+  }, [locList, screenShot]); //only rerender if currentLocation changes
 
   const start = () => {
     setStatus("Continue");
@@ -208,7 +208,7 @@ const RunMap = (props) => {
           };
           setCurrentLocation(latlon);
           //Everytime the location changes -> Add location into locList.
-          const len = loclist.length
+          const len = locList.length
           if (len === 1 || locList[len - 1]?.end) {
             setLocList((locList) => [...locList, {...latlon, start: true}]);
           }

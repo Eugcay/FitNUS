@@ -18,6 +18,7 @@ import { Divider } from "react-native-elements";
 import { updateUser } from "../../store/actions/user";
 import { styles, options } from "./styles";
 import firebase from "firebase";
+import { isEmpty } from "react-redux-firebase";
 // import { finishJio } from "../../helpers/startWorkout";
 
 const StartWorkout = (props) => {
@@ -104,7 +105,13 @@ const StartWorkout = (props) => {
   };
 
   const saveTemplate = async () => {
-    await firebase
+    const exs = formatExercises()
+    if (exercises.length === 0) {
+      Alert.alert('Add exercises before saving a template.')
+    } else if (!exs) {
+      Alert.alert('Add sets to exercises.')
+    } else {
+      await firebase
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
@@ -120,16 +127,23 @@ const StartWorkout = (props) => {
         template: true,
       });
       Alert.alert('Saved to Templates!')
+    }
+    
   };
 
   const formatExercises = () => {
-    return exercises.map((exercise) => ({
-      ...exercise,
-      sets: exercise.sets.map((set) => ({
-        ...set,
-        completed: false,
-      })),
-    }));
+    if (!exercises.reduce((x, y) => x && y?.sets , true)) {
+      return null
+    } else {
+      return exercises.map((exercise) => ({
+        ...exercise,
+        sets: exercise.sets.map((set) => ({
+          ...set,
+          completed: false,
+        })),
+      }));
+    }
+    
   };
 
   const workoutComplete = () => {

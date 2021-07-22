@@ -24,21 +24,24 @@ function WorkoutDetails(props) {
     ? props.route.params.workout?.date
     : null;
   // const achievements = props.route.params.workout?.achievements.length || 0;
-  const PBs = props.route.params?.workout.PBs || 0
+  const PBs = props.route.params?.workout.PBs || 0;
   const id = props.route.params?.id ? props.route.params?.id : "";
   const jio = props.route.params?.jio;
   const jioState = props.route.params?.workout?.jioStatus;
+  const template = props.route.params?.workout?.template;
   // console.log(jioState);
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerRight: () =>
-        date && (
+        (date || template) && (
           <TouchableOpacity
             style={{ marginHorizontal: 5 }}
-            onPress={deleteWorkout}
+            onPress={date ? deleteWorkout : deleteTemplate}
           >
-            <Text style={{ color: "red" }}>Delete</Text>
+            <Text style={{ color: "red" }}>
+              {date ? "Delete" : "Delete Template"}
+            </Text>
           </TouchableOpacity>
         ),
     });
@@ -57,6 +60,34 @@ function WorkoutDetails(props) {
       .doc(id)
       .delete();
     props.navigation.goBack();
+  };
+
+  const delTemp = (id) => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("templates")
+      .doc(id)
+      .delete();
+      props.navigation.goBack();
+  };
+
+  const deleteTemplate = () => {
+    console.log(id)
+    Alert.alert("Confirm Delete Template?", "", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => {
+          delTemp(id);
+        },
+      },
+    ]);
   };
 
   const deleteWorkout = () => {

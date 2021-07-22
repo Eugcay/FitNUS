@@ -32,6 +32,7 @@ const WorkoutSearch = ({ navigation, workouts, jio }) => {
           style={styles.searchItem}
           onPress={() =>
             navigation.navigate("Workout Details", {
+              id: item.id,
               workout: item.data,
               jio: jio ? jio : null
             })
