@@ -25,8 +25,6 @@ const Stack = createStackNavigator();
 const JioStack = (props) => {
   useEffect(() => {
     props.getFeed();
-    // props.getUpcoming();
-    // props.getCompleted();
   }, []);
   return (
     <Stack.Navigator

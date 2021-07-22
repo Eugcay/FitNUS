@@ -36,6 +36,7 @@ const JioSearch = (props) => {
   };
 
   const renderItem = ({ item }) => {
+    console.log(item.data?.photoURL)
     return (
       <TouchableOpacity
         onPress={() =>
@@ -51,7 +52,7 @@ const JioSearch = (props) => {
       >
         <Image
           source={
-            item.data?.photoURL
+            item.data?.photoURL && item.data?.photoURL !== ''
               ? { uri: item.data.photoURL }
               : require("../../../assets/user.png")
           }
