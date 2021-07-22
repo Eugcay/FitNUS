@@ -42,7 +42,7 @@ import firebase from "firebase";
     return fetchWorkouts;
   }, [props.template]);
 
-  return templates.length > 0 && (
+  return (templates.length > 0 || props.template.length === 0) && (
     <ScrollView
       style={{ flex: 1, backgroundColor: "#f2f2f2" }}
       scrollEnabled={true}

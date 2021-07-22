@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
+  Platform
 } from "react-native";
 import * as Location from "expo-location";
 import haversine from "haversine";
@@ -296,7 +297,7 @@ const RunMap = (props) => {
         }}
         provider="google"
         showsUserLocation={userLoc}
-        showsMyLocationButton={true}
+        showsMyLocationButton={Platform.OS === 'android'}
         showsCompass={true}
         onMapReady={_onMapReady}
         customMapStyle={dark ? mapDark : mapStandard}
