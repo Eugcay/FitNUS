@@ -19,6 +19,8 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Entypo } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 import { markers, mapDarkStyle, mapStandardStyle } from "./mapData";
 
@@ -29,52 +31,59 @@ const CARD_HEIGHT = 280;
 const CARD_WIDTH = width * 0.85;
 const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
-const ExploreScreen = () => {
+const ScrollMap = () => {
   const theme = useTheme();
 
   const initialMapState = {
     markers,
     categories: [
       {
-        name: "Gyms",
+        name: "All",
+        cat: "All",
         icon: (
-          <MaterialCommunityIcons
-            style={styles.chipsIcon}
-            name="food-fork-drink"
-            size={18}
-          />
+          <MaterialIcons style={styles.chipsIcon} name="all-inclusive" size={18} color="black" />
+        ),
+      },
+      {
+        name: "Gyms",
+        cat: "Gym",
+        icon: (
+          <MaterialCommunityIcons style={styles.chipsIcon} name="weight-lifter" size={18} color="black" />
+          
         ),
       },
       {
         name: "Tracks and Fields",
+        cat: "Field",
         icon: (
-          <Ionicons name="ios-restaurant" style={styles.chipsIcon} size={18} />
+          <MaterialCommunityIcons style={styles.chipsIcon} name="soccer-field" size={18} color="black" />
         ),
       },
       {
+        name: "Outdoor Courts",
+        cat: "OCourt",
+        icon: <MaterialIcons style={styles.chipsIcon} name="wb-sunny" size={18} color="black" />,
+      },
+      {
         name: "Indoor Courts",
+        cat: "ICourt",
         icon: (
-          <Ionicons name="md-restaurant" style={styles.chipsIcon} size={18} />
+          <Entypo style={styles.chipsIcon} name="home" size={18} color="black" />
         ),
       },
       {
         name: "Pools",
+        cat: "Pool",
         icon: (
-          <MaterialCommunityIcons
-            name="food"
-            style={styles.chipsIcon}
-            size={18}
-          />
+          <FontAwesome5 style={styles.chipsIcon} name="swimmer" size={16} color="black" />
         ),
       },
       {
         name: "Rock walls",
-        icon: <Fontisto name="hotel" style={styles.chipsIcon} size={15} />,
+        cat: "Wall",
+        icon: <FontAwesome5 style={styles.chipsIcon} name="hand-rock" size={16} color="black" />,
       },
-      {
-        name: "Outdoor Courts",
-        icon: <Fontisto name="hotel" style={styles.chipsIcon} size={15} />,
-      },
+      
     ],
     region: {
       latitude: 1.2985,
@@ -85,6 +94,7 @@ const ExploreScreen = () => {
   };
 
   const [state, setState] = React.useState(initialMapState);
+  const [locations, setLocations] = React.useState(initialMapState.markers);
 
   let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
@@ -92,8 +102,8 @@ const ExploreScreen = () => {
   useEffect(() => {
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
-      if (index >= state.markers.length) {
-        index = state.markers.length - 1;
+      if (index >= locations.length) {
+        index = locations.length - 1;
       }
       if (index <= 0) {
         index = 0;
@@ -104,7 +114,7 @@ const ExploreScreen = () => {
       const regionTimeout = setTimeout(() => {
         if (mapIndex !== index) {
           mapIndex = index;
-          const { latlng } = state.markers[index]; //hmm
+          const { latlng } = locations[index]; //hmm
           _map.current.animateToRegion(
             {
               ...latlng,
@@ -118,7 +128,7 @@ const ExploreScreen = () => {
     });
   });
 
-  const interpolations = state.markers.map((marker, index) => {
+  const interpolations = locations.map((marker, index) => {
     const inputRange = [
       (index - 1) * CARD_WIDTH,
       index * CARD_WIDTH,
@@ -148,6 +158,14 @@ const ExploreScreen = () => {
   const _map = React.useRef(null);
   const _scrollView = React.useRef(null);
 
+  const onPressCat = (cat) => {
+    setLocations(state.markers.filter(
+      (marker) => {
+        return cat === "All" ? true : marker.category === cat 
+      }
+    ))
+  }
+
   return (
     <View style={styles.container}>
       <MapView
@@ -157,7 +175,7 @@ const ExploreScreen = () => {
         provider={PROVIDER_GOOGLE}
         customMapStyle={theme.dark ? mapDarkStyle : mapStandardStyle}
       >
-        {state.markers.map((marker, index) => {
+        {locations.map((marker, index) => {
           const scaleStyle = {
             transform: [
               {
@@ -200,7 +218,7 @@ const ExploreScreen = () => {
         }}
       >
         {state.categories.map((category, index) => (
-          <TouchableOpacity key={index} style={styles.chipsItem}>
+          <TouchableOpacity key={index} style={styles.chipsItem} onPress={() => onPressCat(category.cat)}>
             {category.icon}
             <Text>{category.name}</Text>
           </TouchableOpacity>
@@ -238,7 +256,7 @@ const ExploreScreen = () => {
           { useNativeDriver: true }
         )}
       >
-        {state.markers.map((marker, index) => (
+        {locations.map((marker, index) => (
           <View style={styles.card} key={index}>
             <Image
               source={{ uri: marker.image }}
@@ -293,7 +311,7 @@ const ExploreScreen = () => {
   );
 };
 
-export default ExploreScreen;
+export default ScrollMap;
 
 const styles = StyleSheet.create({
   container: {
