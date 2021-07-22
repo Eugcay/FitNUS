@@ -176,12 +176,13 @@ const RunMap = (props) => {
         setIndex(index + 1)
       } else {
         //set distance by drawing from locList
-        if (locList.length >= 2 && locList.length >= index + 1) {
-          if (!locList[index]?.end) {
-            setNewDistance((oldDistance) => oldDistance + calcDistance(locList[index], locList[index + 1]))
+        const len = locList.length
+        if (len >= 2 && len >= index + 1) {
+          if (!locList[len - 1]?.end) {
+            setNewDistance((oldDistance) => oldDistance + calcDistance(locList[len - 2], locList[len - 1]))
           }
           //increase index
-          setIndex((oldIndex) => oldIndex + 1);
+          setIndex((oldIndex) => len - 1);
           //console.log(distance)
         }
       }
@@ -192,7 +193,7 @@ const RunMap = (props) => {
   const start = () => {
     setStatus("Continue");
     ////////////////////////////////////////////////////////////
-    async function watchPos(index) {
+    async function watchPos() {
       let locations = await Location.watchPositionAsync(
         //Only use this to change state, dont use this to change sideEffects, e.g don calc inside
         {
@@ -207,7 +208,8 @@ const RunMap = (props) => {
           };
           setCurrentLocation(latlon);
           //Everytime the location changes -> Add location into locList.
-          if (locList.length === 1 || locList[index]?.end) {
+          const len = loclist.length
+          if (len === 1 || locList[len - 1]?.end) {
             setLocList((locList) => [...locList, {...latlon, start: true}]);
           }
           setLocList((locList) => [...locList, latlon]);
@@ -220,8 +222,9 @@ const RunMap = (props) => {
   };
 
   const stop = () => {
+    console.log(index, locList.length)
     remove.remove();
-    setLocList((locList) => [...locList, {...locList[index + 1], end: true}])
+    setLocList((locList) => [...locList, {...locList[locList.length - 1], end: true}])
     setIndex(oldIndex => oldIndex + 1) 
   };
 
