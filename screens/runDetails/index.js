@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useEffect } from "react";
 import {
   View,
   Text,
@@ -21,17 +21,19 @@ const RunDetails = (props) => {
   const run = props.route.params.workout;
   const name = props.route.params.workout.name;
   const id = props.route.params?.id ? props.route.params?.id : "";
-  const locList = props.route.params.workout.locList;
+  const locList = [...props.route.params.workout.locList];
+  locList.splice(0, 1)
   const date = props.route.params.workout.date;
   const distance = props.route.params.workout.distance;
   const duration = props.route.params.workout.duration;
   const description = props.route.params.workout.description;
   const ran = props.route.params.workout.ran;
   const jioState = props.route.params?.workout?.jioStatus
-  const startPoint = locList[1]
+  const startPoint = locList[0]
   const endPoint = locList[locList.length - 1]
 
   const [refer, setRefer] = useState(null);
+  const [lines, setLines] = useState([]) 
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -43,6 +45,18 @@ const RunDetails = (props) => {
         ),
     });
   }, []);
+
+  useEffect(() => {
+   let prev = 0
+    locList.forEach((loc, index) => {
+      if (loc?.end) {
+        const copy = locList.slice(prev, index + 1)
+        setLines(lines => [...lines, [...copy]])
+        prev = index + 1
+      } 
+    })
+    console.log(lines.map(line => [line[0]]), startPoint)
+  }, [])
 
   const del = (id) => {
     firebase
@@ -106,12 +120,24 @@ const RunDetails = (props) => {
             title={"End"}
             pinColor={"#0B2A59"}
         />
-        <Polyline
-          coordinates={locList}
+        {lines.map(line => <Polyline
+          coordinates={line}
           strokeWidth={2}
           lineJoin="bevel"
           strokeColour="rgba(0,0,0,0.1)"
+        />)}
+        {/* {lines.map((line, index) => (index < lines.length - 1) && (
+          <Polyline
+          coordinates={[line[line.length - 1], lines[index + 1][0]]}
+          strokeWidth={2}
+          lineJoin="bevel"
+          strokeColour="rgba(0,0,0,0.1)"
+          lineDashPattern={[5, 15]}
         />
+        ))} */}
+        <Polyline coordinates={locList} strokeWidth={2}
+          lineJoin="bevel"
+          strokeColour="rgba(0,0,0,0.1)"  lineDashPattern={[5, 5]}/>
 
       </MapView>
       <Divider orientation="horizontal" width={1} />

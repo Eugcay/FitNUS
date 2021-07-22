@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 
 export const styles = StyleSheet.create({
   finishRunBorder: {
@@ -48,7 +48,7 @@ export const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
+    height: Platform.OS === 'ios' ? Dimensions.get("window").height * 0.9 :  Dimensions.get("window").height,
   },
   overlay: {
     position: "absolute",

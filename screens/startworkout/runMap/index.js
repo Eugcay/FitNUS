@@ -33,6 +33,7 @@ const RunMap = (props) => {
   const startPoint = oldRun?.start;
   const endPoint = oldRun?.end;
 
+  
   useEffect(() => {
     if (oldRun && pulls === 1) {
       setOldLocList(oldRun.locList);
@@ -102,6 +103,8 @@ const RunMap = (props) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setNewDistance] = useState(0);
   const [locList, setLocList] = useState([]);
+  const [currLocList, setcurrLocList] = useState([])
+  const [lines, setLines] = useState([])
   const [remove, setRemove] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [screenShot, setScreenshot] = useState(null);
@@ -109,6 +112,7 @@ const RunMap = (props) => {
   const [index, setIndex] = useState(-1);
   const [initial, setInitial] = useState(null);
 
+  
   //takeSnapshot
   const takeScreenshot = async () => {
     // 'takeSnapshot' takes a config object with the
@@ -159,6 +163,12 @@ const RunMap = (props) => {
         if (status !== "granted") {
           setErrorMsg("Permission to access location was denied");
           console.log("Permission not granted!");
+          setInitial({
+            latitude: 1.2966,
+            longitude: 103.7764,
+            latitudeDelta: 0.3,
+            longitudeDelta: 0.3,
+          })
           return;
         }
       } else {
@@ -179,6 +189,7 @@ const RunMap = (props) => {
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         });
+        console.log(initial)
         setCurrentLocation(newLocation);
         setLocList((locList) => [...locList, { ...newLocation, end: true }]);
         setIndex((oldIndex) => oldIndex + 1);
@@ -186,7 +197,7 @@ const RunMap = (props) => {
         //set distance by drawing from locList
         const len = locList.length;
         if (len >= 2 && len >= index + 1) {
-          if (!locList[len - 1]?.end) {
+          if (!locList[len - 2]?.end) {
             setNewDistance(
               (oldDistance) =>
                 oldDistance + calcDistance(locList[len - 2], locList[len - 1])
@@ -222,8 +233,11 @@ const RunMap = (props) => {
           const len = locList.length;
           if (len === 1 || locList[len - 1]?.end) {
             setLocList((locList) => [...locList, { ...latlon, start: true }]);
+            setcurrLocList((currLocList) => [...currLocList, {... latlon}])
+          } else {
+            setLocList((locList) => [...locList, latlon]);
+            setcurrLocList(currLocList => [...currLocList, {...latlon}])
           }
-          setLocList((locList) => [...locList, latlon]);
         }
       );
       setRemove(locations);
@@ -239,11 +253,15 @@ const RunMap = (props) => {
       ...locList,
       { ...locList[locList.length - 1], end: true },
     ]);
+    setLines((lines) => [...lines, currLocList])
+    console.log(lines)
+    setcurrLocList([])
     setIndex((oldIndex) => oldIndex + 1);
   };
 
   const finishRun = async (ss) => {
     remove.remove();
+    console.log(lines)
     const uid = firebase.auth().currentUser.uid;
     const run = {
       name: title,
@@ -295,7 +313,7 @@ const RunMap = (props) => {
 
   const _onMapReady = () => setMargin(Platform.OS === 'ios' ? 0 : 60);
 
-  return (
+  return initial && (
     <View style={styles.container}>
       <MapView
         ref={(ref) => {
@@ -308,7 +326,7 @@ const RunMap = (props) => {
         //   latitudeDelta: 0.01,
         //   longitudeDelta: 0.01,
         // }}
-        region={
+        initialRegion={
           initial
             ? initial
             : {
@@ -318,15 +336,15 @@ const RunMap = (props) => {
                 longitudeDelta: 0.3,
               }
         }
-        onRegionChange={(region) => {
-          setInitial({ region });
-        }}
-        onRegionChangeComplete={(region) => {
-          setInitial({ region });
-        }}
+        // onRegionChange={(region) => {
+        //   setInitial({ region });
+        // }}
+        // onRegionChangeComplete={(region) => {
+        //   setInitial({ region });
+        // }}
         provider="google"
         showsUserLocation={userLoc}
-        showsMyLocationButton={Platform.OS === 'android'}
+        showsMyLocationButton={true}
         showsCompass={true}
         onMapReady={_onMapReady}
         customMapStyle={dark ? mapDark : mapStandard}
@@ -370,7 +388,8 @@ const RunMap = (props) => {
             description={marker.description}
           />
         ))}
-        <Polyline coordinates={locList} strokeWidth={2} />
+        {lines.map(line => (<Polyline coordinates={line} strokeWidth={2} />))}
+        <Polyline coordinates={currLocList} strokeWidth={2} />
       </MapView>
       <View style={styles.overlay}>
         {workoutStatus == "Not Started" ? (
