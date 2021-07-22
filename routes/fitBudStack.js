@@ -5,7 +5,6 @@ import FitBud from "../screens/fitBud";
 import WorkoutDetails from "../screens/workoutDetails";
 import Map from "../screens/map";
 import RunDetails from "../screens/runDetails";
-import FrontMap from "../screens/fitBud/frontMap";
 import ScrollMap from "../screens/fitBud/scrollMap"
 
 const Stack = createStackNavigator();
