@@ -81,13 +81,15 @@ export const styles = StyleSheet.create({
   time: {
     color: "#0B2A59",
     fontSize: 15,
+    fontWeight: "bold"
   },
   ranBox: {
-    bottom: 354,
+    bottom: 356,
   },
   ran: {
     color: "#0B2A59",
     fontSize: 15,
+    fontWeight: "bold"
   },
   startButtonBox: {
     alignSelf: "center",

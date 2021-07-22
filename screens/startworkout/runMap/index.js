@@ -106,6 +106,7 @@ const RunMap = (props) => {
   const [screenShot, setScreenshot] = useState(null);
   const [userLoc, setUserLoc] = useState(true);
   const [index, setIndex] = useState(-1);
+  const [initial, setInitial] = useState(null);
 
   //takeSnapshot
   const takeScreenshot = async () => {
@@ -171,15 +172,24 @@ const RunMap = (props) => {
           latitude: loc.coords.latitude,
           longitude: loc.coords.longitude,
         };
+        setInitial({
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
         setCurrentLocation(newLocation);
-        setLocList((locList) => [...locList, {...newLocation, end: true}]);
-        setIndex((oldIndex) => oldIndex + 1)
+        setLocList((locList) => [...locList, { ...newLocation, end: true }]);
+        setIndex((oldIndex) => oldIndex + 1);
       } else {
         //set distance by drawing from locList
-        const len = locList.length
+        const len = locList.length;
         if (len >= 2 && len >= index + 1) {
           if (!locList[len - 1]?.end) {
-            setNewDistance((oldDistance) => oldDistance + calcDistance(locList[len - 2], locList[len - 1]))
+            setNewDistance(
+              (oldDistance) =>
+                oldDistance + calcDistance(locList[len - 2], locList[len - 1])
+            );
           }
           //increase index
           setIndex((oldIndex) => oldIndex + 1);
@@ -208,9 +218,9 @@ const RunMap = (props) => {
           };
           setCurrentLocation(latlon);
           //Everytime the location changes -> Add location into locList.
-          const len = locList.length
+          const len = locList.length;
           if (len === 1 || locList[len - 1]?.end) {
-            setLocList((locList) => [...locList, {...latlon, start: true}]);
+            setLocList((locList) => [...locList, { ...latlon, start: true }]);
           }
           setLocList((locList) => [...locList, latlon]);
         }
@@ -222,10 +232,13 @@ const RunMap = (props) => {
   };
 
   const stop = () => {
-    console.log(index, locList.length)
+    console.log(index, locList.length);
     remove.remove();
-    setLocList((locList) => [...locList, {...locList[locList.length - 1], end: true}])
-    setIndex(oldIndex => oldIndex + 1) 
+    setLocList((locList) => [
+      ...locList,
+      { ...locList[locList.length - 1], end: true },
+    ]);
+    setIndex((oldIndex) => oldIndex + 1);
   };
 
   const finishRun = async (ss) => {
@@ -233,7 +246,7 @@ const RunMap = (props) => {
     const uid = firebase.auth().currentUser.uid;
     const run = {
       name: title,
-      description: `${title} completed on ${(new Date())}`,
+      description: `${title} completed on ${new Date()}`,
       duration: timeNow / 1000,
       distance,
       locList,
@@ -279,7 +292,7 @@ const RunMap = (props) => {
     batch.commit();
   };
 
-  const _onMapReady = () => setMargin(60);
+  const _onMapReady = () => setMargin(Platform.OS === 'ios' ? 0 : 60);
 
   return (
     <View style={styles.container}>
@@ -288,11 +301,27 @@ const RunMap = (props) => {
           setRefer(ref);
         }}
         style={[styles.map, { marginTop: mTop }]}
-        initialRegion={{
-          latitude: 1.3702303096151767,
-          longitude: 103.94958799677016,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+        // initialRegion={{
+        //   latitude: initial.latitude,
+        //   longitude: initial.longitude,
+        //   latitudeDelta: 0.01,
+        //   longitudeDelta: 0.01,
+        // }}
+        region={
+          initial
+            ? initial
+            : {
+                latitude: 1.2966,
+                longitude: 103.7764,
+                latitudeDelta: 0.3,
+                longitudeDelta: 0.3,
+              }
+        }
+        onRegionChange={(region) => {
+          setInitial({ region });
+        }}
+        onRegionChangeComplete={(region) => {
+          setInitial({ region });
         }}
         provider="google"
         showsUserLocation={userLoc}
@@ -344,7 +373,7 @@ const RunMap = (props) => {
       </MapView>
       <View style={styles.overlay}>
         {workoutStatus == "Not Started" ? (
-          <View style={{alignItems: "center"}}>
+          <View style={{ alignItems: "center" }}>
             <View style={styles.timeBox}>
               <Text style={styles.time}>Time elapsed:</Text>
             </View>
@@ -377,7 +406,7 @@ const RunMap = (props) => {
             </View>
           </View>
         ) : workoutStatus == "Continue" ? ( //Pause and Finish
-          <View>
+          <View style={{ alignItems: "center" }}>
             <View style={styles.timeBox}>
               <Text style={styles.time}>Time elapsed:</Text>
             </View>
@@ -423,7 +452,7 @@ const RunMap = (props) => {
             </View>
           </View>
         ) : workoutStatus == "Paused" ? ( //Finish and Continue
-          <View>
+          <View style={{ alignItems: "center" }}>
             <View style={styles.timeBox}>
               <Text style={styles.time}>Time elapsed:</Text>
             </View>
