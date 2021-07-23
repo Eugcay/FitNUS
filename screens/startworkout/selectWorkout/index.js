@@ -4,6 +4,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   Text,
+  Platform
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { styles } from "./styles";
@@ -17,7 +18,7 @@ const SelectWorkoutType = ({ navigation }) => {
           <ImageBackground
             source={require("../../../assets/runworkout1.jpeg")}
             style={styles.image}
-            blurRadius={5}
+            blurRadius={Platform.OS !== 'ios' ? 2 : 5}
           >
             <View style={styles.darken}>
               <Text style={styles.title}>Distance-based</Text>
@@ -31,7 +32,7 @@ const SelectWorkoutType = ({ navigation }) => {
           <ImageBackground
             source={require("../../../assets/static1.jpeg")}
             style={styles.image}
-            blurRadius={8}
+            blurRadius={Platform.OS !== 'ios' ? 2 : 5}
           >
             <View style={styles.darken}>
               <Text style={styles.title}>Static</Text>

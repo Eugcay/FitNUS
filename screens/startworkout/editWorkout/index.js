@@ -6,7 +6,7 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
-  Button,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Divider } from "react-native-elements";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -48,11 +48,10 @@ const EditExercise = (props) => {
   };
 
   const changeTextHandler = (text) => {
-    const s = ''
-    if (s.charAt(s.length - 1) === '.') {
-
+    const s = "";
+    if (s.charAt(s.length - 1) === ".") {
     }
-  }
+  };
 
   const addSet = () => {
     let data = [...sets];
@@ -87,17 +86,21 @@ const EditExercise = (props) => {
       const newWeight = parseFloat(data[index].weight) + 2.5;
       data[index] = { ...data[index], weight: newWeight };
     } else if (type === "DECREASE_WEIGHT") {
-      const newWeight = parseFloat(data[index].weight) > 0 ? parseFloat(data[index].weight) - 2.5 : 0;
+      const newWeight =
+        parseFloat(data[index].weight) > 0
+          ? parseFloat(data[index].weight) - 2.5
+          : 0;
       data[index] = { ...data[index], weight: newWeight };
     } else if (type === "INCREMENT_REPS") {
-      const newReps = parseInt(data[index].reps)+ 1;
+      const newReps = parseInt(data[index].reps) + 1;
       data[index] = { ...data[index], reps: newReps };
-    } else if (type === 'DECREASE_REPS'){
-      const newReps = parseInt(data[index].reps) > 0 ? parseInt(data[index].reps) - 1 : 0;
+    } else if (type === "DECREASE_REPS") {
+      const newReps =
+        parseInt(data[index].reps) > 0 ? parseInt(data[index].reps) - 1 : 0;
       data[index] = { ...data[index], reps: newReps };
     }
     console.log(data[index]);
-    setSets(data); 
+    setSets(data);
   };
 
   const saveEx = () => {
@@ -107,7 +110,7 @@ const EditExercise = (props) => {
       name: "Start Workout",
       params: { exercise: ex },
       merge: true,
-    })
+    });
   };
 
   const renderItem = ({ item }) => {
@@ -137,17 +140,24 @@ const EditExercise = (props) => {
           <View style={styles.setContent}>
             <Text>Weight (kg)</Text>
             <View style={styles.input}>
-              <TouchableOpacity onPress={() => editSet(index, 'DECREASE_WEIGHT')}>
+              <TouchableOpacity
+                onPress={() => editSet(index, "DECREASE_WEIGHT")}
+              >
                 <MaterialCommunityIcons name="minus" size={20} />
               </TouchableOpacity>
               <TextInput
                 placeholder="0"
-                onChangeText={(text) => {console.log(text); setWeight(index, text)}}
+                onChangeText={(text) => {
+                  console.log(text);
+                  setWeight(index, text);
+                }}
                 value={item.weight !== 0 ? item.weight.toString() : ""}
                 style={{ fontSize: 20, width: "40%", textAlign: "center" }}
-                keyboardType='numeric'
+                keyboardType="numeric"
               />
-              <TouchableOpacity onPress={() => editSet(index, 'INCREMENT_WEIGHT')}>
+              <TouchableOpacity
+                onPress={() => editSet(index, "INCREMENT_WEIGHT")}
+              >
                 <MaterialCommunityIcons name="plus" size={20} />
               </TouchableOpacity>
             </View>
@@ -156,7 +166,7 @@ const EditExercise = (props) => {
           <View style={styles.setContent}>
             <Text>Reps</Text>
             <View style={styles.input}>
-              <TouchableOpacity onPress={() => editSet(index, 'DECREASE_REPS')}>
+              <TouchableOpacity onPress={() => editSet(index, "DECREASE_REPS")}>
                 <MaterialCommunityIcons name="minus" size={20} />
               </TouchableOpacity>
               <TextInput
@@ -164,9 +174,11 @@ const EditExercise = (props) => {
                 value={item.reps !== 0 ? item.reps.toString() : ""}
                 onChangeText={(text) => setReps(index, text)}
                 style={{ fontSize: 20, width: "40%", textAlign: "center" }}
-                keyboardType='numeric'
+                keyboardType="numeric"
               />
-              <TouchableOpacity onPress={() => editSet(index, 'INCREMENT_REPS')}>
+              <TouchableOpacity
+                onPress={() => editSet(index, "INCREMENT_REPS")}
+              >
                 <MaterialCommunityIcons name="plus" size={20} />
               </TouchableOpacity>
             </View>
@@ -181,20 +193,20 @@ const EditExercise = (props) => {
       );
     } else {
       return (
-        <View style={[styles.setHeader, {marginVertical: 10}]}>
+        <View style={[styles.setHeader, { marginVertical: 10 }]}>
           <Text style={styles.setTitle}>Set {index + 1} completed!</Text>
           <Text>
             {item.weight ? item.weight : 0} kg x {item.reps ? item.reps : 0}{" "}
             reps
           </Text>
           <TouchableOpacity
-              onPress={() => {
-                deleteSet(index);
-              }}
-              style={{ position: "absolute", right: 10 }}
-            >
-              <MaterialCommunityIcons name="delete" size={17} />
-            </TouchableOpacity>
+            onPress={() => {
+              deleteSet(index);
+            }}
+            style={{ position: "absolute", right: 10 }}
+          >
+            <MaterialCommunityIcons name="delete" size={17} />
+          </TouchableOpacity>
         </View>
       );
     }
@@ -223,25 +235,32 @@ const EditExercise = (props) => {
           style: { fontSize: 20, color: "#fff" },
         }}
       ></Header>
-      <ScrollView >
-        <View style={styles.container}>
-        <FlatList
-          data={sets}
-          keyExtractor={(item) => item.key}
-          renderItem={renderItem}
-          extraData={sets}
-          style={{ width: "80%", marginVertical: 5 }}
-          scrollEnabled={false}
-        />
-        <TouchableOpacity onPress={addSet} style={styles.addSet}>
-          <Ionicons name="add-outline" color="green" size={23} />
-          <Text style={{ color: "green" }}>ADD SET</Text>
-        </TouchableOpacity>
-        </View>
-      </ScrollView>
+      <KeyboardAvoidingView
+        behavior="height"
+        style={{
+          flex: 1,
+          width: "100%",
+        }}
+      >
+        <ScrollView>
+          <View style={styles.container}>
+            <FlatList
+              data={sets}
+              keyExtractor={(item) => item.key}
+              renderItem={renderItem}
+              extraData={sets}
+              style={{ width: "80%", marginVertical: 5 }}
+              scrollEnabled={false}
+            />
+            <TouchableOpacity onPress={addSet} style={styles.addSet}>
+              <Ionicons name="add-outline" color="green" size={23} />
+              <Text style={{ color: "green" }}>ADD SET</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </>
   );
 };
 
 export default EditExercise;
-

@@ -46,17 +46,17 @@ function FitBud(props) {
       style={{ flex: 1, backgroundColor: "#f2f2f2" }}
       scrollEnabled={true}
     >
-      <View style={{ marginTop: 5, marginBottom: 10 }}>
+      <View style={{ marginTop: 5, marginBottom: 15 }}>
         <WorkoutSearch
           navigation={props.navigation}
           workouts={workouts.concat(templates)}
         />
       </View>
-      <Divider width={1} style={{ marginVertical: 10 }} />
+      {/* <Divider width={1} style={{ marginVertical: 10 }} /> */}
 
       <Text style={styles.headers}>Try something New!</Text>
       <FitBudSuggests navigation={props.navigation} />
-      <Divider width={1} style={{ marginVertical: 10 }} />
+      {/* <Divider width={1} style={{ marginVertical: 10 }} /> */}
       <Text style={styles.headers}>Do it again!</Text>
       <SafeAreaView style={{ marginBottom: 20 }}>
         {history ? (

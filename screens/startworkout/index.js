@@ -288,7 +288,7 @@ const StartWorkout = (props) => {
                 : "0/1 sets completed"}
             </ListItem.Subtitle>
           </ListItem.Content>
-          <TouchableOpacity>
+          <TouchableOpacity style={{width: '10%'}}>
             <MaterialCommunityIcons name="dots-vertical" size={23} />
           </TouchableOpacity>
         </ListItem.Swipeable>

@@ -8,7 +8,7 @@ export default function PieLegend(props) {
           return (
               <View key={cat.key} style={{ justifyContent: 'center', alignItems: 'center', paddingVertical: 5}}>
                   <View style={[styles.circle, {backgroundColor: cat.color}]}></View>
-                  <Text style={{fontSize: 13}}>{cat.key}</Text>
+                  <Text style={{fontSize: 10}}>{cat.key}</Text>
               </View>
           )
       })}

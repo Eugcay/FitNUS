@@ -328,13 +328,6 @@ const RunMap = (props) => {
         // }}
         initialRegion={
           initial
-            ? initial
-            : {
-                latitude: 1.2966,
-                longitude: 103.7764,
-                latitudeDelta: 0.3,
-                longitudeDelta: 0.3,
-              }
         }
         // onRegionChange={(region) => {
         //   setInitial({ region });
