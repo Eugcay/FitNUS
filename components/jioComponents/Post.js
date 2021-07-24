@@ -13,6 +13,7 @@ const Post = ({ navigation, item, currUser }) => {
   const [details, setDetails] = useState(false);
   const [completed, setCompleted] = useState(item.data.completed);
   const currUserId = firebase.auth().currentUser.uid;
+  console.log(item.data?.img)
 
   const start = () => {
     const template = {

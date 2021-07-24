@@ -57,125 +57,122 @@ const Tracker = (props) => {
 
   useEffect(() => {
     ///////////Runs
-    
-      const totRun = props.runs
-        ? getRunStats(props.runs.map((doc) => doc.data))
-        : null;
-      const runsPerMonth =
-        props.runs && yearlyData(props.runs.map((doc) => doc.data));
 
-      const mR = props.runs && reloadRunPeriod(month, props.runs);
-      const runsPerWeek =
-        props.runs &&
-        monthlyData(
-          props.runs.map((doc) => doc.data),
-          month
-        );
-      const wR = props.runs ? reloadRunPeriod(week, props.runs) : null;
-      /////Workouts
-      const tot =
-        props.history && getStats(props.history.map((doc) => doc.data));
+    const totRun = props.runs
+      ? getRunStats(props.runs.map((doc) => doc.data))
+      : null;
+    const runsPerMonth =
+      props.runs && yearlyData(props.runs.map((doc) => doc.data));
 
-      const workoutsPerMonth =
-        props.history && yearlyData(props.history.map((doc) => doc.data));
-
-      const m = props.history && reloadPeriod(month, props.history);
-      const workoutsPerWeek =
-        props.history &&
-        monthlyData(
-          props.history.map((doc) => doc.data),
-          month
-        );
-
-      const w = props.history ? reloadPeriod(week, props.history) : null;
-
-      ///////Favs - Overall
-      const favourites = favExercises(props.history.map((doc) => doc.data));
-      setFavs(favourites);
-      //////User data
-      setUser(props.currentUser);
-      ///////Tracked exercises with the graph and stats
-      setExercises(
-        props.currentUser?.tracked ? props.currentUser?.tracked : []
+    const mR = props.runs && reloadRunPeriod(month, props.runs);
+    const runsPerWeek =
+      props.runs &&
+      monthlyData(
+        props.runs.map((doc) => doc.data),
+        month
       );
-      ////////Goals
-      setGoals({
-        duration: props.currentUser?.durationGoal || null,
-        workouts: props.currentUser?.workoutGoal || null,
-        runs: props.currentUser?.runGoal || null,
-      });
-      /////////Workout sets
-      setTotal({
-        ...tot,
-        workoutFreq: workoutsPerMonth.map(
-          (run, index) => run + runsPerMonth[index]
-        ),
-      });
-      setMonthly({
-        ...m,
-        workoutFreq: workoutsPerWeek.map((week, index) => ({
-          ...week,
-          count: week.count + runsPerWeek[index].count,
-        })),
-      });
-      //.map((run, index) => run + runsPerWeek[index])
-      setWeekly(w);
-      ///////////Run sets
-      setRunTotal({
-        ...totRun,
-        workoutFreq: runsPerMonth,
-      });
-      setRunMonthly({
-        ...mR,
-        workoutFreq: runsPerWeek,
-      });
-      setRunWeekly(wR);
-      ///////////WorkoutPeriod
-      const getPeriod = () => {
-        switch (statsType) {
-          case "weekly":
-            return w;
-          case "monthly":
-            return {
-              ...m,
-              workoutFreq: workoutsPerWeek.map((week, index) => ({
-                ...week,
-                count: week.count + runsPerWeek[index].count,
-              })),
-            };
-          case "total":
-            return {
-              ...tot,
-              workoutFreq: workoutsPerMonth.map(
-                (run, index) => run + runsPerMonth[index]
-              ),
-            };
-          default:
-            return w;
-        }
-      };
-      setPeriod(getPeriod());
-      ///////////////RunPeriod specific stats
-      const getRunPeriod = () => {
-        switch (statsType) {
-          case "weekly":
-            return wR;
-          case "monthly":
-            return {
-              ...mR,
-              workoutFreq: runsPerWeek,
-            };
-          case "total":
-            return {
-              ...totRun,
-              workoutFreq: runsPerMonth,
-            };
-          default:
-            return wR;
-        }
-      };
-      setRunPeriod(getRunPeriod());
-    
+    const wR = props.runs ? reloadRunPeriod(week, props.runs) : null;
+    /////Workouts
+    const tot = props.history && getStats(props.history.map((doc) => doc.data));
+
+    const workoutsPerMonth =
+      props.history && yearlyData(props.history.map((doc) => doc.data));
+
+    const m = props.history && reloadPeriod(month, props.history);
+    const workoutsPerWeek =
+      props.history &&
+      monthlyData(
+        props.history.map((doc) => doc.data),
+        month
+      );
+
+    const w = props.history ? reloadPeriod(week, props.history) : null;
+
+    ///////Favs - Overall
+    const favourites = favExercises(props.history.map((doc) => doc.data));
+    setFavs(favourites);
+    //////User data
+    setUser(props.currentUser);
+    ///////Tracked exercises with the graph and stats
+    setExercises(props.currentUser?.tracked ? props.currentUser?.tracked : []);
+    ////////Goals
+    setGoals({
+      duration: props.currentUser?.durationGoal || null,
+      workouts: props.currentUser?.workoutGoal || null,
+      distance: props.currentUser?.distanceGoal || null,
+      runs: props.currentUser?.runGoal || null,
+    });
+    /////////Workout sets
+    setTotal({
+      ...tot,
+      workoutFreq: workoutsPerMonth.map(
+        (run, index) => run + runsPerMonth[index]
+      ),
+    });
+    setMonthly({
+      ...m,
+      workoutFreq: workoutsPerWeek.map((week, index) => ({
+        ...week,
+        count: week.count + runsPerWeek[index].count,
+      })),
+    });
+    //.map((run, index) => run + runsPerWeek[index])
+    setWeekly(w);
+    ///////////Run sets
+    setRunTotal({
+      ...totRun,
+      workoutFreq: runsPerMonth,
+    });
+    setRunMonthly({
+      ...mR,
+      workoutFreq: runsPerWeek,
+    });
+    setRunWeekly(wR);
+    ///////////WorkoutPeriod
+    const getPeriod = () => {
+      switch (statsType) {
+        case "weekly":
+          return w;
+        case "monthly":
+          return {
+            ...m,
+            workoutFreq: workoutsPerWeek.map((week, index) => ({
+              ...week,
+              count: week.count + runsPerWeek[index].count,
+            })),
+          };
+        case "total":
+          return {
+            ...tot,
+            workoutFreq: workoutsPerMonth.map(
+              (run, index) => run + runsPerMonth[index]
+            ),
+          };
+        default:
+          return w;
+      }
+    };
+    setPeriod(getPeriod());
+    ///////////////RunPeriod specific stats
+    const getRunPeriod = () => {
+      switch (statsType) {
+        case "weekly":
+          return wR;
+        case "monthly":
+          return {
+            ...mR,
+            workoutFreq: runsPerWeek,
+          };
+        case "total":
+          return {
+            ...totRun,
+            workoutFreq: runsPerMonth,
+          };
+        default:
+          return wR;
+      }
+    };
+    setRunPeriod(getRunPeriod());
   }, [props.history, props.currentUser, props.runs, week, month, statsType]);
 
   useEffect(() => {
@@ -303,7 +300,7 @@ const Tracker = (props) => {
           </TouchableOpacity>
         </View>
       )}
-      {period && periodRun? (
+      {period && periodRun ? (
         <>
           <View style={styles.statContainer}>
             <Text style={styles.statsTitle}>General Stats</Text>
@@ -339,8 +336,9 @@ const Tracker = (props) => {
                     }
                     width={Dimensions.get("screen").width * 0.85}
                     borderColor={
-                      (period.workouts + periodRun.runs >
-                        (goals.workouts || 2)) ? "gold" : "blue"
+                      period.workouts + periodRun.runs > (goals.workouts || 2)
+                        ? "gold"
+                        : "blue"
                     }
                     borderWidth={
                       period.workouts + periodRun.runs > (goals.workouts || 2)
@@ -369,8 +367,8 @@ const Tracker = (props) => {
                 <View style={styles.genStat}>
                   <MaterialCommunityIcons
                     name="clock-time-four-outline"
-                    size={17}
-                    color="red"
+                    size={18}
+                    color="darkgreen"
                   />
 
                   <Text style={styles.statTitleSmall}>Total Duration</Text>
@@ -381,7 +379,7 @@ const Tracker = (props) => {
                 <View style={styles.genStat}>
                   <MaterialCommunityIcons
                     name="timer-outline"
-                    size={16}
+                    size={17}
                     color="blue"
                   />
                   <Text style={styles.statTitleSmall}>Avg Duration</Text>
@@ -405,13 +403,27 @@ const Tracker = (props) => {
                   <Text>{period.sets}</Text>
                 </View>
                 <View style={styles.genStat}>
-                  <MaterialCommunityIcons
-                    name="map-marker-distance"
-                    size={17}
-                    color="gray"
-                  />
-                  <Text style={styles.statTitleSmall}>Distance</Text>
-                  <Text>{periodRun.distance.toFixed(2)} km</Text>
+                  {statsType !== "weekly" ? (
+                    <>
+                      <MaterialCommunityIcons
+                        name="map-marker-distance"
+                        size={17}
+                        color="crimson"
+                      />
+                      <Text style={styles.statTitleSmall}>Distance</Text>
+                      <Text>{periodRun.distance.toFixed(2)} km</Text>
+                    </>
+                  ) : (
+                    <>
+                      <MaterialCommunityIcons
+                        name="run-fast"
+                        size={17}
+                        color="crimson"
+                      />
+                      <Text style={styles.statTitleSmall}>Runs</Text>
+                      <Text>{periodRun.runs}</Text>
+                    </>
+                  )}
                 </View>
               </View>
               {statsType !== "weekly" && (
@@ -467,33 +479,74 @@ const Tracker = (props) => {
       {periodRun ? (
         <View style={styles.statContainer}>
           <Text style={styles.statsTitle}>Run Stats</Text>
-          <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
-            <View style={styles.runStat}>
-              <Text style={styles.statTitleSmall}>Average Pace</Text>
-              <Text>
-                {periodRun.runs
-                  ? (periodRun.duration / 60 / periodRun.distance).toFixed(2)
-                  : 0}{" "}
-                min/Km
-              </Text>
+          {statsType === "weekly" && (
+            <View style={{ marginHorizontal: 5, alignItems: "center" }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginBottom: 5,
+                }}
+              >
+                <Text style={{fontSize: 18, color: 'green'}}>
+                  {periodRun.distance.toFixed(2)}
+                </Text>
+                <Text>
+                  {" out of " + (goals.distance || "2")} km completed!
+                </Text>
+              </View>
+
+              <Progress.Bar
+                animated
+                progress={periodRun.distance / (goals.distance || 2)}
+                width={Dimensions.get("screen").width * 0.85}
+                color="forestgreen"
+                borderColor={
+                  periodRun.distance > (goals.distance || 2)
+                    ? "gold"
+                    : "darkgreen"
+                }
+                borderWidth={1.5}
+                height={15}
+              />
             </View>
-            <View style={styles.runStat}>
-              <Text style={styles.statTitleSmall}>Runs</Text>
-              <Text>{periodRun.runs}</Text>
+          )}
+          <View style={{ justifyContent: "center", marginTop: 15 }}>
+            <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
+              <View style={styles.genStat}>
+                <Text style={styles.statTitleSmall}>Average Pace</Text>
+                <Text>
+                  {periodRun.runs
+                    ? (periodRun.duration / 60 / periodRun.distance).toFixed(2)
+                    : 0}{" "}
+                  min/Km
+                </Text>
+              </View>
+              <View style={styles.genStat}>
+                <Text style={styles.statTitleSmall}>Total Duration</Text>
+                <Text>{secondsToDuration(periodRun.duration)}</Text>
+              </View>
+              <View style={styles.genStat}>
+                <Text style={styles.statTitleSmall}>Distance Per Run</Text>
+                <Text>
+                  {periodRun.runs
+                    ? (periodRun.distance / periodRun.runs).toFixed(2)
+                    : 0}{" "}
+                  Km
+                </Text>
+              </View>
+              <View style={styles.genStat}>
+                <Text style={styles.statTitleSmall}>Longest Run</Text>
+                <Text>{periodRun.longest.toFixed(2)} Km</Text>
+              </View>
             </View>
-            <View style={styles.runStat}>
-              <Text style={styles.statTitleSmall}>Distance Per Run</Text>
-              <Text>
-                {periodRun.runs
-                  ? (periodRun.distance / periodRun.runs).toFixed(2)
-                  : 0}{" "}
-                Km
-              </Text>
-            </View>
-            <View style={styles.runStat}>
-              <Text style={styles.statTitleSmall}>Longest Run</Text>
-              <Text>{periodRun.longest.toFixed(2)} Km</Text>
-            </View>
+            {statsType !== "weekly" && (
+              <View style={styles.workoutCircle}>
+                <Text style={styles.workoutFreq}>{periodRun.runs}</Text>
+                <Text>Runs</Text>
+              </View>
+            )}
           </View>
         </View>
       ) : (
@@ -517,7 +570,7 @@ const Tracker = (props) => {
                     )
                       ? props.currentUser.pb.find(
                           (ex) => ex.exercise === item.data.name
-                        ).best 
+                        ).best
                       : 0
                   }
                   del={deleteEx}

@@ -204,7 +204,7 @@ function EditProfile(props) {
           ></TextInput>
         </View>
 
-        <View style={styles.input}>
+        {/* <View style={styles.input}>
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.fields}
@@ -213,7 +213,7 @@ function EditProfile(props) {
             value={userState.email}
             textContentType="emailAddress"
           ></TextInput>
-        </View>
+        </View> */}
 
         <View style={styles.input}>
           <Text style={styles.label}>Bio</Text>
@@ -233,7 +233,8 @@ function EditProfile(props) {
             onChangeText={(text) => setUserState(text, "durationGoal", true)}
             placeholder="Set goal for total weekly workout duration"
             value={userState.durationGoal}
-            maxLength={6}
+            maxLength={5}
+            keyboardType='numeric'
           ></TextInput>
         </View>
 
@@ -244,7 +245,8 @@ function EditProfile(props) {
             onChangeText={(text) => setUserState(text, "distanceGoal", true)}
             placeholder="Set goal for total distance run per week"
             value={userState.distanceGoal}
-            maxLength={8}
+            maxLength={3}
+            keyboardType='numeric'
           ></TextInput>
         </View>
 
@@ -255,7 +257,8 @@ function EditProfile(props) {
             onChangeText={(text) => setUserState(text, "workoutGoal", true)}
             placeholder="Set goal for minimum workouts per week"
             value={userState.workoutGoal}
-            maxLength={6}
+            maxLength={3}
+            keyboardType='number-pad'
           />
         </View>
 

@@ -93,12 +93,14 @@ const JioStart = (props) => {
   };
 
   const removeJio = async (id) => {
-    const storageRef = firebase.storage().refFromURL(jioState.img);
+    if (jioState.img) {
+      const storageRef = firebase.storage().refFromURL(jioState.img);
 
-    storageRef
-      .delete()
-      .then(() => console.log("success"))
-      .catch((err) => console.log(err));
+      storageRef
+        .delete()
+        .then(() => console.log("success"))
+        .catch((err) => console.log(err));
+    }
 
     firebase
       .firestore()
@@ -369,7 +371,7 @@ const JioStart = (props) => {
                 jioState.type === "Run"
                   ? updateAndSubmit()
                   : props.navigation.navigate("Details", {
-                      jioState: {...jioState, details: null},
+                      jioState: { ...jioState, details: null },
                       user: user,
                     })
               }

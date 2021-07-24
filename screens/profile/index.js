@@ -280,7 +280,7 @@ const Profile = (props) => {
         </Text>
         <TouchableOpacity
           onPress={() =>
-            props.navigation.navigate("Start Workout", {
+            curr && props.navigation.navigate("Start Workout", {
               screen: "Select Workout Type",
             })
           }

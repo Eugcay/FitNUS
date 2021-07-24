@@ -30,18 +30,20 @@ const WorkoutSearch = ({ navigation, workouts, jio }) => {
       <View style={styles.result}>
         <Text
           style={styles.searchItem}
-          onPress={() =>
+          onPress={() => {
+            setFiltered([])
+            setSearchQuery("");
             navigation.navigate("Workout Details", {
               id: item.id,
               workout: item.data,
-              jio: jio ? jio : null
-            })
-          }
+              jio: jio ? jio : null,
+            });
+          }}
         >
           {item.data.name}
         </Text>
         {item.data?.template && (
-          <MaterialIcons name='person' size={17} color='midnightblue'/> 
+          <MaterialIcons name="person" size={17} color="midnightblue" />
         )}
       </View>
     );
@@ -71,7 +73,7 @@ const styles = StyleSheet.create({
   searchItem: {
     padding: 15,
     fontSize: 15,
-    width: '91%',
+    width: "91%",
   },
 
   container: {
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
   result: {
     borderBottomWidth: 0.5,
     borderBottomColor: "#C0C0C0",
-    flexDirection: 'row',
-    alignItems: 'center'
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

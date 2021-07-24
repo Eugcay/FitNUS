@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import WorkoutSearch from "../../../components/fitBudComponents/workoutSearch";
 import ExListItem from "../../../components/detailsComponents/ExListItem";
 import { Divider } from "react-native-paper";
+import { getWorkouts } from "../../../helpers";
 import firebase from "firebase";
 import { styles } from "./styles";
 import { connect } from "react-redux";
@@ -19,22 +20,21 @@ const JioDetails = (props) => {
   const [workouts, setWorkouts] = useState([]);
   const [info, setInfo] = useState({});
   const [details, setDetails] = useState(null);
+  const [templates, setTemplates] = useState([])
 
   useEffect(() => {
-    const fetchWorkouts = firebase
-      .firestore()
-      .collection("Workouts")
-      .onSnapshot((querySnapshot) => {
-        const workouts = props.templates;
-        querySnapshot.forEach((documentSnapshot) => {
-          workouts.push({
-            data: documentSnapshot.data(),
-            key: documentSnapshot.id,
-          });
+    setTemplates(props.templates);
+    setInfo(props.route.params?.jioState);
+    const fetchWorkouts = getWorkouts().onSnapshot((querySnapshot) => {
+      const results = [];
+      querySnapshot.docs.forEach((documentSnapshot) => {
+        results.push({
+          data: documentSnapshot.data(),
+          key: documentSnapshot.id,
         });
-        setInfo(props.route.params?.jioState);
-        setWorkouts(workouts);
       });
+      setWorkouts(results);
+    });
 
     if (props.route.params?.exercises) {
       setDetails(props.route.params?.exercises);
@@ -45,7 +45,9 @@ const JioDetails = (props) => {
   }, [props.route.params?.jioState, props.route.params?.exercises, props.templates]);
 
   const updateAndSubmit = async () => {
+    console.log(info.img)
     if (info.img && info.img.indexOf('firebase') === -1) {
+      console.log("ye");
       const res = await fetch(info.img);
       const blob = await res.blob();
       const path = `jios/${
@@ -61,7 +63,6 @@ const JioDetails = (props) => {
       const completed = () => {
         task.snapshot.ref.getDownloadURL().then((snapshot) => {
           submitJio(snapshot);
-          console.log(snapshot);
         });
       };
 
@@ -71,7 +72,7 @@ const JioDetails = (props) => {
 
       task.on("state_change", progress, error, completed);
     } else {
-      submitJio(info.img)
+      submitJio(info?.img || null)
     }
   };
 
@@ -98,6 +99,7 @@ const JioDetails = (props) => {
           details,
           user: firebase.auth().currentUser.uid,
           creation: created,
+          img: snapshot,
           likes: [props.route.params?.user],
         })
         .then(props.navigation.navigate("Main"));
@@ -115,7 +117,7 @@ const JioDetails = (props) => {
       <ScrollView style={{ height: "90%" }}>
         <WorkoutSearch
           navigation={props.navigation}
-          workouts={workouts}
+          workouts={workouts.concat(templates)}
           jio={true}
         />
         <Divider style={{ marginVertical: 15 }} />

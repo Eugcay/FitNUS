@@ -87,13 +87,14 @@ export const styles = StyleSheet.create({
 
     genStat: {
       width: "48%",
-      height: 90,
+      minHeight: 100,
       alignItems: "center",
       justifyContent: 'center',
       padding: 10,
       backgroundColor: "white",
       margin: 3,
-      marginVertical: 5
+      marginVertical: 5,
+      borderRadius: 5
     },
 
     workoutFreq: {
@@ -102,8 +103,8 @@ export const styles = StyleSheet.create({
     },
 
     workoutCircle: {
-      width: 110,
-      height: 110,
+      width: 100,
+      height: 100,
       borderRadius: 55,
       borderWidth: 8,
       borderColor: "whitesmoke",
