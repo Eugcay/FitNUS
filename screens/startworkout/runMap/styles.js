@@ -111,7 +111,7 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     margin: 10,
     width: 135,
-    bottom: -20,
+    bottom: -30,
   },
   pauseButtonBox: {
     alignSelf: "center",
@@ -120,7 +120,7 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     margin: 10,
     width: 135,
-    bottom: -20,
+    bottom: -30,
   },
   pauseButton: {
     alignSelf: "center",
@@ -134,7 +134,7 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     margin: 10,
     width: 135,
-    bottom: -20,
+    bottom: -30,
   },
 });
 
