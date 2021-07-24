@@ -5,17 +5,32 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
+  Alert
 } from "react-native";
-import { resend, deleteUser } from "../../../helpers/auth";
+import { resend, deleteUser, logout } from "../../../helpers/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import firebase from "firebase";
 
 const Verification = (props) => {
-  const goback = async () => {
-    deleteUser()
+  const goback = () => {
+    logout()
+  //   Alert.alert("Restart Verifcation?", "By doing so, your created acount will not be saved.", [
+  //     {
+  //       text: "Cancel",
+  //       onPress: () => console.log("Cancel Pressed"),
+  //       style: "cancel",
+  //     },
+  //     {
+  //       text: "Confirm",
+  //       onPress: () => {
+  //         logout()
+  //       }
+  //     },
+  //   ]);
   };
 
   useEffect(() => {
+
     setInterval(() => {
         const user = firebase.auth().currentUser
         if (user) {
@@ -25,7 +40,6 @@ const Verification = (props) => {
           }
         }
   
-        
       }, 1000);
   }, [])
 
@@ -67,6 +81,7 @@ const styles = StyleSheet.create({
   info: {
     color: "gold",
     marginVertical: 10,
+    textAlign: 'center'
   },
 
   resendButton: {

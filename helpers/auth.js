@@ -5,9 +5,9 @@ export async function signUp(name, email, password) {
   try {
     await firebase.auth().createUserWithEmailAndPassword(email, password);
 
-  
     // send verification email
     const currUser = firebase.auth().currentUser;
+    currUser.sendEmailVerification();
       
     await firebase.firestore().collection("users").doc(currUser.uid).set({
       name,
@@ -17,10 +17,11 @@ export async function signUp(name, email, password) {
       caloriesGoal: "",
       durationGoal: "",
       pb: [],
+      created: new Date()
     });
 
-    currUser.sendEmailVerification();
-
+    currUser.updateProfile({displayName: name})
+    
   } catch (error) {
     alert(error);
   }
@@ -29,6 +30,9 @@ export async function signUp(name, email, password) {
 export async function login(email, password) {
   try {
     await firebase.auth().signInWithEmailAndPassword(email, password);
+    if (!firebase.auth().currentUser.emailVerified) {
+      resend()
+    }
   } catch (error) {
     alert(error);
   }
@@ -44,8 +48,19 @@ export async function logout() {
 export const resend = async () => {
   try {
     const user = firebase.auth().currentUser;
+    const name = user.displayName
     console.log(user.email);
-    await user.sendEmailVerification();
+    user.sendEmailVerification();
+    await firebase.firestore().collection("users").doc(user.uid).set({
+      name,
+      email: user.email,
+      bio: "",
+      photoURL: "",
+      caloriesGoal: "",
+      durationGoal: "",
+      pb: [],
+      created: new Date()
+    });
   } catch (error) {
     alert(error);
   }
@@ -54,6 +69,7 @@ export const resend = async () => {
 export const resetPassword = async (email) => {
   try {
     firebase.auth().sendPasswordResetEmail(email);
+    
   } catch (error) {
     const errCode = error.code;
     const errMsg = error.message;

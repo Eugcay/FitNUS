@@ -51,7 +51,16 @@ function WorkoutDetails(props) {
     return (num <= 9 ? "0" : "") + num;
   };
 
-  const del = (id) => {
+  const del = async (id) => {
+    if (workout.imageURL) {
+      const storageRef = firebase.storage().refFromURL(workout.imageURL);
+
+      storageRef
+        .delete()
+        .then(() => console.log("success"))
+        .catch((err) => console.log(err));
+    }
+
     firebase
       .firestore()
       .collection("users")
