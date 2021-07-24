@@ -63,7 +63,7 @@ const StartWorkout = (props) => {
   const setTime = useRef((someNewValue) => {
     setTimeout(() => {
       setTimeNow(someNewValue);
-    }, 0);
+    }, 1000);
   }).current;
 
   const clearWorkout = () => {

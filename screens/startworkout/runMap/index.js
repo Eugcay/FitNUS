@@ -66,7 +66,7 @@ const RunMap = (props) => {
   const setTime = useRef((someNewValue) => {
     setTimeout(() => {
       setTimeNow(someNewValue);
-    }, 0);
+    }, 1000);
   }).current;
 
   // convert time in seconds to displayed form
@@ -320,21 +320,10 @@ const RunMap = (props) => {
           setRefer(ref);
         }}
         style={[styles.map, { marginTop: mTop }]}
-        // initialRegion={{
-        //   latitude: initial.latitude,
-        //   longitude: initial.longitude,
-        //   latitudeDelta: 0.01,
-        //   longitudeDelta: 0.01,
-        // }}
+
         initialRegion={
           initial
         }
-        // onRegionChange={(region) => {
-        //   setInitial({ region });
-        // }}
-        // onRegionChangeComplete={(region) => {
-        //   setInitial({ region });
-        // }}
         provider="google"
         showsUserLocation={userLoc}
         showsMyLocationButton={true}
