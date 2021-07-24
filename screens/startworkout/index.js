@@ -19,6 +19,7 @@ import { updateUser } from "../../store/actions/user";
 import { styles, options } from "./styles";
 import firebase from "firebase";
 import { isEmpty } from "react-redux-firebase";
+import { useStopwatch } from "react-use-precision-timer";
 // import { finishJio } from "../../helpers/startWorkout";
 
 const StartWorkout = (props) => {
@@ -58,13 +59,7 @@ const StartWorkout = (props) => {
 
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
-  const [timeNow, setTimeNow] = useState(0);
-
-  const setTime = useRef((someNewValue) => {
-    setTimeout(() => {
-      setTimeNow(someNewValue);
-    }, 0);
-  }).current;
+  const timeNow = useRef(null)
 
   const clearWorkout = () => {
     setExercises([]);
@@ -119,7 +114,7 @@ const StartWorkout = (props) => {
       .add({
         name,
         description,
-        duration: timeNow / 1000,
+        duration: timeNow.current / 1000,
         distance: 0,
         calories: 100,
         imageURL,
@@ -158,14 +153,12 @@ const StartWorkout = (props) => {
     if (workoutComplete()) {
       setStatus("Paused");
       setIsStopwatchStart(false);
-      console.log(timeNow);
       checkPb();
-      console.log(PBs)
 
       const workout = {
         name,
         description,
-        duration: timeNow / 1000,
+        duration: timeNow.current / 1000,
         distance: 0,
         calories: 100,
         imageURL,
@@ -361,7 +354,7 @@ const StartWorkout = (props) => {
                 //To reset
                 options={options}
                 //options for the styling
-                getMsecs={(time) => setTime(time)}
+                getMsecs={(time) => timeNow.current = time}
               />
             </View>
           ) : (
@@ -383,7 +376,7 @@ const StartWorkout = (props) => {
                 //To reset
                 options={options}
                 //options for the styling
-                getMsecs={(time) => setTime(time)}
+                getMsecs={(time) => timeNow.current = time}
               />
             </View>
           )}

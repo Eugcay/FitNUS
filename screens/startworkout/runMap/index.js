@@ -58,16 +58,10 @@ const RunMap = (props) => {
   };
 
   const [workoutStatus, setStatus] = useState("Not Started");
-  const [timeNow, setTimeNow] = useState(null);
+  const timeNow = useRef(null)
 
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
-
-  const setTime = useRef((someNewValue) => {
-    setTimeout(() => {
-      setTimeNow(someNewValue);
-    }, 0);
-  }).current;
 
   // convert time in seconds to displayed form
   const secondsToDuration = (seconds) => {
@@ -266,7 +260,7 @@ const RunMap = (props) => {
     const run = {
       name: title,
       description: `${title} completed on ${new Date()}`,
-      duration: timeNow / 1000,
+      duration: timeNow.current / 1000,
       distance,
       locList,
       date: new Date(),
@@ -320,21 +314,10 @@ const RunMap = (props) => {
           setRefer(ref);
         }}
         style={[styles.map, { marginTop: mTop }]}
-        // initialRegion={{
-        //   latitude: initial.latitude,
-        //   longitude: initial.longitude,
-        //   latitudeDelta: 0.01,
-        //   longitudeDelta: 0.01,
-        // }}
+
         initialRegion={
           initial
         }
-        // onRegionChange={(region) => {
-        //   setInitial({ region });
-        // }}
-        // onRegionChangeComplete={(region) => {
-        //   setInitial({ region });
-        // }}
         provider="google"
         showsUserLocation={userLoc}
         showsMyLocationButton={true}
@@ -397,7 +380,7 @@ const RunMap = (props) => {
               //To reset
               options={options}
               //options for the styling
-              getMsecs={(time) => setTime(time)}
+              getMsecs={(time) => timeNow.current=time}
             />
             <View style={styles.ranBox}>
               <Text style={styles.ran}>Distance:</Text>
@@ -430,7 +413,7 @@ const RunMap = (props) => {
               //To reset
               options={options}
               //options for the styling
-              getMsecs={(time) => setTime(time)}
+              getMsecs={(time) => timeNow.current=time}
             />
             <View style={styles.ranBox}>
               <Text style={styles.ran}>Distance:</Text>
@@ -476,7 +459,7 @@ const RunMap = (props) => {
               //To reset
               options={options}
               //options for the styling
-              getMsecs={(time) => setTime(time)}
+              getMsecs={(time) => timeNow.current=time}
             />
             <View style={styles.ranBox}>
               <Text style={styles.ran}>Distance:</Text>
@@ -573,8 +556,8 @@ const RunMap = (props) => {
                   }}
                 >
                   You ran a total of {distance.toFixed(2)} Km in{"\n"}
-                  {secondsToDuration(timeNow / 1000)}, with an average pace of{" "}
-                  {(timeNow / 1000 / 60 / distance.toFixed(2)).toFixed(2)}{" "}
+                  {secondsToDuration(timeNow.current / 1000)}, with an average pace of{" "}
+                  {(timeNow.current / 1000 / 60 / distance.toFixed(2)).toFixed(2)}{" "}
                   min/Km.
                 </Text>
                 <Text
