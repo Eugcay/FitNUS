@@ -17,7 +17,7 @@ const FitBudStack = ({ navigation }) => {
         <Stack.Screen name="Workout Details" component={WorkoutDetails}></Stack.Screen>
         <Stack.Screen name="Run Details" component={RunDetails}></Stack.Screen>
         <Stack.Screen name="Map" component={Map}></Stack.Screen> 
-        <Stack.Screen name="Scroll Map" component={ScrollMap}></Stack.Screen>
+        <Stack.Screen name="Workout Spots" component={ScrollMap}></Stack.Screen>
       </Stack.Navigator>
     </>
   );
