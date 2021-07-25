@@ -126,15 +126,6 @@ const RunDetails = (props) => {
           lineJoin="bevel"
           strokeColour="rgba(0,0,0,0.1)"
         />)}
-        {/* {lines.map((line, index) => (index < lines.length - 1) && (
-          <Polyline
-          coordinates={[line[line.length - 1], lines[index + 1][0]]}
-          strokeWidth={2}
-          lineJoin="bevel"
-          strokeColour="rgba(0,0,0,0.1)"
-          lineDashPattern={[5, 15]}
-        />
-        ))} */}
         <Polyline coordinates={locList} strokeWidth={2}
           lineJoin="bevel"
           strokeColour="rgba(0,0,0,0.1)"  lineDashPattern={[5, 5]}/>
@@ -215,9 +206,9 @@ const RunDetails = (props) => {
           {ran === 1 ? <Text>1 time</Text> : <Text>{ran} times</Text>}
         </View>
       </View>
+      <Divider orientation="horizontal" width={1} />
       
     </ScrollView>
-    <Divider orientation="horizontal" width={1} />
 
     <TouchableOpacity
     onPress={() =>

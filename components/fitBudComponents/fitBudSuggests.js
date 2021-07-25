@@ -74,7 +74,7 @@ const FitBudSuggests = ({ navigation }) => {
               alignSelf: "center",
             },
           ]}
-          onPress={() => navigation.navigate("Scroll Map")}
+          onPress={() => navigation.navigate("Workout Spots")}
         >
           <MapView
             style={styles.map}
@@ -89,7 +89,7 @@ const FitBudSuggests = ({ navigation }) => {
             showsMyLocationButton={false}
             showsCompass={true}
             scrollEnabled={false}
-            onPress={() => navigation.navigate("Scroll Map")}
+            onPress={() => navigation.navigate("Workout Spots")}
           >
           </MapView>
         </TouchableOpacity>
