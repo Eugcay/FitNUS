@@ -58,10 +58,10 @@ export default function Map(props) {
       <MapView
         style={[styles.map, { marginTop: mTop }]}
         initialRegion={{
-          latitude: 1.3012,
-          longitude: 103.77442,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+          latitude: 1.2985,
+          longitude: 103.775,
+          latitudeDelta: 0.012,
+          longitudeDelta: 0.012,
         }}
         provider="google"
         showsUserLocation={true}
