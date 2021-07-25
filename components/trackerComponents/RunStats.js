@@ -66,11 +66,10 @@ const styles = StyleSheet.create({
   },
 
   genStat: {
-    width: "47%",
+    width: "48%",
     minHeight: 100,
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: 5,
     padding: 10,
     backgroundColor: "white",
     margin: 3,

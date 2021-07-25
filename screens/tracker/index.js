@@ -364,6 +364,7 @@ const Tracker = (props) => {
           {statsType === "weekly" && (
             <WeeklyProgBar freq={periodRun.distance} goal={goals.distance || 2} type={'Run'}/> 
           )}
+
           <RunStats periodRun={periodRun} statsType={statsType}/>
         </View>
       ) : (

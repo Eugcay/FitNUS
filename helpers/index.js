@@ -23,7 +23,7 @@ export const deleteFromArray = (array, item) => {
 };
 
 export const concatWithoutDupe = (arr, inputArr) => {
-  return arr.length === 0 ? inputArr : arr.concat(inputArr.filter((item) => !arr.includes(item)));
+  return !arr ||arr.length === 0 ? inputArr : arr.concat(inputArr.filter((item) => !arr.includes(item)));
 };
 
 export const getCat = (cat) => {
