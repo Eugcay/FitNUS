@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { ListItem } from "react-native-elements";
 import { connect } from "react-redux";
 import { addToHistory } from "../../store/actions/history";
+import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import HeaderTop from "../../components/startWorkoutComponents/headerTop";
 import { Stopwatch } from "react-native-stopwatch-timer";
 import { Divider } from "react-native-elements";
@@ -57,9 +58,17 @@ const StartWorkout = (props) => {
     });
   }, [exercises, name, description]);
 
+  useEffect(() => {
+    if (workoutStatus === 'Continue') { 
+      activateKeepAwake()
+    } else {
+      deactivateKeepAwake()
+    }
+  }, [workoutStatus])
+
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
-  const timeNow = useRef(null)
+  const timeNow = useRef(null);
 
   const clearWorkout = () => {
     setExercises([]);
@@ -100,35 +109,34 @@ const StartWorkout = (props) => {
   };
 
   const saveTemplate = async () => {
-    const exs = formatExercises()
+    const exs = formatExercises();
     if (exercises.length === 0) {
-      Alert.alert('Add exercises before saving a template.')
+      Alert.alert("Add exercises before saving a template.");
     } else if (!exs) {
-      Alert.alert('Add sets to exercises.')
+      Alert.alert("Add sets to exercises.");
     } else {
       await firebase
-      .firestore()
-      .collection("users")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("templates")
-      .add({
-        name,
-        description,
-        duration: timeNow.current / 1000,
-        distance: 0,
-        calories: 100,
-        imageURL,
-        exercises: formatExercises(),
-        template: true,
-      });
-      Alert.alert('Saved to Templates!')
+        .firestore()
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .collection("templates")
+        .add({
+          name,
+          description,
+          duration: timeNow.current / 1000,
+          distance: 0,
+          calories: 100,
+          imageURL,
+          exercises: formatExercises(),
+          template: true,
+        });
+      Alert.alert("Saved to Templates!");
     }
-    
   };
 
   const formatExercises = () => {
-    if (!exercises.reduce((x, y) => x && y?.sets , true)) {
-      return null
+    if (!exercises.reduce((x, y) => x && y?.sets, true)) {
+      return null;
     } else {
       return exercises.map((exercise) => ({
         ...exercise,
@@ -138,7 +146,6 @@ const StartWorkout = (props) => {
         })),
       }));
     }
-    
   };
 
   const workoutComplete = () => {
@@ -181,10 +188,10 @@ const StartWorkout = (props) => {
           });
       }
       clearWorkout();
-      props.navigation.navigate("Main", { screen: 'FitBud' });
+      props.navigation.navigate("Main", { screen: "FitBud" });
     } else {
       Alert.alert("Workout incomplete!");
-     }
+    }
   };
 
   const finishJio = async (id, workout) => {
@@ -209,19 +216,19 @@ const StartWorkout = (props) => {
   };
 
   const checkPb = () => {
-    let currPBs = [...props.currentUser?.pb] || []
+    let currPBs = [...props.currentUser?.pb] || [];
     exercises.forEach((exe) => {
       const exName = exe.data.name;
       const max = exe.sets
         .map((set) => set.weight)
         .reduce((x, y) => Math.max(x, y), 0);
-      
+
       const doneBefore = props.currentUser?.pb
         ? currPBs.find((ex) => ex.exercise === exName)
         : null;
-      
+
       const currPb = doneBefore ? doneBefore.best : 0;
-      console.log(max, currPb)
+      console.log(max, currPb);
       if (max > currPb) {
         setPBs(PBs + 1);
         if (doneBefore) {
@@ -230,12 +237,12 @@ const StartWorkout = (props) => {
           data.splice(index, 1, { exercise: exName, best: max });
           currPBs = data;
         } else {
-           currPBs = currPBs.concat({ exercise: exName, best: max })
+          currPBs = currPBs.concat({ exercise: exName, best: max });
         }
       }
     });
 
-    props.updatePB({...props.currentUser, pb: currPBs})
+    props.updatePB({ ...props.currentUser, pb: currPBs });
   };
 
   const renderItem = ({ item }) => {
@@ -281,7 +288,7 @@ const StartWorkout = (props) => {
                 : "0/1 sets completed"}
             </ListItem.Subtitle>
           </ListItem.Content>
-          <TouchableOpacity style={{width: '10%'}}>
+          <TouchableOpacity style={{ width: "10%" }}>
             <MaterialCommunityIcons name="dots-vertical" size={23} />
           </TouchableOpacity>
         </ListItem.Swipeable>
@@ -325,7 +332,7 @@ const StartWorkout = (props) => {
 
   return (
     <View style={{ flexGrow: 1, justifyContent: "space-evenly" }}>
-      <ScrollView style={{height: '88%'}}>
+      <ScrollView style={{ height: "88%" }}>
         <View style={{ flex: 1, justifyContent: "space-between" }}>
           <View style={{ paddingBottom: 10 }}>
             <HeaderTop
@@ -354,7 +361,7 @@ const StartWorkout = (props) => {
                 //To reset
                 options={options}
                 //options for the styling
-                getMsecs={(time) => timeNow.current = time}
+                getMsecs={(time) => (timeNow.current = time)}
               />
             </View>
           ) : (
@@ -376,7 +383,7 @@ const StartWorkout = (props) => {
                 //To reset
                 options={options}
                 //options for the styling
-                getMsecs={(time) => timeNow.current = time}
+                getMsecs={(time) => (timeNow.current = time)}
               />
             </View>
           )}

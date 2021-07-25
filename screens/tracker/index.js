@@ -33,6 +33,7 @@ import MuscleCategoryPie from "../../components/trackerComponents/MuscleCategory
 import PieLegend from "../../components/trackerComponents/MuscleCategoryLegend";
 import ExStats from "../../components/trackerComponents/ExStats";
 import { FrequencyBarChart } from "../../components/trackerComponents/FrequencyBarChart";
+import WeeklyProgBar from "../../components/trackerComponents/WeeklyProgBar";
 import { Favourites } from "../../components/trackerComponents/Favourites";
 import { styles } from "./styles";
 import * as Progress from "react-native-progress";
@@ -312,42 +313,7 @@ const Tracker = (props) => {
               }}
             >
               {statsType === "weekly" && (
-                <View style={{ marginHorizontal: 5, alignItems: "center" }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginBottom: 5,
-                    }}
-                  >
-                    <Text style={styles.workoutFreq}>
-                      {period.workouts + periodRun.runs}
-                    </Text>
-                    <Text>
-                      {" out of " + (goals.workouts || "2")} workouts completed!
-                    </Text>
-                  </View>
-
-                  <Progress.Bar
-                    animated
-                    progress={
-                      (period.workouts + periodRun.runs) / (goals.workouts || 2)
-                    }
-                    width={Dimensions.get("screen").width * 0.85}
-                    borderColor={
-                      period.workouts + periodRun.runs > (goals.workouts || 2)
-                        ? "gold"
-                        : "blue"
-                    }
-                    borderWidth={
-                      period.workouts + periodRun.runs > (goals.workouts || 2)
-                        ? 2
-                        : 1
-                    }
-                    height={15}
-                  />
-                </View>
+                <WeeklyProgBar freq={(period.workouts + periodRun.runs)} goal={goals.workouts || 2} type={'Workouts'}/>
               )}
               {!period && <Spinner />}
               {statsType !== "weekly" && period && (
@@ -477,40 +443,11 @@ const Tracker = (props) => {
         <Spinner />
       )}
       {periodRun ? (
+        
         <View style={styles.statContainer}>
           <Text style={styles.statsTitle}>Run Stats</Text>
           {statsType === "weekly" && (
-            <View style={{ marginHorizontal: 5, alignItems: "center" }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginBottom: 5,
-                }}
-              >
-                <Text style={{fontSize: 18, color: 'green'}}>
-                  {periodRun.distance.toFixed(2)}
-                </Text>
-                <Text>
-                  {" out of " + (goals.distance || "2")} km completed!
-                </Text>
-              </View>
-
-              <Progress.Bar
-                animated
-                progress={periodRun.distance / (goals.distance || 2)}
-                width={Dimensions.get("screen").width * 0.85}
-                color="forestgreen"
-                borderColor={
-                  periodRun.distance > (goals.distance || 2)
-                    ? "gold"
-                    : "darkgreen"
-                }
-                borderWidth={1.5}
-                height={15}
-              />
-            </View>
+            <WeeklyProgBar freq={periodRun.distance} goal={goals.distance || 2} type={'Run'}/> 
           )}
           <View style={{ justifyContent: "center", marginTop: 15 }}>
             <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>

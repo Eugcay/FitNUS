@@ -41,7 +41,7 @@ const initialState = {
   location: "",
   time: new Date(),
   duration: "",
-  type: "",
+  type: "Static",
   completed: false,
 };
 

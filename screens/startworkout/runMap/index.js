@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
-  Platform
+  Platform,
 } from "react-native";
 import * as Location from "expo-location";
 import haversine from "haversine";
@@ -19,6 +19,7 @@ import { connect } from "react-redux";
 import { addToRuns } from "../../../store/actions/history";
 import Spinner from "../../../components/Spinner";
 import { Entypo } from "@expo/vector-icons";
+import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 
 const RunMap = (props) => {
   //RunDetails Stuff
@@ -33,7 +34,6 @@ const RunMap = (props) => {
   const startPoint = oldRun?.start;
   const endPoint = oldRun?.end;
 
-  
   useEffect(() => {
     if (oldRun && pulls === 1) {
       setOldLocList(oldRun.locList);
@@ -58,7 +58,7 @@ const RunMap = (props) => {
   };
 
   const [workoutStatus, setStatus] = useState("Not Started");
-  const timeNow = useRef(null)
+  const timeNow = useRef(null);
 
   //Stopwatch stuff
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
@@ -97,8 +97,8 @@ const RunMap = (props) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setNewDistance] = useState(0);
   const [locList, setLocList] = useState([]);
-  const [currLocList, setcurrLocList] = useState([])
-  const [lines, setLines] = useState([])
+  const [currLocList, setcurrLocList] = useState([]);
+  const [lines, setLines] = useState([]);
   const [remove, setRemove] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [screenShot, setScreenshot] = useState(null);
@@ -106,7 +106,6 @@ const RunMap = (props) => {
   const [index, setIndex] = useState(-1);
   const [initial, setInitial] = useState(null);
 
-  
   //takeSnapshot
   const takeScreenshot = async () => {
     // 'takeSnapshot' takes a config object with the
@@ -162,7 +161,7 @@ const RunMap = (props) => {
             longitude: 103.7764,
             latitudeDelta: 0.3,
             longitudeDelta: 0.3,
-          })
+          });
           return;
         }
       } else {
@@ -183,7 +182,7 @@ const RunMap = (props) => {
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         });
-        console.log(initial)
+        console.log(initial);
         setCurrentLocation(newLocation);
         setLocList((locList) => [...locList, { ...newLocation, end: true }]);
         setIndex((oldIndex) => oldIndex + 1);
@@ -208,6 +207,7 @@ const RunMap = (props) => {
 
   const start = () => {
     setStatus("Continue");
+    activateKeepAwake()
     ////////////////////////////////////////////////////////////
     async function watchPos() {
       let locations = await Location.watchPositionAsync(
@@ -227,10 +227,10 @@ const RunMap = (props) => {
           const len = locList.length;
           if (len === 1 || locList[len - 1]?.end) {
             setLocList((locList) => [...locList, { ...latlon, start: true }]);
-            setcurrLocList((currLocList) => [...currLocList, {... latlon}])
+            setcurrLocList((currLocList) => [...currLocList, { ...latlon }]);
           } else {
             setLocList((locList) => [...locList, latlon]);
-            setcurrLocList(currLocList => [...currLocList, {...latlon}])
+            setcurrLocList((currLocList) => [...currLocList, { ...latlon }]);
           }
         }
       );
@@ -243,19 +243,20 @@ const RunMap = (props) => {
   const stop = () => {
     console.log(index, locList.length);
     remove.remove();
+    deactivateKeepAwake()
     setLocList((locList) => [
       ...locList,
       { ...locList[locList.length - 1], end: true },
     ]);
-    setLines((lines) => [...lines, currLocList])
-    console.log(lines)
-    setcurrLocList([])
+    setLines((lines) => [...lines, currLocList]);
+    console.log(lines);
+    setcurrLocList([]);
     setIndex((oldIndex) => oldIndex + 1);
   };
 
   const finishRun = async (ss) => {
     remove.remove();
-    console.log(lines)
+    console.log(lines);
     const uid = firebase.auth().currentUser.uid;
     const run = {
       name: title,
@@ -305,285 +306,292 @@ const RunMap = (props) => {
     batch.commit();
   };
 
-  const _onMapReady = () => setMargin(Platform.OS === 'ios' ? 0 : 60);
+  const _onMapReady = () => setMargin(Platform.OS === "ios" ? 0 : 60);
 
-  return initial && (
-    <View style={styles.container}>
-      <MapView
-        ref={(ref) => {
-          setRefer(ref);
-        }}
-        style={[styles.map, { marginTop: mTop }]}
-
-        initialRegion={
-          initial
-        }
-        provider="google"
-        showsUserLocation={userLoc}
-        showsMyLocationButton={true}
-        showsCompass={true}
-        onMapReady={_onMapReady}
-        customMapStyle={dark ? mapDark : mapStandard}
-        maxZoomLevel={19.9}
-        onLongPress={() => setshowhideRoute(!showhideRoute)}
-      >
-        {showhideRoute && oldRun ? (
-          <MapView.Marker
-            key={1}
-            coordinate={startPoint}
-            title={"Start"}
-            pinColor={"green"}
-          />
-        ) : (
-          <View />
-        )}
-        {showhideRoute && oldRun ? (
-          <MapView.Marker
-            key={2}
-            coordinate={endPoint}
-            title={"End"}
-            pinColor={"#0B2A59"}
-          />
-        ) : (
-          <View />
-        )}
-        {showhideRoute && oldRun ? (
-          <Polyline
-            coordinates={oldLocList}
-            strokeWidth={1}
-            strokeColor={"red"}
-          />
-        ) : (
-          <View />
-        )}
-        {presetLocations.map((marker) => (
-          <MapView.Marker
-            key={marker.index}
-            coordinate={marker.latlng}
-            title={marker.title}
-            description={marker.description}
-          />
-        ))}
-        {lines.map(line => (<Polyline coordinates={line} strokeWidth={2} />))}
-        <Polyline coordinates={currLocList} strokeWidth={2} />
-      </MapView>
-      <View style={styles.overlay}>
-        {workoutStatus == "Not Started" ? (
-          <View style={{ alignItems: "center" }}>
-            <View style={styles.timeBox}>
-              <Text style={styles.time}>Time elapsed:</Text>
-            </View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getMsecs={(time) => timeNow.current=time}
+  return (
+    initial && (
+      <View style={styles.container}>
+        <MapView
+          ref={(ref) => {
+            setRefer(ref);
+          }}
+          style={[styles.map, { marginTop: mTop }]}
+          initialRegion={initial}
+          provider="google"
+          showsUserLocation={userLoc}
+          showsMyLocationButton={true}
+          showsCompass={true}
+          onMapReady={_onMapReady}
+          customMapStyle={dark ? mapDark : mapStandard}
+          maxZoomLevel={19.9}
+          onLongPress={() => setshowhideRoute(!showhideRoute)}
+        >
+          {showhideRoute && oldRun ? (
+            <MapView.Marker
+              key={1}
+              coordinate={startPoint}
+              title={"Start"}
+              pinColor={"green"}
             />
-            <View style={styles.ranBox}>
-              <Text style={styles.ran}>Distance:</Text>
-            </View>
-            <View style={styles.distanceBox}>
-              <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
-            </View>
-            <View style={styles.bottombar}>
-              <TouchableOpacity //Start
-                style={styles.startButtonBox}
-                onPress={() => {
-                  start();
-                  setIsStopwatchStart(true);
-                  setStatus("Continue");
-                }}
-              >
-                <Text style={styles.startButton}>Start</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : workoutStatus == "Continue" ? ( //Pause and Finish
-          <View style={{ alignItems: "center" }}>
-            <View style={styles.timeBox}>
-              <Text style={styles.time}>Time elapsed:</Text>
-            </View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getMsecs={(time) => timeNow.current=time}
+          ) : (
+            <View />
+          )}
+          {showhideRoute && oldRun ? (
+            <MapView.Marker
+              key={2}
+              coordinate={endPoint}
+              title={"End"}
+              pinColor={"#0B2A59"}
             />
-            <View style={styles.ranBox}>
-              <Text style={styles.ran}>Distance:</Text>
-            </View>
-            <View style={styles.distanceBox}>
-              <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
-            </View>
-            <View style={styles.bottombar}>
-              <TouchableOpacity //Paused
-                style={styles.pauseButtonBox}
-                onPress={() => {
-                  setStatus("Paused");
-                  setIsStopwatchStart(false);
-                  stop();
-                }}
-              >
-                <Text style={styles.pauseButton}>Pause</Text>
-              </TouchableOpacity>
-              <TouchableOpacity //Finish
-                style={styles.finishButtonBox}
-                onPress={() => {
-                  setRan(ran + 1);
-                  setStatus("Finished");
-                  setIsStopwatchStart(false);
-                  stop();
-                  fitAllMarkers();
-                  setUserLoc(false);
-                }}
-              >
-                <Text style={styles.pauseButton}>Finish</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : workoutStatus == "Paused" ? ( //Finish and Continue
-          <View style={{ alignItems: "center" }}>
-            <View style={styles.timeBox}>
-              <Text style={styles.time}>Time elapsed:</Text>
-            </View>
-            <Stopwatch
-              start={isStopwatchStart}
-              //To start
-              reset={false}
-              //To reset
-              options={options}
-              //options for the styling
-              getMsecs={(time) => timeNow.current=time}
+          ) : (
+            <View />
+          )}
+          {showhideRoute && oldRun ? (
+            <Polyline
+              coordinates={oldLocList}
+              strokeWidth={1}
+              strokeColor={"red"}
             />
-            <View style={styles.ranBox}>
-              <Text style={styles.ran}>Distance:</Text>
+          ) : (
+            <View />
+          )}
+          {presetLocations.map((marker) => (
+            <MapView.Marker
+              key={marker.index}
+              coordinate={marker.latlng}
+              title={marker.title}
+              description={marker.description}
+            />
+          ))}
+          {lines.map((line) => (
+            <Polyline coordinates={line} strokeWidth={2} />
+          ))}
+          <Polyline coordinates={currLocList} strokeWidth={2} />
+        </MapView>
+        <View style={styles.overlay}>
+          {workoutStatus == "Not Started" ? (
+            <View style={{ alignItems: "center" }}>
+              <View style={styles.timeBox}>
+                <Text style={styles.time}>Time elapsed:</Text>
+              </View>
+              <Stopwatch
+                start={isStopwatchStart}
+                //To start
+                reset={false}
+                //To reset
+                options={options}
+                //options for the styling
+                getMsecs={(time) => (timeNow.current = time)}
+              />
+              <View style={styles.ranBox}>
+                <Text style={styles.ran}>Distance:</Text>
+              </View>
+              <View style={styles.distanceBox}>
+                <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
+              </View>
+              <View style={styles.bottombar}>
+                <TouchableOpacity //Start
+                  style={styles.startButtonBox}
+                  onPress={() => {
+                    start();
+                    setIsStopwatchStart(true);
+                    setStatus("Continue");
+                  }}
+                >
+                  <Text style={styles.startButton}>Start</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.distanceBox}>
-              <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
+          ) : workoutStatus == "Continue" ? ( //Pause and Finish
+            <View style={{ alignItems: "center" }}>
+              <View style={styles.timeBox}>
+                <Text style={styles.time}>Time elapsed:</Text>
+              </View>
+              <Stopwatch
+                start={isStopwatchStart}
+                //To start
+                reset={false}
+                //To reset
+                options={options}
+                //options for the styling
+                getMsecs={(time) => (timeNow.current = time)}
+              />
+              <View style={styles.ranBox}>
+                <Text style={styles.ran}>Distance:</Text>
+              </View>
+              <View style={styles.distanceBox}>
+                <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
+              </View>
+              <View style={styles.bottombar}>
+                <TouchableOpacity //Paused
+                  style={styles.pauseButtonBox}
+                  onPress={() => {
+                    setStatus("Paused");
+                    setIsStopwatchStart(false);
+                    stop();
+                  }}
+                >
+                  <Text style={styles.pauseButton}>Pause</Text>
+                </TouchableOpacity>
+                <TouchableOpacity //Finish
+                  style={styles.finishButtonBox}
+                  onPress={() => {
+                    setRan(ran + 1);
+                    setStatus("Finished");
+                    setIsStopwatchStart(false);
+                    stop();
+                    fitAllMarkers();
+                    setUserLoc(false);
+                  }}
+                >
+                  <Text style={styles.pauseButton}>Finish</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.bottombar}>
-              <TouchableOpacity //Continue
-                style={styles.continueButtonBox}
-                onPress={() => {
-                  start();
-                  setIsStopwatchStart(true);
-                  setStatus("Continue");
-                }}
-              >
-                <Text style={styles.startButton}>Continue</Text>
-              </TouchableOpacity>
-              <TouchableOpacity //Finish
-                style={styles.finishButtonBox}
-                onPress={() => {
-                  setStatus("Finished");
-                  setIsStopwatchStart(false);
-                  stop();
-                  fitAllMarkers();
-                  setUserLoc(false);
-                  setRan(ran + 1);
-                }}
-              >
-                <Text style={styles.pauseButton}>Finish</Text>
-              </TouchableOpacity>
+          ) : workoutStatus == "Paused" ? ( //Finish and Continue
+            <View style={{ alignItems: "center" }}>
+              <View style={styles.timeBox}>
+                <Text style={styles.time}>Time elapsed:</Text>
+              </View>
+              <Stopwatch
+                start={isStopwatchStart}
+                //To start
+                reset={false}
+                //To reset
+                options={options}
+                //options for the styling
+                getMsecs={(time) => (timeNow.current = time)}
+              />
+              <View style={styles.ranBox}>
+                <Text style={styles.ran}>Distance:</Text>
+              </View>
+              <View style={styles.distanceBox}>
+                <Text style={styles.distance}>{distance.toFixed(2)} Km</Text>
+              </View>
+              <View style={styles.bottombar}>
+                <TouchableOpacity //Continue
+                  style={styles.continueButtonBox}
+                  onPress={() => {
+                    start();
+                    setIsStopwatchStart(true);
+                    setStatus("Continue");
+                  }}
+                >
+                  <Text style={styles.startButton}>Continue</Text>
+                </TouchableOpacity>
+                <TouchableOpacity //Finish
+                  style={styles.finishButtonBox}
+                  onPress={() => {
+                    setStatus("Finished");
+                    setIsStopwatchStart(false);
+                    stop();
+                    fitAllMarkers();
+                    setUserLoc(false);
+                    setRan(ran + 1);
+                  }}
+                >
+                  <Text style={styles.pauseButton}>Finish</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        ) : (
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={400}
-            style={styles.finishRunBorder}
-          >
-            {loading && <Spinner />}
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 20,
-                }}
-              >
-                <Entypo name="medal" size={64} color="#0B2A59" />
+          ) : (
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              keyboardVerticalOffset={400}
+              style={styles.finishRunBorder}
+            >
+              {loading && <Spinner />}
+              <View>
                 <View
                   style={{
-                    flexDirection: "column",
-                    paddingLeft: 10,
-                    alignContent: "space-around",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: 20,
                   }}
                 >
-                  <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-                    Run title:{" "}
-                  </Text>
-                  <TextInput
+                  <Entypo name="medal" size={64} color="#0B2A59" />
+                  <View
                     style={{
-                      height: 32,
-                      width: 200,
-                      borderColor: "gray",
-                      borderWidth: 1,
-                      borderRadius: 10,
-                      marginVertical: 10,
-                      paddingLeft: 15,
-                      fontSize: 16,
+                      flexDirection: "column",
+                      paddingLeft: 10,
+                      alignContent: "space-around",
                     }}
-                    onChangeText={(text) => setTitle(text)}
-                    value={title}
-                    maxLength={31}
-                    defaultValue={"Custom run"}
-                  />
+                  >
+                    <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+                      Run title:{" "}
+                    </Text>
+                    <TextInput
+                      style={{
+                        height: 32,
+                        width: 200,
+                        borderColor: "gray",
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        marginVertical: 10,
+                        paddingLeft: 15,
+                        fontSize: 16,
+                      }}
+                      onChangeText={(text) => setTitle(text)}
+                      value={title}
+                      maxLength={31}
+                      defaultValue={"Custom run"}
+                    />
+                  </View>
+                </View>
+                <View style={{ paddingTop: 30 }}>
+                  <Text
+                    style={{
+                      fontSize: 22,
+                      paddingBottom: 10,
+                      fontWeight: "bold",
+                      color: "#0B2A59",
+                    }}
+                  >
+                    Great Job!
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      textAlign: "justify",
+                      lineHeight: 32,
+                    }}
+                  >
+                    You ran a total of {distance.toFixed(2)} Km in{"\n"}
+                    {secondsToDuration(timeNow.current / 1000)}, with an average
+                    pace of{" "}
+                    {(
+                      timeNow.current /
+                      1000 /
+                      60 /
+                      distance.toFixed(2)
+                    ).toFixed(2)}{" "}
+                    min/Km.
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      paddingTop: 10,
+                      color: "#0B2A59",
+                    }}
+                  >
+                    Keep it up!
+                  </Text>
                 </View>
               </View>
-              <View style={{ paddingTop: 30 }}>
-                <Text
-                  style={{
-                    fontSize: 22,
-                    paddingBottom: 10,
-                    fontWeight: "bold",
-                    color: "#0B2A59",
-                  }}
-                >
-                  Great Job!
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    textAlign: "justify",
-                    lineHeight: 32,
-                  }}
-                >
-                  You ran a total of {distance.toFixed(2)} Km in{"\n"}
-                  {secondsToDuration(timeNow.current / 1000)}, with an average pace of{" "}
-                  {(timeNow.current / 1000 / 60 / distance.toFixed(2)).toFixed(2)}{" "}
-                  min/Km.
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    paddingTop: 10,
-                    color: "#0B2A59",
-                  }}
-                >
-                  Keep it up!
-                </Text>
-              </View>
-            </View>
 
-            <TouchableOpacity //Finishfinish
-              style={styles.finishRunButton}
-              onPress={() => {
-                takeScreenshot();
-              }}
-            >
-              <Text style={styles.finishRunButtonText}>Finish</Text>
-            </TouchableOpacity>
-          </KeyboardAvoidingView>
-        )}
+              <TouchableOpacity //Finishfinish
+                style={styles.finishRunButton}
+                onPress={() => {
+                  takeScreenshot();
+                }}
+              >
+                <Text style={styles.finishRunButtonText}>Finish</Text>
+              </TouchableOpacity>
+            </KeyboardAvoidingView>
+          )}
+        </View>
       </View>
-    </View>
+    )
   );
 };
 

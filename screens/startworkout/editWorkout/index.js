@@ -12,6 +12,7 @@ import { Divider } from "react-native-elements";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Header } from "react-native-elements";
 import { styles } from "./styles";
+import { Alert } from "react-native";
 
 const EditExercise = (props) => {
   const { exercise } = props.route.params;
@@ -55,10 +56,12 @@ const EditExercise = (props) => {
 
   const addSet = () => {
     let data = [...sets];
+    console.log(sets.length)
+ 
     data = data.concat({
       key: currKey + 1,
-      weight: sets[sets.length - 1].weight,
-      reps: sets[sets.length - 1].reps,
+      weight: sets.length < 1 ? 0 : sets[sets.length - 1].weight,
+      reps: sets.length < 1? 0 : sets[sets.length - 1].reps,
       completed: false,
     });
     setCurrKey(currKey + 1);
@@ -75,9 +78,13 @@ const EditExercise = (props) => {
 
   const completeSet = (index) => {
     let data = [...sets];
-    data[index] = { ...data[index], completed: true };
-    setSets(data);
-    console.log(sets);
+    if (data[index].weight === 0 || data[index].reps === 0) {
+      Alert.alert("Invalid wieght or reps!");
+    } else {
+      data[index] = { ...data[index], completed: true };
+      setSets(data);
+      console.log(sets);
+    }
   };
 
   const editSet = (index, type) => {
