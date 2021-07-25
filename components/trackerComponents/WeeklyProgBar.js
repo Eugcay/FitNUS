@@ -23,8 +23,10 @@ const WeeklyProgBar = ({ freq, goal, type }) => {
             : type === "Run" ? "darkgreen" :"blue"
         }
         color= {type === 'Run' ? "forestgreen" : 'blue'}
-        borderWidth={(freq > goal) ? 2 : 1.5}
+        borderWidth={2}
         height={15}
+        style={{shadowColor: (freq > goal) && 'gold', shadowRadius: 2}}
+
       />
     </View>
   );

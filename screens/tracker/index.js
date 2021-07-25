@@ -33,6 +33,8 @@ import MuscleCategoryPie from "../../components/trackerComponents/MuscleCategory
 import PieLegend from "../../components/trackerComponents/MuscleCategoryLegend";
 import ExStats from "../../components/trackerComponents/ExStats";
 import { FrequencyBarChart } from "../../components/trackerComponents/FrequencyBarChart";
+import GenStats from "../../components/trackerComponents/GenStats";
+import RunStats from "../../components/trackerComponents/RunStats";
 import WeeklyProgBar from "../../components/trackerComponents/WeeklyProgBar";
 import { Favourites } from "../../components/trackerComponents/Favourites";
 import { styles } from "./styles";
@@ -215,6 +217,7 @@ const Tracker = (props) => {
       (seconds < 3600 ? Math.floor(seconds % 60) + "s" : "")
     );
   };
+
   const deleteEx = (ex) => {
     const dat = [...exercises];
     dat.splice(exercises.indexOf(ex), 1);
@@ -239,34 +242,34 @@ const Tracker = (props) => {
       <View style={styles.datapicker}>
         <View style={styles.container}>
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, {backgroundColor: statsType === 'weekly' ? 'powderblue': "#0B2A59"}]}
             onPress={() => {
               setType("weekly");
               setPeriod(weekly);
               setRunPeriod(weeklyRun);
             }}
           >
-            <Text style={styles.text}>Weekly</Text>
+            <Text style={[styles.text, {color: statsType === 'weekly' ? 'black' : 'white' }]}>Weekly</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, {backgroundColor: statsType === 'monthly' ? 'powderblue': "#0B2A59"}]}
             onPress={() => {
               setType("monthly");
               setPeriod(monthly);
               setRunPeriod(monthlyRun);
             }}
           >
-            <Text style={styles.text}>Monthly</Text>
+            <Text style={[styles.text, {color: statsType === 'monthly' ? 'black' : 'white' }]}>Monthly</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, {backgroundColor: statsType === 'total' ? 'powderblue': "#0B2A59"}]}
             onPress={() => {
               setType("total");
               setPeriod(total);
               setRunPeriod(totalRun);
             }}
           >
-            <Text style={styles.text}>Overall</Text>
+            <Text style={[styles.text, {color: statsType === 'total' ? 'black' : 'white' }]}>Overall</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -327,106 +330,18 @@ const Tracker = (props) => {
             {statsType === "total" && (
               <Favourites favs={favs} pb={props.currentUser.pb} />
             )}
-
-            <View style={{ justifyContent: "center" }}>
-              <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
-                <View style={styles.genStat}>
-                  <MaterialCommunityIcons
-                    name="clock-time-four-outline"
-                    size={18}
-                    color="darkgreen"
-                  />
-
-                  <Text style={styles.statTitleSmall}>Total Duration</Text>
-                  <Text>
-                    {secondsToDuration(period.duration + periodRun.duration)}
-                  </Text>
-                </View>
-                <View style={styles.genStat}>
-                  <MaterialCommunityIcons
-                    name="timer-outline"
-                    size={17}
-                    color="blue"
-                  />
-                  <Text style={styles.statTitleSmall}>Avg Duration</Text>
-                  <Text>
-                    {period.workouts + periodRun.runs === 0
-                      ? "0m 0s"
-                      : secondsToDuration(
-                          (period.duration + periodRun.duration) /
-                            (period.workouts + periodRun.runs)
-                        )}
-                  </Text>
-                </View>
-
-                <View style={styles.genStat}>
-                  <MaterialCommunityIcons
-                    name="weight-lifter"
-                    size={17}
-                    color="goldenrod"
-                  />
-                  <Text style={styles.statTitleSmall}>Sets</Text>
-                  <Text>{period.sets}</Text>
-                </View>
-                <View style={styles.genStat}>
-                  {statsType !== "weekly" ? (
-                    <>
-                      <MaterialCommunityIcons
-                        name="map-marker-distance"
-                        size={17}
-                        color="crimson"
-                      />
-                      <Text style={styles.statTitleSmall}>Distance</Text>
-                      <Text>{periodRun.distance.toFixed(2)} km</Text>
-                    </>
-                  ) : (
-                    <>
-                      <MaterialCommunityIcons
-                        name="run-fast"
-                        size={17}
-                        color="crimson"
-                      />
-                      <Text style={styles.statTitleSmall}>Runs</Text>
-                      <Text>{periodRun.runs}</Text>
-                    </>
-                  )}
-                </View>
-              </View>
-              {statsType !== "weekly" && (
-                <View style={styles.workoutCircle}>
-                  <Text style={styles.workoutFreq}>
-                    {period.workouts + periodRun.runs}
-                  </Text>
-                  <Text>Workouts</Text>
-                </View>
-              )}
-            </View>
+            <GenStats period={period} periodRun={periodRun} statsType={statsType}/>
 
             <View
-              style={{
-                backgroundColor: "white",
-                marginHorizontal: 5,
-                marginVertical: 15,
-              }}
+              style={styles.muscleBox}
             >
               <Text
-                style={{
-                  padding: 10,
-                  paddingBottom: 5,
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                }}
+                style={styles.muscleTitle}
               >
                 Muscles Used
               </Text>
               <View
-                style={{
-                  flexDirection: "row",
-                  paddingBottom: 10,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                style={styles.muscleChartContainer}
               >
                 <View style={{ width: "80%" }}>
                   <MuscleCategoryPie
@@ -449,42 +364,7 @@ const Tracker = (props) => {
           {statsType === "weekly" && (
             <WeeklyProgBar freq={periodRun.distance} goal={goals.distance || 2} type={'Run'}/> 
           )}
-          <View style={{ justifyContent: "center", marginTop: 15 }}>
-            <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
-              <View style={styles.genStat}>
-                <Text style={styles.statTitleSmall}>Average Pace</Text>
-                <Text>
-                  {periodRun.runs
-                    ? (periodRun.duration / 60 / periodRun.distance).toFixed(2)
-                    : 0}{" "}
-                  min/Km
-                </Text>
-              </View>
-              <View style={styles.genStat}>
-                <Text style={styles.statTitleSmall}>Total Duration</Text>
-                <Text>{secondsToDuration(periodRun.duration)}</Text>
-              </View>
-              <View style={styles.genStat}>
-                <Text style={styles.statTitleSmall}>Distance Per Run</Text>
-                <Text>
-                  {periodRun.runs
-                    ? (periodRun.distance / periodRun.runs).toFixed(2)
-                    : 0}{" "}
-                  Km
-                </Text>
-              </View>
-              <View style={styles.genStat}>
-                <Text style={styles.statTitleSmall}>Longest Run</Text>
-                <Text>{periodRun.longest.toFixed(2)} Km</Text>
-              </View>
-            </View>
-            {statsType !== "weekly" && (
-              <View style={styles.workoutCircle}>
-                <Text style={styles.workoutFreq}>{periodRun.runs}</Text>
-                <Text>Runs</Text>
-              </View>
-            )}
-          </View>
+          <RunStats periodRun={periodRun} statsType={statsType}/>
         </View>
       ) : (
         <Spinner />
