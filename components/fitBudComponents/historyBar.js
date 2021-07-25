@@ -88,7 +88,7 @@ const HistoryBar = ({ navigation, hist, runs }) => {
           source={item.data?.imageURL ? { uri: item.data.imageURL } : img} //lags for run sometimes
           style={[styles.item]}
           imageStyle={{ borderRadius: 8 }}
-          blurRadius={item.data?.imageURL && item.data?.exercises ? 5 : 3}
+          blurRadius={item.data?.imageURL && item.data?.exercises ? 5 : 0.5}
         >
           <Text style={[styles.title, styles.text]}>
             {item.data?.name ? item.data?.name : "Custom Workout"}
@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignSelf: "center",
     borderRadius: 20,
-    textShadowRadius: 5,
-    textShadowColor: "gray",
+    textShadowRadius: 6,
+    textShadowColor: "black",
     shadowOpacity: 0.8,
   },
 
