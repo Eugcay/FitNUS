@@ -19,7 +19,5 @@ In addition, there is a community element to the fitNUS application, with the �
 1. Provides information on the respective exercises, such as expected calories burned, time needed for exercise
 1. Personal workout statistics: Students can keep track of their workout progress after completion, with information such as percentage of a muscle group worked, average number of workouts per month, total calories burnt etc.
 
-### The “Exercise Jio”:
-1. Jio initiation: Jioer, Capacity (adhering to COVID-19 regulations), Venue, Time, Type of exercise/sport, Filters (e.g. Females only, boys only, etc...)
-1. Jio reminder
+
 
