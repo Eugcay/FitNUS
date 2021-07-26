@@ -10,6 +10,7 @@ import FitBudStack from "./fitBudStack";
 import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";
 import HistoryStack from "./historyStack";
+import Jio from "../screens/jio"
 import firebase from "firebase";
 
 import {
