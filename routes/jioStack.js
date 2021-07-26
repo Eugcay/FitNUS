@@ -28,7 +28,7 @@ const JioStack = (props) => {
   }, []);
   return (
     <Stack.Navigator
-      initialRouteName="Jio"
+      initialRouteName="Main"
       screenOptions={{ headerStyle: { backgroundColor: "powderblue" } }}
     >
       <Stack.Screen

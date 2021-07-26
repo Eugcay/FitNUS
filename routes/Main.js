@@ -7,7 +7,6 @@ import { bindActionCreators } from "redux";
 
 import { TrackerStack } from "./trackerStack";
 import FitBudStack from "./fitBudStack";
-import Jio from "../screens/jio";
 import ProfileStack from "./profileStack";
 import HistoryStack from "./historyStack";
 import firebase from "firebase";
@@ -21,7 +20,7 @@ import {
 
 import {
   getUserAccruedAchievements,
-  getUserSingleAchievements
+  getUserSingleAchievements,
 } from "../store/actions/achievements";
 
 import { fetchUpcoming, fetchCompleted } from "../store/actions/jios";
@@ -42,8 +41,8 @@ export const Main = (props) => {
     props.getUserFollowing();
     props.getUserFollowers();
     props.getUserAccruedAchievements();
-    props.fetchCompleted()
-    props.fetchUpcoming()
+    props.fetchCompleted();
+    props.fetchUpcoming();
     props.getUserSingleAchievements();
   }, []);
 
@@ -63,6 +62,12 @@ export const Main = (props) => {
         <Tab.Screen
           name="Jio"
           component={Jio}
+          listeners={({ navigation }) => ({
+            tabPress: (event) => {
+              event.preventDefault();
+              navigation.navigate("Exercise Jio");
+            },
+          })}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons
@@ -74,12 +79,15 @@ export const Main = (props) => {
             tabBarColor: "#0B2A59",
           }}
         />
-        <Tab.Screen name='History' component={HistoryStack} options={{
-          tabBarIcon: (({color, size}) => (
-            <MaterialCommunityIcons name='calendar' color={color} size={25}/>
-          )),
-          tabBarColor: "#0B2A59" 
-        }}
+        <Tab.Screen
+          name="History"
+          component={HistoryStack}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="calendar" color={color} size={25} />
+            ),
+            tabBarColor: "#0B2A59",
+          }}
         />
         <Tab.Screen
           name="Tracker"

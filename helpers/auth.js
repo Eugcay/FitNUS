@@ -54,7 +54,7 @@ export const resend = async () => {
     user.sendEmailVerification();
     await firebase.firestore().collection("users").doc(user.uid).set({
       name,
-      email: user.email,
+      email,
       bio: "",
       photoURL: "",
       caloriesGoal: "",

@@ -16,7 +16,7 @@ const ProfileStack = () => {
       <Stack.Navigator initialRouteName="Profile">
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="Edit Profile" component={EditProfile} />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Select Workout Type"
           component={SelectWorkoutType}
           options={{ headerShown: false }}
@@ -24,7 +24,7 @@ const ProfileStack = () => {
         <Stack.Screen
           name="Start Workout"
           component={StartWorkout} 
-        />
+        /> */}
         <Stack.Screen name="Run Map" component={RunMap} />
         <Stack.Screen
           name="Add Exercises"
