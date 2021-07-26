@@ -132,7 +132,7 @@ const ExStats = ({ item, hist, pb, del }) => {
             size={22}
           />
           <Text style={{ color: "gray" }}>Last completed</Text>
-          <Text>
+          <Text style={{fontSize: 12}}>
             {stat.date
               ? moment(new Date(stat.date)).format("DD MMMM YYYY")
               : "No Attempt"}
@@ -142,7 +142,7 @@ const ExStats = ({ item, hist, pb, del }) => {
         <View style={{ width: "33%", alignItems: "center" }}>
           <MaterialCommunityIcons name="podium" size={22} color="goldenrod" />
           <Text style={{ color: "gray" }}>Personal Best</Text>
-          <Text>{`${pb} kg`}</Text>
+          <Text style={{fontSize: 12}}>{`${pb} kg`}</Text>
         </View>
         <Divider orientation="vertical" />
         <View style={{ width: "33%", alignItems: "center" }}>
@@ -152,7 +152,7 @@ const ExStats = ({ item, hist, pb, del }) => {
             color="green"
           />
           <Text style={{ color: "gray" }}>Sets Completed</Text>
-          <Text>{stat.exStats}</Text>
+          <Text style={{fontSize: 12}}>{stat.exStats}</Text>
         </View>
       </View>
 
