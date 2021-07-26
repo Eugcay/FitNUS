@@ -9,6 +9,7 @@ import { TrackerStack } from "./trackerStack";
 import FitBudStack from "./fitBudStack";
 import ProfileStack from "./profileStack";
 import HistoryStack from "./historyStack";
+import Jio from "../screens/jio"
 import firebase from "firebase";
 
 import {
