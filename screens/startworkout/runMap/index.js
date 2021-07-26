@@ -104,7 +104,12 @@ const RunMap = (props) => {
   const [screenShot, setScreenshot] = useState(null);
   const [userLoc, setUserLoc] = useState(true);
   const [index, setIndex] = useState(-1);
-  const [initial, setInitial] = useState(null);
+  const [initial, setInitial] = useState({
+    latitude: 1.302,
+    longitude: 103.7758,
+    latitudeDelta: 0.015,
+    longitudeDelta: 0.015,
+  });
 
   //takeSnapshot
   const takeScreenshot = async () => {
