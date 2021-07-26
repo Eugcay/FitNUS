@@ -72,7 +72,7 @@ const Preview = ({ navigation, item, currUser }) => {
           <Text>{user.name}</Text>
           {item.data.creation && (
             <Text>
-              {moment(item.data.creation.toDate()).format("D MMM YY h:mm a")}
+              {moment(item.data.time.toDate()).format("D MMM YY h:mm a")}
             </Text>
           )}
         </View>

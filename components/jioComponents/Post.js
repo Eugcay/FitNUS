@@ -35,9 +35,9 @@ const Post = ({ navigation, item, currUser }) => {
   };
 
   const onLike = () => {
-    if (item.data.likes.length >= 8) {
+    if (item.data.likes.length >= 5) {
       alert(
-        "Sorry! A maximum of 8 people can gather in light of Covid-19 regulations."
+        "Sorry! A maximum of 5 people can gather in light of Covid-19 regulations."
       );
     } else {
       firebase

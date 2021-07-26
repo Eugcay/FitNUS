@@ -13,6 +13,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Header } from "react-native-elements";
 import { styles } from "./styles";
 import { Alert } from "react-native";
+import { set } from "react-native-reanimated";
 
 const EditExercise = (props) => {
   const { exercise } = props.route.params;
@@ -54,14 +55,19 @@ const EditExercise = (props) => {
     }
   };
 
+  const completeAll = () => {
+    const data = sets.map((set) => ({ ...set, completed: true }));
+    setSets(data);
+  };
+
   const addSet = () => {
     let data = [...sets];
-    console.log(sets.length)
- 
+    console.log(sets.length);
+
     data = data.concat({
       key: currKey + 1,
       weight: sets.length < 1 ? 0 : sets[sets.length - 1].weight,
-      reps: sets.length < 1? 0 : sets[sets.length - 1].reps,
+      reps: sets.length < 1 ? 0 : sets[sets.length - 1].reps,
       completed: false,
     });
     setCurrKey(currKey + 1);
@@ -250,7 +256,7 @@ const EditExercise = (props) => {
         }}
       >
         <ScrollView>
-          <View style={styles.container}>
+          <View style={styles.container}>        
             <FlatList
               data={sets}
               keyExtractor={(item) => item.key}
@@ -262,6 +268,15 @@ const EditExercise = (props) => {
             <TouchableOpacity onPress={addSet} style={styles.addSet}>
               <Ionicons name="add-outline" color="green" size={23} />
               <Text style={{ color: "green" }}>ADD SET</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                completeAll();
+              }}
+            >
+              <Text style={{ textAlign: "center", fontWeight: 'bold', color: "green", fontSize: 18, marginBottom: 30 }}>
+                Complete All
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
