@@ -10,8 +10,8 @@ In addition, there is a community element to the fitNUS application, with the â€
 
 Test it out here at https://docs.google.com/document/d/1TYnSBouCxTk8gRaH7y5y25p4pHBMf12f0FSljnQs9Rs/edit 
 
-Installation Guides
-Users
+## Installation Guides
+### Users
 
 For Users who involved in testing the application, these are the instructions to setup FitNUS on your phone
 
@@ -37,7 +37,7 @@ Start working out.
 
 * Go to the profile page and check if it is still loading after a minute. If this happens, please let us know.
 
-Developers
+### Developers
 
 For potential developers looking to try out and perhaps build on this application, these are instructions to obtain the code and start developing.
 
