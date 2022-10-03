@@ -10,6 +10,11 @@ In addition, there is a community element to the fitNUS application, with the â€
 
 Test it out here at https://docs.google.com/document/d/1TYnSBouCxTk8gRaH7y5y25p4pHBMf12f0FSljnQs9Rs/edit 
 
+## Product Demo
+[Poster](https://github.com/eugenechiaannyao/FitNUS/files/9694269/0FitNUS.vFinal.pdf)
+
+[Video](https://drive.google.com/file/d/1Nwjp88ecuLaQOTxXuLepClyt-P-FBLBF/view?usp=sharing)
+
 ## Installation Guides
 ### Users
 
